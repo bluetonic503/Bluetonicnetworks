@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bluetonic.net - Freelance Marketplace</title>
-    <link rel="icon" type="image/jpg" href="bluetonic.jpg">
+    <link rel="icon" type="image/png" href="bluetonic.jpg.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDKs -->
@@ -303,6 +303,8 @@
             border-radius: 15px;
             margin-bottom: 40px;
             animation: slideInLeft 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
         }
 
         .hero h1 {
@@ -349,6 +351,244 @@
         .stat-label {
             color: var(--light);
             font-size: 0.9rem;
+        }
+
+        /* MODIFIED: Features Section - Smaller Cards with Real Photos */
+        .features-section {
+            margin: 60px 0;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-image {
+            width: 100%;
+            height: 160px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            background-color: #f8fafc;
+        }
+
+        /* NEW STYLISH: Experience the Bluetonic Advantage Section */
+        .advantage-section {
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .advantage-container {
+            position: relative;
+            padding: 50px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .advantage-container::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(37, 99, 235, 0.1));
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .advantage-container::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .advantage-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .advantage-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .advantage-header .tagline {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .advantage-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .advantage-feature {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .advantage-feature:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(37, 99, 235, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .feature-icon-stylish {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .advantage-feature h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .advantage-feature p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feature-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-bubble i {
+            color: #60a5fa;
+        }
+
+        .advantage-cta {
+            text-align: center;
+            margin-top: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-text {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 25px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Call to Action */
+        .call-to-action {
+            text-align: center;
+            margin: 40px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            animation: fadeIn 0.8s ease-out;
         }
 
         .job-listings {
@@ -400,6 +640,110 @@
             background-color: var(--primary);
             color: white;
             transform: translateY(-2px);
+        }
+
+        /* Comments Section Styles */
+        .comments-section {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+
+        .comments-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .comment-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .comment-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .comments-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .comment-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .comment-time {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-left: auto;
+        }
+
+        .comment-text {
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .show-more-btn {
+            display: block;
+            margin: 20px auto 0;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .show-more-btn:hover {
+            background: var(--primary);
+            color: white;
         }
 
         /* Forms */
@@ -845,6 +1189,14 @@
             .stats {
                 gap: 20px;
             }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .advantage-features {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
@@ -883,6 +1235,53 @@
                 gap: 15px;
             }
 
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature-card {
+                padding: 15px;
+            }
+
+            .feature-image {
+                height: 140px;
+            }
+
+            .feature-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+
+            .advantage-container {
+                padding: 30px 20px;
+            }
+
+            .advantage-header h2 {
+                font-size: 2rem;
+            }
+
+            .advantage-features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .advantage-feature {
+                padding: 20px;
+            }
+
+            .feature-icon-stylish {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
             .chat-container {
                 flex-direction: column;
                 height: 700px;
@@ -917,6 +1316,11 @@
             .profile-actions {
                 flex-direction: column;
             }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -931,6 +1335,10 @@
             .job-listings {
                 grid-template-columns: 1fr;
             }
+
+            .call-to-action {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
@@ -940,7 +1348,7 @@
         <div class="container">
             <div class="navbar">
                 <div class="logo">
-                    <img src="bluetonic.jpg" 
+                    <img src="bluetonic.jpg.jpg" 
                          alt="Bluetonic Logo" 
                          class="logo-img">
                     <span>Bluetonic.net</span>
@@ -967,14 +1375,14 @@
 
     <!-- Main App Container -->
     <div id="app">
-        <!-- Home Page -->
+        <!-- Home Page - MODIFIED WITH REAL PHOTOS -->
         <div class="page container" id="home-page">
             <div class="hero">
-                <h1>Find Freelance Talent or Work</h1>
-                <p>Connect with skilled freelancers or find freelance jobs that match your skills. Bluetonic makes freelancing simple and efficient.</p>
+                <h1>Your New Home for Freelancing & Quick Hiring!</h1>
+                <p>Whether you're a Student, Freelancer, Entrepreneur, or Business Owner, Bluetonic gives you a smooth and fast experience.</p>
                 <div>
-                    <button class="btn btn-primary" data-page="register">Get Started</button>
-                    <button class="btn btn-secondary" data-page="jobs">Browse Jobs</button>
+                    <button class="btn btn-primary" data-page="register">Start Freelancing</button>
+                    <button class="btn btn-success" data-page="post-job">Hire Talent Now</button>
                 </div>
                 
                 <div class="stats">
@@ -990,6 +1398,190 @@
                         <div class="stat-number" id="stats-earned">$0</div>
                         <div class="stat-label">Earned</div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- MODIFIED: Features Section with Real Photos and Smaller Cards -->
+            <div class="features-section">
+                <h2 style="text-align: center; margin-bottom: 20px;">Why Choose Bluetonic?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <!-- Real photo for Lightning Fast -->
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="Fast computer and phone showing quick loading"
+                             class="feature-image">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Lightning Fast</h3>
+                        <p>Post jobs or apply in seconds. No lengthy forms, just quick action.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <!-- Real photo for Responsive Design -->
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="Multiple devices showing responsive design"
+                             class="feature-image">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Perfectly Responsive</h3>
+                        <p>Works seamlessly on mobile and desktop. Freelance on the go!</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <!-- Real photo for Global Reach -->
+                        <img src="https://media.istockphoto.com/id/2173063067/photo/business-people-in-the-office.jpg?s=1024x1024&w=is&k=20&c=kJ5qgtxb1f4ruoDN03nRfMzZBXOV1FBu2_fBM95y8Es=" 
+                             alt="Global team collaboration"
+                             class="feature-image">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe-africa"></i>
+                        </div>
+                        <h3>Built for Kenya & Global</h3>
+                        <p>Designed with local needs in mind, accessible worldwide.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NEW STYLISH: Experience the Bluetonic Advantage Section -->
+            <div class="advantage-section">
+                <div class="advantage-container">
+                    <div class="advantage-header">
+                        <h2>Experience the Bluetonic Advantage</h2>
+                        <p class="tagline">Fast applying of jobs and fast posting - your ultimate platform for freelancing success!</p>
+                    </div>
+                    
+                    <div class="advantage-features">
+                        <div class="advantage-feature">
+                            <div class="feature-number">01</div>
+                            <div class="feature-icon-stylish">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h3>Lightning Fast Posting</h3>
+                            <p>Post jobs in seconds with our streamlined interface. No complicated forms, just quick action that gets results.</p>
+                            <div class="feature-stats">
+                                <span class="stat-bubble">
+                                    <i class="fas fa-clock"></i> Under 30 seconds
+                                </span>
+                                <span class="stat-bubble">
+                                    <i class="fas fa-check-circle"></i> 95% success rate
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="advantage-feature">
+                            <div class="feature-number">02</div>
+                            <div class="feature-icon-stylish">
+                                <i class="fas fa-mouse-pointer"></i>
+                            </div>
+                            <h3>One-Click Applications</h3>
+                            <p>Apply instantly to opportunities with one click. Your profile does the talking, saving you time and effort.</p>
+                            <div class="feature-stats">
+                                <span class="stat-bubble">
+                                    <i class="fas fa-bolt"></i> Instant apply
+                                </span>
+                                <span class="stat-bubble">
+                                    <i class="fas fa-user-check"></i> Smart matching
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="advantage-feature">
+                            <div class="feature-number">03</div>
+                            <div class="feature-icon-stylish">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h3>Perfectly Responsive</h3>
+                            <p>Clean, responsive UI that works flawlessly on any device. Freelance from your phone, tablet, or desktop.</p>
+                            <div class="feature-stats">
+                                <span class="stat-bubble">
+                                    <i class="fas fa-mobile"></i> Mobile-first
+                                </span>
+                                <span class="stat-bubble">
+                                    <i class="fas fa-desktop"></i> Desktop optimized
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="advantage-feature">
+                            <div class="feature-number">04</div>
+                            <div class="feature-icon-stylish">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3>Smart Talent Matching</h3>
+                            <p>Find talent faster than ever with our intelligent matching system that connects you with the perfect freelancers.</p>
+                            <div class="feature-stats">
+                                <span class="stat-bubble">
+                                    <i class="fas fa-brain"></i> AI-powered
+                                </span>
+                                <span class="stat-bubble">
+                                    <i class="fas fa-bullseye"></i> Precision matches
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="advantage-feature">
+                            <div class="feature-number">05</div>
+                            <div class="feature-icon-stylish">
+                                <i class="fas fa-globe-africa"></i>
+                            </div>
+                            <h3>Local & Global Reach</h3>
+                            <p>Built specifically for Kenya with global accessibility. Connect with talent and opportunities worldwide.</p>
+                            <div class="feature-stats">
+                                <span class="stat-bubble">
+                                    <i class="fas fa-map-marker-alt"></i> Kenya-focused
+                                </span>
+                                <span class="stat-bubble">
+                                    <i class="fas fa-globe"></i> Worldwide access
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="advantage-feature">
+                            <div class="feature-number">06</div>
+                            <div class="feature-icon-stylish">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <h3>Seamless Experience</h3>
+                            <p>Works perfectly on mobile and desktop with smooth transitions and intuitive navigation throughout.</p>
+                            <div class="feature-stats">
+                                <span class="stat-bubble">
+                                    <i class="fas fa-sync"></i> Real-time updates
+                                </span>
+                                <span class="stat-bubble">
+                                    <i class="fas fa-shield-alt"></i> Secure & reliable
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="advantage-cta">
+                        <p class="cta-text">Join thousands of freelancers and clients who trust Bluetonic for their projects. Experience the difference today!</p>
+                        <div class="cta-buttons">
+                            <button class="btn btn-primary" data-page="register" style="font-size: 1.1rem; padding: 12px 30px; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                                <i class="fas fa-rocket"></i> Start Freelancing
+                            </button>
+                            <button class="btn btn-success" data-page="post-job" style="font-size: 1.1rem; padding: 12px 30px; background: linear-gradient(135deg, #10b981, #059669);">
+                                <i class="fas fa-briefcase"></i> Hire Your Next Worker
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="call-to-action">
+                <h2 style="margin-bottom: 15px;">Start Your Freelancing Journey Today!</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 25px;">
+                    Join thousands of freelancers and clients who trust Bluetonic for their projects.
+                </p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" data-page="register" style="font-size: 1.1rem; padding: 12px 30px;">
+                        <i class="fas fa-rocket"></i> Start Freelancing
+                    </button>
+                    <button class="btn btn-success" data-page="post-job" style="font-size: 1.1rem; padding: 12px 30px;">
+                        <i class="fas fa-briefcase"></i> Hire Your Next Worker
+                    </button>
                 </div>
             </div>
             
@@ -1277,6 +1869,32 @@
         </div>
     </div>
 
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <div class="container comments-container">
+            <h2 style="text-align: center; margin-bottom: 30px; color: white;">What Our Users Say</h2>
+            
+            <div class="comment-form">
+                <h3 style="margin-bottom: 20px; color: white;">Share Your Experience</h3>
+                <textarea class="comment-input" id="comment-text" placeholder="Share your thoughts about Bluetonic..." rows="4"></textarea>
+                <button class="btn btn-primary" id="submit-comment" style="width: 100%;">
+                    <i class="fas fa-paper-plane"></i> Post Comment
+                </button>
+            </div>
+            
+            <div class="comments-list" id="comments-list">
+                <!-- Comments will be loaded here -->
+                <div class="comment-item" style="text-align: center; color: rgba(255,255,255,0.7);">
+                    <p>No comments yet. Be the first to share your experience!</p>
+                </div>
+            </div>
+            
+            <button class="btn btn-secondary show-more-btn" id="show-more-comments" style="display: none;">
+                <i class="fas fa-chevron-down"></i> Show More Comments
+            </button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <div class="container">
@@ -1350,7 +1968,10 @@
             editingSkills: [],
             isLoading: false,
             chatListener: null,
-            contactsListener: null
+            contactsListener: null,
+            commentsListener: null,
+            visibleComments: 5,
+            allComments: []
         };
         
         // ============================================
@@ -1410,6 +2031,150 @@
                     }
                 }, 500);
             }, 3000);
+        }
+        
+        // Format date for comments
+        function formatCommentDate(timestamp) {
+            if (!timestamp) return 'Just now';
+            
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+            
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                year: diffDays > 365 ? 'numeric' : undefined
+            });
+        }
+        
+        // ============================================
+        // COMMENTS SYSTEM FUNCTIONS
+        // ============================================
+        
+        // Load Comments
+        function loadComments() {
+            if (state.commentsListener) {
+                state.commentsListener();
+            }
+            
+            state.commentsListener = db.collection('comments')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((snapshot) => {
+                    state.allComments = [];
+                    snapshot.forEach(doc => {
+                        state.allComments.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    renderComments();
+                }, (error) => {
+                    console.error('Error loading comments:', error);
+                });
+        }
+        
+        // Render Comments
+        function renderComments() {
+            const container = document.getElementById('comments-list');
+            const showMoreBtn = document.getElementById('show-more-comments');
+            
+            if (state.allComments.length === 0) {
+                container.innerHTML = `
+                    <div class="comment-item" style="text-align: center; color: rgba(255,255,255,0.7);">
+                        <p>No comments yet. Be the first to share your experience!</p>
+                    </div>
+                `;
+                showMoreBtn.style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            const commentsToShow = state.allComments.slice(0, state.visibleComments);
+            
+            commentsToShow.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment-item';
+                commentElement.innerHTML = `
+                    <div class="comment-header">
+                        <div class="comment-avatar">
+                            ${comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div class="comment-author">${comment.authorName || 'Anonymous User'}</div>
+                        <div class="comment-time">${formatCommentDate(comment.createdAt)}</div>
+                    </div>
+                    <div class="comment-text">${comment.text}</div>
+                `;
+                container.appendChild(commentElement);
+            });
+            
+            // Show/hide "Show More" button
+            if (state.allComments.length > state.visibleComments) {
+                showMoreBtn.style.display = 'block';
+            } else {
+                showMoreBtn.style.display = 'none';
+            }
+        }
+        
+        // Submit Comment
+        async function submitComment() {
+            const commentInput = document.getElementById('comment-text');
+            const text = commentInput.value.trim();
+            
+            if (!text) {
+                showNotification('Please enter a comment', 'warning');
+                return;
+            }
+            
+            if (!state.currentUser) {
+                showNotification('Please login to post a comment', 'warning');
+                showPage('login');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submit-comment');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+            submitBtn.disabled = true;
+            
+            try {
+                await db.collection('comments').add({
+                    text: text,
+                    authorId: state.currentUser.uid,
+                    authorName: state.userProfile?.name || 'Anonymous',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                commentInput.value = '';
+                showNotification('Comment posted successfully!');
+                
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Error posting comment:', error);
+                showNotification('Error posting comment', 'error');
+                
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+        
+        // Show More Comments
+        function showMoreComments() {
+            state.visibleComments += 5;
+            renderComments();
         }
         
         // ============================================
@@ -1655,6 +2420,10 @@
                     state.contactsListener();
                     state.contactsListener = null;
                 }
+                if (state.commentsListener) {
+                    state.commentsListener();
+                    state.commentsListener = null;
+                }
                 
                 await auth.signOut();
                 showNotification('Logged out successfully');
@@ -1672,7 +2441,7 @@
         }
         
         // ============================================
-        // FIREBASE FIRESTORE FUNCTIONS - FULLY RESTORED
+        // FIREBASE FIRESTORE FUNCTIONS
         // ============================================
         
         // Load Home Page Stats
@@ -1987,7 +2756,7 @@
         }
         
         // ============================================
-        // PROFILE FUNCTIONS - FULLY RESTORED
+        // PROFILE FUNCTIONS
         // ============================================
         
         // Load Profile Data
@@ -2105,7 +2874,7 @@
         }
         
         // ============================================
-        // CHAT FUNCTIONS - UPDATED WITH FIXES
+        // CHAT FUNCTIONS
         // ============================================
         
         // Set up real-time chat listener
@@ -2298,7 +3067,7 @@
             }
         }
         
-        // Send Message - UPDATED VERSION
+        // Send Message
         async function sendMessage() {
             if (!state.currentUser || !state.currentChatWith) {
                 showNotification('Please select a conversation first', 'warning');
@@ -2565,6 +3334,29 @@
                 });
             }
             
+            // Comment submission
+            const submitCommentBtn = document.getElementById('submit-comment');
+            if (submitCommentBtn) {
+                submitCommentBtn.addEventListener('click', submitComment);
+            }
+            
+            // Enter key for comment input
+            const commentInput = document.getElementById('comment-text');
+            if (commentInput) {
+                commentInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        e.preventDefault();
+                        submitComment();
+                    }
+                });
+            }
+            
+            // Show more comments
+            const showMoreCommentsBtn = document.getElementById('show-more-comments');
+            if (showMoreCommentsBtn) {
+                showMoreCommentsBtn.addEventListener('click', showMoreComments);
+            }
+            
             // Profile page buttons
             const editProfileBtn = document.getElementById('edit-profile-btn');
             if (editProfileBtn) {
@@ -2652,6 +3444,9 @@
             setupEventListeners();
             showPage('home');
             
+            // Load comments
+            loadComments();
+            
             // Check auth state immediately
             console.log("Checking initial auth state...");
         });
@@ -2711,3 +3506,4 @@
     </script>
 </body>
 </html>
+        
