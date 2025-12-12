@@ -1144,6 +1144,7 @@
                 bottom: 0;
                 background: rgba(0,0,0,0.5);
                 z-index: 999;
+                pointer-events: auto;
             }
             
             .chat-overlay.active {
@@ -1800,7 +1801,7 @@
                     
                     <div class="chat-input" id="mobile-chat-input" style="display: none;">
                         <input type="text" id="mobile-message-input" placeholder="Type your message..." autocomplete="off">
-                        <button class="chat-send-btn" id="mobile-send-message">
+                        <button class="btn btn-primary" id="mobile-send-message">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -2275,7 +2276,7 @@
     }
     
     // ============================================
-    // MOBILE CHAT FUNCTIONS
+    // MOBILE CHAT FUNCTIONS - FIXED VERSION
     // ============================================
     
     function setupChatView() {
@@ -2286,10 +2287,27 @@
         if (isMobile) {
             desktopChat.classList.add('hidden');
             mobileChat.classList.remove('hidden');
-            showMobileChatSidebar();
+            
+            // Initialize mobile chat to sidebar view
+            document.getElementById('mobile-sidebar').classList.add('active');
+            document.getElementById('mobile-conversation').classList.remove('active');
+            document.getElementById('chatOverlay').classList.remove('active');
+            state.isMobileChatOpen = false;
+            
+            // Clear any existing conversation
+            document.getElementById('mobile-chat-input').style.display = 'none';
+            document.getElementById('mobile-chat-with').innerHTML = '<span>Select a conversation</span>';
+            document.getElementById('mobile-chat-messages').innerHTML = 
+                '<div style="text-align: center; padding: 40px; color: var(--light);"><i class="fas fa-comment"></i><p>Select a conversation to start chatting</p></div>';
         } else {
             desktopChat.classList.remove('hidden');
             mobileChat.classList.add('hidden');
+            
+            // Clear desktop chat
+            document.getElementById('chat-input-area').style.display = 'none';
+            document.getElementById('chat-with').innerHTML = '<span>Select a conversation</span>';
+            document.getElementById('chat-messages').innerHTML = 
+                '<div style="text-align: center; padding: 40px; color: var(--light);"><i class="fas fa-comment"></i><p>Select a conversation to start chatting</p></div>';
         }
     }
     
@@ -2298,6 +2316,16 @@
         document.getElementById('mobile-conversation').classList.remove('active');
         document.getElementById('chatOverlay').classList.remove('active');
         state.isMobileChatOpen = false;
+        
+        // Reset current chat
+        state.currentChatWith = null;
+        state.currentChatUser = null;
+        
+        // Clear chat listener
+        if (state.chatListener) {
+            state.chatListener();
+            state.chatListener = null;
+        }
     }
     
     function showMobileChatConversation() {
@@ -2504,6 +2532,12 @@
             return;
         }
         
+        // Reset any existing chat
+        if (state.chatListener) {
+            state.chatListener();
+            state.chatListener = null;
+        }
+        
         state.currentChatWith = userId;
         state.currentChatUser = { id: userId, name: userName, type: userType };
         
@@ -2523,6 +2557,8 @@
         `;
         
         document.getElementById('mobile-chat-input').style.display = 'flex';
+        
+        // Switch to conversation view
         showMobileChatConversation();
         
         // Load messages
@@ -2530,7 +2566,11 @@
         
         // Focus input
         setTimeout(() => {
-            document.getElementById('mobile-message-input').focus();
+            const input = document.getElementById('mobile-message-input');
+            if (input) {
+                input.focus();
+                input.value = ''; // Clear any previous input
+            }
         }, 100);
     }
     
@@ -3192,21 +3232,14 @@
                         setupChatView();
                         loadChatContacts();
                         // Reset chat UI
-                        const isMobile = window.innerWidth < 768;
-                        if (isMobile) {
-                            document.getElementById('mobile-chat-messages').innerHTML = 
-                                '<div style="text-align: center; padding: 40px; color: var(--light);"><i class="fas fa-comment"></i><p>Select a conversation to start chatting</p></div>';
-                            document.getElementById('mobile-chat-input').style.display = 'none';
-                            document.getElementById('mobile-chat-with').innerHTML = '<span>Select a conversation</span>';
-                            showMobileChatSidebar();
-                        } else {
-                            document.getElementById('chat-messages').innerHTML = 
-                                '<div style="text-align: center; padding: 40px; color: var(--light);"><i class="fas fa-comment"></i><p>Select a conversation to start chatting</p></div>';
-                            document.getElementById('chat-input-area').style.display = 'none';
-                            document.getElementById('chat-with').innerHTML = '<span>Select a conversation</span>';
-                        }
                         state.currentChatWith = null;
                         state.currentChatUser = null;
+                        
+                        // Clear any existing chat listener
+                        if (state.chatListener) {
+                            state.chatListener();
+                            state.chatListener = null;
+                        }
                     }
                     break;
             }
@@ -3374,7 +3407,14 @@
         });
         
         // Chat overlay click
-        document.getElementById('chatOverlay').addEventListener('click', showMobileChatSidebar);
+        const chatOverlay = document.getElementById('chatOverlay');
+        if (chatOverlay) {
+            chatOverlay.addEventListener('click', function() {
+                if (window.innerWidth < 768) { // Only on mobile
+                    showMobileChatSidebar();
+                }
+            });
+        }
         
         // Window resize for chat
         window.addEventListener('resize', function() {
@@ -3410,6 +3450,11 @@
         setupEventListeners();
         showPage('home');
         loadComments();
+        
+        // Initialize mobile chat state on page load
+        if (window.innerWidth < 768) {
+            showMobileChatSidebar();
+        }
     });
     </script>
 </body>
