@@ -49,6 +49,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
         @keyframes slideInRight {
             from { opacity: 0; transform: translateX(20px); }
             to { opacity: 1; transform: translateX(0); }
@@ -165,6 +170,17 @@
 
         .btn-danger {
             background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
             color: white;
         }
 
@@ -476,6 +492,82 @@
             background-color: var(--primary);
             color: white;
             transform: translateY(-1px);
+        }
+
+        /* Freelancer Cards */
+        .freelancer-card {
+            border-left: 4px solid var(--success);
+        }
+
+        .freelancer-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .freelancer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .freelancer-info {
+            flex: 1;
+        }
+
+        .freelancer-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .freelancer-rating {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+
+        .freelancer-rate {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .freelancer-bio {
+            color: var(--light);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .freelancer-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .freelancer-skill {
+            background: #e0f2fe;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+        }
+
+        .freelancer-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         /* Forms */
@@ -1369,6 +1461,26 @@
             .portfolio-container {
                 grid-template-columns: 1fr;
             }
+
+            /* Freelancer responsive */
+            .freelancer-actions {
+                flex-direction: column;
+            }
+            
+            .freelancer-actions .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .freelancer-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .freelancer-info {
+                text-align: center;
+                margin: 10px 0;
+            }
         }
 
         /* ============ ORIGINAL RESPONSIVE DESIGN ============ */
@@ -1522,6 +1634,7 @@
                 <div class="nav-links" id="navLinks">
                     <a href="#" data-page="home">Home</a>
                     <a href="#" data-page="jobs">Find Work</a>
+                    <a href="#" data-page="freelancers">Find Talent</a>
                     <a href="#" data-page="post-job">Post a Job</a>
                     <a href="#" data-page="chat">Messages</a>
                     
@@ -1985,6 +2098,55 @@
             </div>
         </div>
 
+        <!-- Freelancer Search Page -->
+        <div class="page container hidden" id="freelancers-page">
+            <h2>Find Freelancers</h2>
+            <p style="color: var(--light); margin-bottom: 20px;">Search and hire talented freelancers</p>
+            
+            <!-- Search Bar -->
+            <div class="card" style="margin-bottom: 25px;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <input type="text" id="freelancer-search" class="form-control" 
+                               placeholder="Search freelancers by name or username...">
+                    </div>
+                    <button class="btn btn-primary" id="search-freelancers-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button class="btn btn-secondary" id="clear-search-btn">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+                
+                <!-- Search Filters -->
+                <div style="margin-top: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--light); display: block; margin-bottom: 5px;">Skills</label>
+                        <input type="text" id="filter-skills" class="form-control" placeholder="e.g., JavaScript, Design" style="width: 200px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--light); display: block; margin-bottom: 5px;">Hourly Rate (max)</label>
+                        <select id="filter-rate" class="form-control" style="width: 150px;">
+                            <option value="">Any rate</option>
+                            <option value="25">$25/hr</option>
+                            <option value="50">$50/hr</option>
+                            <option value="100">$100/hr</option>
+                            <option value="200">$200/hr</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div id="freelancer-results">
+                <div style="text-align: center; padding: 40px; color: var(--light);">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <h3>Search for Freelancers</h3>
+                    <p>Use the search bar above to find talented freelancers</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Chat Page - MOBILE FIXED -->
         <div class="page container hidden" id="chat-page">
             <h2>Messages</h2>
@@ -2121,6 +2283,7 @@
                     <div class="footer-links">
                         <a href="#" data-page="home">Home</a>
                         <a href="#" data-page="jobs">Find Work</a>
+                        <a href="#" data-page="freelancers">Find Talent</a>
                         <a href="#" data-page="post-job">Post a Job</a>
                         <a href="#" data-page="chat">Messages</a>
                     </div>
@@ -2185,7 +2348,8 @@
         commentsListener: null,
         appliedJobs: new Set(),
         isMobileChatOpen: false,
-        statsUpdateInterval: null
+        statsUpdateInterval: null,
+        freelancerSearchTimeout: null
     };
     
     // ============================================
@@ -2291,6 +2455,16 @@
         return re.test(email);
     }
     
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
     // ============================================
     // AUTHENTICATION FUNCTIONS
     // ============================================
@@ -2340,6 +2514,10 @@
         if (state.statsUpdateInterval) {
             clearInterval(state.statsUpdateInterval);
             state.statsUpdateInterval = null;
+        }
+        if (state.freelancerSearchTimeout) {
+            clearTimeout(state.freelancerSearchTimeout);
+            state.freelancerSearchTimeout = null;
         }
     }
     
@@ -2559,7 +2737,7 @@
     }
     
     // ============================================
-    // MOBILE CHAT FUNCTIONS - FIXED VERSION
+    // MOBILE CHAT FUNCTIONS
     // ============================================
     
     function setupChatView() {
@@ -2571,13 +2749,11 @@
             desktopChat.classList.add('hidden');
             mobileChat.classList.remove('hidden');
             
-            // Initialize mobile chat to sidebar view
             document.getElementById('mobile-sidebar').classList.add('active');
             document.getElementById('mobile-conversation').classList.remove('active');
             document.getElementById('chatOverlay').classList.remove('active');
             state.isMobileChatOpen = false;
             
-            // Clear any existing conversation
             document.getElementById('mobile-chat-input').style.display = 'none';
             document.getElementById('mobile-chat-with').innerHTML = '<span>Select a conversation</span>';
             document.getElementById('mobile-chat-messages').innerHTML = 
@@ -2586,7 +2762,6 @@
             desktopChat.classList.remove('hidden');
             mobileChat.classList.add('hidden');
             
-            // Clear desktop chat
             document.getElementById('chat-input-area').style.display = 'none';
             document.getElementById('chat-with').innerHTML = '<span>Select a conversation</span>';
             document.getElementById('chat-messages').innerHTML = 
@@ -2600,11 +2775,9 @@
         document.getElementById('chatOverlay').classList.remove('active');
         state.isMobileChatOpen = false;
         
-        // Reset current chat
         state.currentChatWith = null;
         state.currentChatUser = null;
         
-        // Clear chat listener
         if (state.chatListener) {
             state.chatListener();
             state.chatListener = null;
@@ -2636,7 +2809,6 @@
         if (mobileContainer) mobileContainer.innerHTML = loadingHtml;
         
         try {
-            // Get recent messages
             const messagesRef = db.collection('messages');
             
             const [sentSnapshot, receivedSnapshot] = await Promise.all([
@@ -2650,7 +2822,6 @@
                     .get()
             ]);
             
-            // Combine messages
             const allMessages = [];
             
             sentSnapshot.forEach(doc => {
@@ -2680,7 +2851,6 @@
                 return;
             }
             
-            // Group by contact
             const contactMap = new Map();
             
             allMessages.forEach(msg => {
@@ -2697,7 +2867,6 @@
                 }
             });
             
-            // Get user details
             const contacts = [];
             for (const [userId, contactData] of contactMap) {
                 try {
@@ -2718,10 +2887,8 @@
                 }
             }
             
-            // Sort by time
             contacts.sort((a, b) => b.lastTime - a.lastTime);
             
-            // Display contacts
             displayContacts(contacts, desktopContainer, false);
             displayContacts(contacts, mobileContainer, true);
             
@@ -2782,7 +2949,6 @@
         state.currentChatWith = userId;
         state.currentChatUser = { id: userId, name: userName, type: userType };
         
-        // Update UI
         document.getElementById('chat-with').innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div class="avatar" style="width: 36px; height: 36px;">
@@ -2799,10 +2965,8 @@
         
         document.getElementById('chat-input-area').style.display = 'flex';
         
-        // Load messages
         loadMessages(userId, false);
         
-        // Focus input
         setTimeout(() => {
             document.getElementById('message-input').focus();
         }, 100);
@@ -2815,7 +2979,6 @@
             return;
         }
         
-        // Reset any existing chat
         if (state.chatListener) {
             state.chatListener();
             state.chatListener = null;
@@ -2824,7 +2987,6 @@
         state.currentChatWith = userId;
         state.currentChatUser = { id: userId, name: userName, type: userType };
         
-        // Update UI
         document.getElementById('mobile-chat-with').innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div class="avatar" style="width: 36px; height: 36px;">
@@ -2841,18 +3003,15 @@
         
         document.getElementById('mobile-chat-input').style.display = 'flex';
         
-        // Switch to conversation view
         showMobileChatConversation();
         
-        // Load messages
         loadMessages(userId, true);
         
-        // Focus input
         setTimeout(() => {
             const input = document.getElementById('mobile-message-input');
             if (input) {
                 input.focus();
-                input.value = ''; // Clear any previous input
+                input.value = '';
             }
         }, 100);
     }
@@ -2860,7 +3019,6 @@
     async function loadMessages(userId, isMobile) {
         if (!state.currentUser || !userId) return;
         
-        // Clear existing listener
         if (state.chatListener) {
             state.chatListener();
             state.chatListener = null;
@@ -2875,11 +3033,9 @@
         container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>';
         
         try {
-            // Create chat ID
             const participants = [state.currentUser.uid, userId].sort();
             const chatId = participants.join('_');
             
-            // Set up listener
             state.chatListener = db.collection('messages')
                 .where('chatId', '==', chatId)
                 .orderBy('timestamp', 'asc')
@@ -2903,7 +3059,6 @@
                         messages.push({ id: doc.id, ...doc.data() });
                     });
                     
-                    // Sort by timestamp
                     messages.sort((a, b) => {
                         const timeA = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : a.timestamp || 0;
                         const timeB = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : b.timestamp || 0;
@@ -2911,7 +3066,6 @@
                     });
                     
                     messages.forEach(message => {
-                        // Group by date
                         const messageDate = message.timestamp?.toDate ? 
                             message.timestamp.toDate().toDateString() : 
                             new Date().toDateString();
@@ -2924,7 +3078,6 @@
                             lastDate = messageDate;
                         }
                         
-                        // Display message
                         const isSent = message.from === state.currentUser.uid;
                         const time = formatMessageTime(message.timestamp);
                         
@@ -2938,12 +3091,10 @@
                         container.appendChild(messageElement);
                     });
                     
-                    // Scroll to bottom
                     setTimeout(() => {
                         container.scrollTop = container.scrollHeight;
                     }, 100);
                     
-                    // Mark as read
                     markMessagesAsRead(userId);
                     
                 }, (error) => {
@@ -2985,11 +3136,9 @@
             return;
         }
         
-        // Create chat ID
         const participants = [state.currentUser.uid, state.currentChatWith].sort();
         const chatId = participants.join('_');
         
-        // Message data
         const messageData = {
             from: state.currentUser.uid,
             to: state.currentChatWith,
@@ -3003,13 +3152,10 @@
         try {
             await db.collection('messages').add(messageData);
             
-            // Clear input
             input.value = '';
             
-            // Refresh contacts list
             loadChatContacts();
             
-            // Focus back on input
             input.focus();
             
         } catch (error) {
@@ -3051,27 +3197,19 @@
     
     async function loadHomeStats() {
         try {
-            console.log('Loading home stats...');
-            
-            // Get freelancer count
             const freelancersSnapshot = await db.collection('users')
                 .where('type', '==', 'freelancer')
                 .get();
             
             const freelancerCount = freelancersSnapshot.size || 0;
-            console.log('Freelancer count:', freelancerCount);
             document.getElementById('stats-freelancers').textContent = freelancerCount.toLocaleString();
             
-            // Get job count
             const jobsSnapshot = await db.collection('jobs').get();
             const jobCount = jobsSnapshot.size || 0;
-            console.log('Job count:', jobCount);
             document.getElementById('stats-jobs').textContent = jobCount.toLocaleString();
             
-            // Calculate earnings from completed or in-progress jobs
             let totalEarned = 0;
             
-            // Get all jobs
             const allJobsSnapshot = await db.collection('jobs').get();
             
             allJobsSnapshot.forEach(doc => {
@@ -3081,14 +3219,10 @@
                 }
             });
             
-            console.log('Total available earnings:', totalEarned);
-            
-            // Format as dollars with thousands separator
             document.getElementById('stats-earned').textContent = `$${totalEarned.toLocaleString()}`;
             
         } catch (error) {
             console.error('Error loading stats:', error);
-            // Set default values
             document.getElementById('stats-freelancers').textContent = "1,234";
             document.getElementById('stats-jobs').textContent = "456";
             document.getElementById('stats-earned').textContent = "$89,100";
@@ -3152,19 +3286,15 @@
             
             const jobsData = [];
             
-            // First collect all job data
             snapshot.forEach(doc => {
                 jobsData.push({ id: doc.id, ...doc.data() });
             });
             
-            // Process each job
             for (const job of jobsData) {
-                // Check if applied
                 const hasApplied = state.appliedJobs.has(job.id);
                 const isFreelancer = state.userProfile?.type === 'freelancer';
                 const isLoggedIn = state.currentUser !== null;
                 
-                // Get poster info
                 let posterName = 'Unknown';
                 try {
                     const userDoc = await db.collection('users').doc(job.postedBy).get();
@@ -3179,7 +3309,6 @@
                 jobElement.className = 'job-card card';
                 jobElement.id = `job-${job.id}`;
                 
-                // Apply button logic - SIMPLIFIED
                 let applyButtonHtml = '';
                 if (!isLoggedIn) {
                     applyButtonHtml = '<button class="btn btn-primary btn-small" disabled>Login to Apply</button>';
@@ -3207,6 +3336,11 @@
                         <div style="display: flex; gap: 8px;">
                             ${applyButtonHtml}
                             <button class="btn btn-secondary btn-small message-poster-btn" data-poster-id="${job.postedBy}">Message</button>
+                            ${state.currentUser && job.postedBy === state.currentUser.uid ? 
+                                `<button class="btn btn-danger btn-small delete-job-btn" data-job-id="${job.id}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>` : ''
+                            }
                         </div>
                     </div>
                 `;
@@ -3214,7 +3348,6 @@
                 container.appendChild(jobElement);
             }
             
-            // Setup button listeners AFTER all jobs are loaded
             setupApplyButtonListeners();
             
         } catch (error) {
@@ -3227,12 +3360,10 @@
     function setupApplyButtonListeners() {
         console.log('Setting up apply button listeners...');
         
-        // Remove existing listeners first
         document.querySelectorAll('.apply-job-btn').forEach(button => {
             button.replaceWith(button.cloneNode(true));
         });
         
-        // Add new listeners
         document.querySelectorAll('.apply-job-btn').forEach(button => {
             button.addEventListener('click', async function(e) {
                 e.preventDefault();
@@ -3279,11 +3410,9 @@
             return;
         }
         
-        // Save original state
         const originalText = applyButton.innerHTML;
         const originalClass = applyButton.className;
         
-        // Update button to show loading
         applyButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
         applyButton.disabled = true;
         applyButton.classList.remove('btn-primary');
@@ -3302,20 +3431,16 @@
             const job = jobDoc.data();
             console.log('Job data:', job);
             
-            // Add applicant to job
             await jobRef.update({
                 applicants: firebase.firestore.FieldValue.arrayUnion(state.currentUser.uid)
             });
             
-            // Update local state
             state.appliedJobs.add(jobId);
             console.log('Added job to applied jobs:', jobId, 'Total applied:', state.appliedJobs.size);
             
-            // Create chat ID for messaging
             const participants = [state.currentUser.uid, job.postedBy].sort();
             const chatId = participants.join('_');
             
-            // Send application message to client
             await db.collection('messages').add({
                 from: state.currentUser.uid,
                 to: job.postedBy,
@@ -3330,21 +3455,18 @@
             
             console.log('Application message sent to client');
             
-            // Update button to show success
             applyButton.innerHTML = '<i class="fas fa-check"></i> Applied';
             applyButton.classList.remove('btn-secondary', 'btn-primary');
             applyButton.classList.add('btn-success');
             
             showNotification('Application submitted successfully! The client has been notified.', 'success');
             
-            // Update all apply buttons on the page
             updateAllApplyButtons();
             
         } catch (error) {
             console.error('Error applying for job:', error);
             showNotification('Error applying for job: ' + error.message, 'error');
             
-            // Reset button on error
             resetApplyButton(applyButton, originalText, originalClass);
         }
     }
@@ -3369,6 +3491,63 @@
                 button.disabled = true;
             }
         });
+    }
+    
+    // ============================================
+    // DELETE POST FUNCTIONALITY
+    // ============================================
+    
+    async function deleteJob(jobId) {
+        if (!state.currentUser) {
+            showNotification('Please login to delete posts', 'warning');
+            return;
+        }
+
+        try {
+            const jobDoc = await db.collection('jobs').doc(jobId).get();
+            if (!jobDoc.exists) {
+                showNotification('Job not found', 'error');
+                return;
+            }
+
+            const job = jobDoc.data();
+            
+            if (job.postedBy !== state.currentUser.uid) {
+                showNotification('You can only delete your own posts', 'error');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+                return;
+            }
+
+            await db.collection('jobs').doc(jobId).delete();
+            
+            if (state.userProfile) {
+                await db.collection('users').doc(state.currentUser.uid).update({
+                    jobsPosted: firebase.firestore.FieldValue.increment(-1)
+                });
+                state.userProfile.jobsPosted = Math.max(0, (state.userProfile.jobsPosted || 1) - 1);
+            }
+
+            showNotification('Job deleted successfully!', 'success');
+            
+            const jobElement = document.getElementById(`job-${jobId}`);
+            if (jobElement) {
+                jobElement.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    jobElement.remove();
+                }, 300);
+            }
+
+            if (document.getElementById('home-page') && !document.getElementById('home-page').classList.contains('hidden')) {
+                loadHomeStats();
+            }
+
+        } catch (error) {
+            console.error('Error deleting job:', error);
+            showNotification('Failed to delete job', 'error');
+        }
     }
     
     async function postJob() {
@@ -3404,7 +3583,6 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             
-            // Update user's jobs posted count
             await db.collection('users').doc(state.currentUser.uid).update({
                 jobsPosted: firebase.firestore.FieldValue.increment(1)
             });
@@ -3413,7 +3591,6 @@
             document.getElementById('post-job-form').reset();
             hideLoader('post-job-submit-btn', 'post-job-text', 'post-job-loader');
             
-            // Reload stats
             loadHomeStats();
             
         } catch (error) {
@@ -3424,18 +3601,429 @@
     }
     
     // ============================================
-    // PORTFOLIO FUNCTIONS
+    // FREELANCER SEARCH FUNCTIONS
     // ============================================
     
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.add('active');
-        document.body.style.overflow = 'hidden';
+    async function searchFreelancers() {
+        const searchInput = document.getElementById('freelancer-search');
+        const skillsFilter = document.getElementById('filter-skills');
+        const rateFilter = document.getElementById('filter-rate');
+        
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const skills = skillsFilter.value.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
+        const maxRate = rateFilter.value ? parseInt(rateFilter.value) : null;
+        
+        const resultsContainer = document.getElementById('freelancer-results');
+        resultsContainer.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+        
+        try {
+            let query = db.collection('users').where('type', '==', 'freelancer');
+            
+            const snapshot = await query.get();
+            
+            if (snapshot.empty) {
+                resultsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--light);">
+                        <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3>No freelancers found</h3>
+                        <p>Try adjusting your search criteria</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let freelancers = [];
+            let filteredCount = 0;
+            
+            snapshot.forEach(doc => {
+                const freelancer = { id: doc.id, ...doc.data() };
+                let include = true;
+                
+                if (searchTerm) {
+                    const nameMatch = freelancer.name?.toLowerCase().includes(searchTerm);
+                    const emailMatch = freelancer.email?.toLowerCase().includes(searchTerm);
+                    const bioMatch = freelancer.bio?.toLowerCase().includes(searchTerm);
+                    
+                    if (!nameMatch && !emailMatch && !bioMatch) {
+                        include = false;
+                    }
+                }
+                
+                if (include && skills.length > 0 && freelancer.skills) {
+                    const freelancerSkills = freelancer.skills.map(s => s.toLowerCase());
+                    const hasRequiredSkills = skills.every(skill => 
+                        freelancerSkills.some(fs => fs.includes(skill))
+                    );
+                    if (!hasRequiredSkills) {
+                        include = false;
+                    }
+                }
+                
+                if (include && maxRate && freelancer.hourlyRate) {
+                    if (freelancer.hourlyRate > maxRate) {
+                        include = false;
+                    }
+                }
+                
+                if (include) {
+                    freelancers.push(freelancer);
+                    filteredCount++;
+                }
+            });
+            
+            freelancers.sort((a, b) => {
+                if (b.rating !== a.rating) {
+                    return (b.rating || 0) - (a.rating || 0);
+                }
+                return (a.name || '').localeCompare(b.name || '');
+            });
+            
+            displayFreelancerResults(freelancers);
+            
+        } catch (error) {
+            console.error('Error searching freelancers:', error);
+            resultsContainer.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: var(--danger);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error searching freelancers</p>
+                    <button class="btn btn-secondary" onclick="searchFreelancers()" style="margin-top: 10px;">
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
     }
     
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('active');
-        document.body.style.overflow = 'auto';
+    function displayFreelancerResults(freelancers) {
+        const container = document.getElementById('freelancer-results');
+        
+        if (!freelancers || freelancers.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: var(--light);">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <h3>No freelancers match your search</h3>
+                    <p>Try different search terms or filters</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `
+            <div style="margin-bottom: 20px; color: var(--light);">
+                Found ${freelancers.length} freelancer${freelancers.length !== 1 ? 's' : ''}
+            </div>
+            <div class="job-listings">
+        `;
+        
+        freelancers.forEach((freelancer, index) => {
+            const skills = freelancer.skills || [];
+            const rating = freelancer.rating || 0;
+            const hourlyRate = freelancer.hourlyRate || 50;
+            const bio = freelancer.bio || 'No bio available';
+            
+            html += `
+                <div class="card freelancer-card" style="animation-delay: ${0.1 * index}s;">
+                    <div class="freelancer-header">
+                        <div class="freelancer-avatar">
+                            ${getUserInitials(freelancer.name)}
+                        </div>
+                        <div class="freelancer-info">
+                            <div class="freelancer-name">${escapeHtml(freelancer.name)}</div>
+                            <div class="freelancer-rating">
+                                <i class="fas fa-star"></i> ${rating.toFixed(1)}
+                                <span style="margin-left: 15px; color: var(--light);">${freelancer.email}</span>
+                            </div>
+                        </div>
+                        <div class="freelancer-rate">$${hourlyRate}/hr</div>
+                    </div>
+                    
+                    <div class="freelancer-bio">${escapeHtml(bio.substring(0, 200))}${bio.length > 200 ? '...' : ''}</div>
+                    
+                    ${skills.length > 0 ? `
+                        <div class="freelancer-skills">
+                            ${skills.slice(0, 6).map(skill => 
+                                `<span class="freelancer-skill">${escapeHtml(skill)}</span>`
+                            ).join('')}
+                            ${skills.length > 6 ? `<span class="freelancer-skill">+${skills.length - 6} more</span>` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="freelancer-actions">
+                        <button class="btn btn-primary hire-freelancer-btn" data-freelancer-id="${freelancer.id}">
+                            <i class="fas fa-handshake"></i> Hire
+                        </button>
+                        <button class="btn btn-secondary message-freelancer-btn" data-freelancer-id="${freelancer.id}">
+                            <i class="fas fa-envelope"></i> Message
+                        </button>
+                        <button class="btn btn-outline-primary view-profile-btn" data-freelancer-id="${freelancer.id}">
+                            <i class="fas fa-eye"></i> View Profile
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
     }
+    
+    // ============================================
+    // HIRE FREELANCER FUNCTIONALITY
+    // ============================================
+    
+    async function hireFreelancer(freelancerId) {
+        if (!state.currentUser) {
+            showNotification('Please login to hire freelancers', 'warning');
+            showPage('login');
+            return;
+        }
+        
+        if (state.userProfile?.type !== 'client') {
+            showNotification('Only clients can hire freelancers', 'error');
+            return;
+        }
+        
+        try {
+            const freelancerDoc = await db.collection('users').doc(freelancerId).get();
+            if (!freelancerDoc.exists) {
+                showNotification('Freelancer not found', 'error');
+                return;
+            }
+            
+            const freelancer = freelancerDoc.data();
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3>Hire ${escapeHtml(freelancer.name)}</h3>
+                        <button class="modal-close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <p>You're about to hire <strong>${escapeHtml(freelancer.name)}</strong>.</p>
+                        <p style="color: var(--light); margin-top: 10px;">
+                            Please provide job details for ${escapeHtml(freelancer.name)} to review.
+                        </p>
+                    </div>
+                    
+                    <form id="hire-form">
+                        <div class="form-group">
+                            <label for="hire-job-title">Job Title</label>
+                            <input type="text" id="hire-job-title" class="form-control" placeholder="Project title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hire-job-description">Job Description</label>
+                            <textarea id="hire-job-description" class="form-control" rows="4" placeholder="Describe the project..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hire-budget">Budget (USD)</label>
+                            <input type="number" id="hire-budget" class="form-control" placeholder="500" min="1" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hire-duration">Estimated Duration</label>
+                            <select id="hire-duration" class="form-control">
+                                <option value="1-2 weeks">1-2 weeks</option>
+                                <option value="1 month">1 month</option>
+                                <option value="1-3 months">1-3 months</option>
+                                <option value="3+ months">3+ months</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" class="btn btn-secondary" 
+                                    onclick="this.parentElement.parentElement.parentElement.parentElement.remove()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send Hire Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const form = modal.querySelector('#hire-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('hire-job-title').value.trim();
+                const description = document.getElementById('hire-job-description').value.trim();
+                const budget = document.getElementById('hire-budget').value;
+                const duration = document.getElementById('hire-duration').value;
+                
+                if (!title || !description || !budget) {
+                    showNotification('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                try {
+                    const jobData = {
+                        title,
+                        description,
+                        budget: parseInt(budget),
+                        duration,
+                        postedBy: state.currentUser.uid,
+                        assignedTo: freelancerId,
+                        clientName: state.userProfile?.name,
+                        freelancerName: freelancer.name,
+                        status: 'pending',
+                        isDirectHire: true,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    const jobRef = await db.collection('jobs').add(jobData);
+                    
+                    await db.collection('messages').add({
+                        from: state.currentUser.uid,
+                        to: freelancerId,
+                        text: `${state.userProfile?.name} wants to hire you for: "${title}". Please check the job details.`,
+                        type: 'hire_request',
+                        jobId: jobRef.id,
+                        read: false,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    modal.remove();
+                    showNotification(`Hire request sent to ${freelancer.name}! They'll be notified.`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error sending hire request:', error);
+                    showNotification('Failed to send hire request', 'error');
+                }
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error hiring freelancer:', error);
+            showNotification('Error processing hire request', 'error');
+        }
+    }
+    
+    // ============================================
+    // VIEW FREELANCER PROFILE
+    // ============================================
+    
+    async function viewFreelancerProfile(freelancerId) {
+        try {
+            const freelancerDoc = await db.collection('users').doc(freelancerId).get();
+            if (!freelancerDoc.exists) {
+                showNotification('Freelancer not found', 'error');
+                return;
+            }
+            
+            const freelancer = freelancerDoc.data();
+            const skills = freelancer.skills || [];
+            const rating = freelancer.rating || 0;
+            const hourlyRate = freelancer.hourlyRate || 50;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 700px;">
+                    <div class="modal-header">
+                        <h3>${escapeHtml(freelancer.name)}'s Profile</h3>
+                        <button class="modal-close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    
+                    <div class="profile-header" style="margin: 0 0 25px 0;">
+                        <div class="profile-avatar" style="width: 80px; height: 80px; font-size: 2rem;">
+                            ${getUserInitials(freelancer.name)}
+                        </div>
+                        <div class="profile-info">
+                            <h2>${escapeHtml(freelancer.name)}</h2>
+                            <div class="profile-badge">Freelancer</div>
+                            <p style="margin: 5px 0;">${freelancer.email}</p>
+                            <div class="profile-stats" style="margin-top: 10px;">
+                                <div class="profile-stat-item">
+                                    <span class="profile-stat-number">${rating.toFixed(1)}</span>
+                                    <span class="profile-stat-label">Rating</span>
+                                </div>
+                                <div class="profile-stat-item">
+                                    <span class="profile-stat-number">$${hourlyRate}</span>
+                                    <span class="profile-stat-label">Hourly</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px;">About</h4>
+                        <p style="line-height: 1.6;">${escapeHtml(freelancer.bio || 'No bio available')}</p>
+                    </div>
+                    
+                    ${skills.length > 0 ? `
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 10px;">Skills</h4>
+                            <div class="profile-skills-container">
+                                ${skills.map(skill => 
+                                    `<span class="profile-skill">${escapeHtml(skill)}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="border-top: 1px solid var(--border); padding-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="hireFreelancer('${freelancerId}'); this.parentElement.parentElement.parentElement.parentElement.remove()">
+                            <i class="fas fa-handshake"></i> Hire This Freelancer
+                        </button>
+                        <button class="btn btn-secondary" onclick="messageFreelancer('${freelancerId}', '${escapeHtml(freelancer.name)}', 'freelancer'); this.parentElement.parentElement.parentElement.parentElement.remove()">
+                            <i class="fas fa-envelope"></i> Send Message
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error viewing freelancer profile:', error);
+            showNotification('Error loading profile', 'error');
+        }
+    }
+    
+    // ============================================
+    // MESSAGE FREELANCER FUNCTION
+    // ============================================
+    
+    function messageFreelancer(freelancerId, freelancerName, userType = 'freelancer') {
+        if (!state.currentUser) {
+            showNotification('Please login to send messages', 'warning');
+            showPage('login');
+            return;
+        }
+        
+        showPage('chat');
+        
+        setTimeout(() => {
+            if (window.innerWidth < 768) {
+                openMobileChatWithUser(freelancerId, freelancerName, userType);
+            } else {
+                openChatWithUser(freelancerId, freelancerName, userType);
+            }
+        }, 100);
+    }
+    
+    // ============================================
+    // PORTFOLIO FUNCTIONS
+    // ============================================
     
     async function loadPortfolioItems() {
         if (!state.currentUser || state.userProfile?.type !== 'freelancer') return;
@@ -3624,7 +4212,6 @@
         const user = state.userProfile;
         console.log('Loading profile data for:', user.name);
         
-        // Update basic info
         document.getElementById('profile-name').textContent = user.name || 'User';
         document.getElementById('profile-type').textContent = user.type ? 
             user.type.charAt(0).toUpperCase() + user.type.slice(1) : 'User';
@@ -3634,15 +4221,13 @@
         document.getElementById('location-text').textContent = user.location || 'Location not set';
         
         try {
-            // Calculate profile stats based on user type
             if (user.type === 'client') {
-                // Count jobs posted by this client
                 const jobsSnapshot = await db.collection('jobs')
                     .where('postedBy', '==', state.currentUser.uid)
                     .get();
                 
                 const jobsPosted = jobsSnapshot.size || 0;
-                const jobsCompleted = 0; // You can add logic to count completed jobs
+                const jobsCompleted = 0;
                 
                 document.getElementById('profile-jobs').textContent = jobsPosted;
                 document.getElementById('jobs-label').textContent = 'Jobs Posted';
@@ -3650,10 +4235,8 @@
                 document.getElementById('profile-skills-section').style.display = 'none';
                 
             } else if (user.type === 'freelancer') {
-                // Count jobs applied to
                 const appliedCount = state.appliedJobs.size || 0;
                 
-                // Count completed jobs for this freelancer
                 const completedJobsSnapshot = await db.collection('jobs')
                     .where('assignedTo', '==', state.currentUser.uid)
                     .where('status', '==', 'completed')
@@ -3666,7 +4249,6 @@
                 document.getElementById('profile-hired').textContent = jobsCompleted;
                 document.getElementById('profile-skills-section').style.display = 'block';
                 
-                // Skills
                 const skillsContainer = document.getElementById('profile-skills');
                 skillsContainer.innerHTML = '';
                 
@@ -3684,11 +4266,9 @@
                 }
             }
             
-            // Rating
             document.getElementById('profile-rating').textContent = 
                 user.rating ? user.rating.toFixed(1) : '0.0';
             
-            // Load portfolio and payment methods for freelancers
             if (user.type === 'freelancer') {
                 loadPortfolioItems();
                 updatePaymentMethodsUI();
@@ -3696,7 +4276,6 @@
             
         } catch (error) {
             console.error('Error loading profile stats:', error);
-            // Set default values on error
             document.getElementById('profile-jobs').textContent = "0";
             document.getElementById('profile-hired').textContent = "0";
             document.getElementById('profile-rating').textContent = "0.0";
@@ -3711,7 +4290,6 @@
         console.log('Loading comments...');
         
         try {
-            // Clear any existing listener
             if (state.commentsListener) {
                 state.commentsListener();
                 state.commentsListener = null;
@@ -3725,7 +4303,6 @@
             
             container.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7);"><i class="fas fa-spinner fa-spin"></i> Loading comments...</div>';
             
-            // Set up real-time listener for comments
             state.commentsListener = db.collection('comments')
                 .orderBy('createdAt', 'desc')
                 .limit(20)
@@ -3751,7 +4328,6 @@
                         const time = comment.createdAt?.toDate ? 
                             formatMessageTime(comment.createdAt) : 'Recently';
                         
-                        // Ensure all fields exist
                         const authorName = comment.authorName || 'Anonymous';
                         const commentText = comment.text || 'No comment text';
                         
@@ -3806,7 +4382,6 @@
             return;
         }
         
-        // Disable button during submission
         const submitBtn = document.getElementById('submit-comment');
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
@@ -3827,7 +4402,6 @@
             
             console.log('Comment added successfully');
             
-            // Clear input
             commentInput.value = '';
             
             showNotification('Comment posted successfully!');
@@ -3836,7 +4410,6 @@
             console.error('Error posting comment:', error);
             showNotification('Error posting comment: ' + error.message, 'error');
         } finally {
-            // Re-enable button
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }
@@ -3867,27 +4440,22 @@
     }
     
     function showPage(pageName) {
-        // Hide all pages
         document.querySelectorAll('.page').forEach(page => {
             page.classList.add('hidden');
         });
         
-        // Show requested page
         const pageElement = document.getElementById(`${pageName}-page`);
         if (pageElement) {
             pageElement.classList.remove('hidden');
             updateUIForUser();
             
-            // Close mobile menu
             const navLinks = document.getElementById('navLinks');
             if (navLinks) navLinks.classList.remove('active');
             
-            // Load page-specific data
             switch(pageName) {
                 case 'home':
                     loadHomeStats();
                     loadRecentJobs();
-                    // Start live updates for stats every 30 seconds
                     if (state.statsUpdateInterval) {
                         clearInterval(state.statsUpdateInterval);
                     }
@@ -3895,19 +4463,36 @@
                         loadHomeStats();
                     }, 30000);
                     break;
+                    
                 case 'jobs':
-                    // Clear and reload jobs to ensure fresh state
                     const container = document.getElementById('all-job-listings');
                     if (container) container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading jobs...</div>';
                     setTimeout(() => {
                         loadAllJobs();
                     }, 100);
                     break;
+                    
+                case 'freelancers':
+                    if (!state.currentUser) {
+                        showNotification('Please login to search freelancers', 'warning');
+                        showPage('login');
+                    } else {
+                        document.getElementById('freelancer-search').value = '';
+                        document.getElementById('filter-skills').value = '';
+                        document.getElementById('filter-rate').value = '';
+                        
+                        setTimeout(() => {
+                            searchFreelancers();
+                        }, 100);
+                    }
+                    break;
+                    
                 case 'profile':
                     if (state.userProfile) {
                         loadProfileData();
                     }
                     break;
+                    
                 case 'chat':
                     if (!state.currentUser) {
                         showNotification('Please login to use chat', 'warning');
@@ -3915,11 +4500,9 @@
                     } else {
                         setupChatView();
                         loadChatContacts();
-                        // Reset chat UI
                         state.currentChatWith = null;
                         state.currentChatUser = null;
                         
-                        // Clear any existing chat listener
                         if (state.chatListener) {
                             state.chatListener();
                             state.chatListener = null;
@@ -3928,7 +4511,6 @@
                     break;
             }
             
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
@@ -4133,6 +4715,42 @@
             openModal('bank-modal');
         });
         
+        // Freelancer search
+        const searchFreelancersBtn = document.getElementById('search-freelancers-btn');
+        if (searchFreelancersBtn) {
+            searchFreelancersBtn.addEventListener('click', searchFreelancers);
+        }
+        
+        const freelancerSearchInput = document.getElementById('freelancer-search');
+        if (freelancerSearchInput) {
+            freelancerSearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchFreelancers();
+                }
+            });
+            
+            freelancerSearchInput.addEventListener('input', function() {
+                if (state.freelancerSearchTimeout) {
+                    clearTimeout(state.freelancerSearchTimeout);
+                }
+                state.freelancerSearchTimeout = setTimeout(() => {
+                    if (this.value.trim().length >= 2 || this.value.trim().length === 0) {
+                        searchFreelancers();
+                    }
+                }, 300);
+            });
+        }
+        
+        const clearSearchBtn = document.getElementById('clear-search-btn');
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', function() {
+                document.getElementById('freelancer-search').value = '';
+                document.getElementById('filter-skills').value = '';
+                document.getElementById('filter-rate').value = '';
+                searchFreelancers();
+            });
+        }
+        
         // Event delegation
         document.addEventListener('click', function(e) {
             // Logout
@@ -4160,13 +4778,46 @@
                     }
                 });
             }
+            
+            // Delete job
+            if (e.target.closest('.delete-job-btn')) {
+                const button = e.target.closest('.delete-job-btn');
+                const jobId = button.getAttribute('data-job-id');
+                deleteJob(jobId);
+            }
+            
+            // Hire freelancer
+            if (e.target.closest('.hire-freelancer-btn')) {
+                const button = e.target.closest('.hire-freelancer-btn');
+                const freelancerId = button.getAttribute('data-freelancer-id');
+                hireFreelancer(freelancerId);
+            }
+            
+            // Message freelancer
+            if (e.target.closest('.message-freelancer-btn')) {
+                const button = e.target.closest('.message-freelancer-btn');
+                const freelancerId = button.getAttribute('data-freelancer-id');
+                db.collection('users').doc(freelancerId).get().then(doc => {
+                    if (doc.exists) {
+                        const user = doc.data();
+                        messageFreelancer(freelancerId, user.name, user.type);
+                    }
+                });
+            }
+            
+            // View freelancer profile
+            if (e.target.closest('.view-profile-btn')) {
+                const button = e.target.closest('.view-profile-btn');
+                const freelancerId = button.getAttribute('data-freelancer-id');
+                viewFreelancerProfile(freelancerId);
+            }
         });
         
         // Chat overlay click
         const chatOverlay = document.getElementById('chatOverlay');
         if (chatOverlay) {
             chatOverlay.addEventListener('click', function() {
-                if (window.innerWidth < 768) { // Only on mobile
+                if (window.innerWidth < 768) {
                     showMobileChatSidebar();
                 }
             });
@@ -4206,12 +4857,10 @@
         setupEventListeners();
         showPage('home');
         
-        // Load comments immediately
         setTimeout(() => {
             loadComments();
         }, 1000);
         
-        // Initialize mobile chat state on page load
         if (window.innerWidth < 768) {
             showMobileChatSidebar();
         }
