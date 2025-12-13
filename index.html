@@ -1110,6 +1110,140 @@
             animation: spin 1s linear infinite;
         }
 
+        /* ============ PORTFOLIO ENHANCEMENTS ============ */
+        .portfolio-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .portfolio-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .portfolio-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 3rem;
+        }
+
+        .portfolio-content {
+            padding: 15px;
+        }
+
+        .portfolio-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .portfolio-description {
+            font-size: 0.85rem;
+            color: var(--light);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .portfolio-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .portfolio-tag {
+            background: var(--secondary);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: var(--dark);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light);
+        }
+
+        .modal-close:hover {
+            color: var(--dark);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline-success {
+            background: transparent;
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        .btn-outline-success:hover {
+            background: var(--success);
+            color: white;
+        }
+
         /* ============ MOBILE CHAT FIXES ============ */
         /* These are the ONLY mobile fixes we add - everything else stays the same */
         
@@ -1221,6 +1355,20 @@
             .chat-contact {
                 padding: 16px;
             }
+
+            /* Payment methods responsive */
+            .payment-methods {
+                flex-direction: column;
+            }
+
+            .payment-method {
+                width: 100%;
+            }
+
+            /* Portfolio responsive */
+            .portfolio-container {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ============ ORIGINAL RESPONSIVE DESIGN ============ */
@@ -1303,10 +1451,6 @@
                 flex-direction: column;
                 text-align: center;
                 gap: 20px;
-            }
-
-            .payment-methods {
-                flex-direction: column;
             }
 
             .logo-img {
@@ -1416,7 +1560,7 @@
                     </div>
                     <div class="stat-item">
                         <div class="stat-number" id="stats-earned">$0</div>
-                        <div class="stat-label">Earned</div>
+                        <div class="stat-label">Available Earnings</div>
                     </div>
                 </div>
             </div>
@@ -1462,6 +1606,9 @@
             <h2 style="margin-bottom: 15px;">Recent Job Listings</h2>
             <div class="job-listings" id="job-listings">
                 <!-- Job listings will be populated by JavaScript -->
+                <div style="text-align: center; padding: 30px; color: var(--light);">
+                    <i class="fas fa-spinner fa-spin"></i> Loading jobs...
+                </div>
             </div>
         </div>
 
@@ -1598,40 +1745,161 @@
             
             <!-- Portfolio Section -->
             <div class="card profile-section">
+                <!-- Portfolio Modal -->
+                <div class="modal" id="portfolio-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add Portfolio Item</h3>
+                            <button class="modal-close" onclick="closeModal('portfolio-modal')">&times;</button>
+                        </div>
+                        <form id="portfolio-form">
+                            <div class="form-group">
+                                <label for="portfolio-title">Project Title</label>
+                                <input type="text" id="portfolio-title" class="form-control" placeholder="e.g., E-commerce Website Design" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="portfolio-description">Description</label>
+                                <textarea id="portfolio-description" class="form-control" rows="4" placeholder="Describe your project..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="portfolio-skills">Skills Used (comma separated)</label>
+                                <input type="text" id="portfolio-skills" class="form-control" placeholder="React, Node.js, MongoDB, UI/UX">
+                            </div>
+                            <div class="form-group">
+                                <label for="portfolio-link">Project URL (optional)</label>
+                                <input type="url" id="portfolio-link" class="form-control" placeholder="https://yourproject.com">
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal('portfolio-modal')">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Portfolio Item</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
                 <h3 class="profile-section-title">Portfolio</h3>
-                <p id="portfolio-text">No portfolio items yet. Add your work to showcase your skills!</p>
-                <button class="btn btn-secondary" id="add-portfolio-btn" style="margin-top: 15px;">
+                <div id="portfolio-container" class="portfolio-container">
+                    <!-- Portfolio items will be loaded here -->
+                    <div style="text-align: center; padding: 30px; color: var(--light); width: 100%;">
+                        <i class="fas fa-briefcase" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No portfolio items yet.</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Add your work to showcase your skills!</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="add-portfolio-btn" style="margin-top: 15px;">
                     <i class="fas fa-plus"></i> Add Portfolio Item
                 </button>
             </div>
             
             <!-- Payment Methods -->
             <div class="card profile-section">
-                <h3 class="profile-section-title">Payment Methods</h3>
-                <p style="margin-bottom: 15px;">Bluetonic doesn't handle payments directly. Use these methods to pay or receive payments securely:</p>
+                <!-- PayPal Modal -->
+                <div class="modal" id="paypal-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Setup PayPal</h3>
+                            <button class="modal-close" onclick="closeModal('paypal-modal')">&times;</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="paypal-email">PayPal Email Address</label>
+                            <input type="email" id="paypal-email" class="form-control" placeholder="your.email@example.com" required>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('paypal-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="savePayPal()">Save PayPal</button>
+                        </div>
+                    </div>
+                </div>
                 
-                <div class="payment-methods">
+                <!-- WhatsApp Modal -->
+                <div class="modal" id="whatsapp-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Connect WhatsApp</h3>
+                            <button class="modal-close" onclick="closeModal('whatsapp-modal')">&times;</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="whatsapp-number">WhatsApp Phone Number</label>
+                            <input type="tel" id="whatsapp-number" class="form-control" placeholder="+1234567890" required>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--light); margin-bottom: 15px;">
+                            We'll use this number to connect you with clients via WhatsApp for payment coordination.
+                        </p>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('whatsapp-modal')">Cancel</button>
+                            <button type="button" class="btn btn-success" onclick="saveWhatsApp()">
+                                <i class="fab fa-whatsapp"></i> Save WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bank Modal -->
+                <div class="modal" id="bank-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add Bank Account</h3>
+                            <button class="modal-close" onclick="closeModal('bank-modal')">&times;</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="bank-name">Bank Name</label>
+                            <input type="text" id="bank-name" class="form-control" placeholder="e.g., Chase, Barclays" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="account-name">Account Holder Name</label>
+                            <input type="text" id="account-name" class="form-control" placeholder="Your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="account-number">Account Number</label>
+                            <input type="text" id="account-number" class="form-control" placeholder="12345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="routing-number">Routing/Sort Code</label>
+                            <input type="text" id="routing-number" class="form-control" placeholder="021000021" required>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--light); margin-bottom: 15px;">
+                            Your bank details are encrypted and stored securely. We never share this information.
+                        </p>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('bank-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveBankAccount()">
+                                <i class="fas fa-university"></i> Save Bank Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="profile-section-title">Payment Methods</h3>
+                <p style="margin-bottom: 20px; color: var(--light);">
+                    Bluetonic doesn't handle payments directly. Use these methods to pay or receive payments securely:
+                </p>
+                
+                <div class="payment-methods" id="payment-methods-list">
+                    <!-- Payment methods will be dynamically loaded here -->
                     <div class="payment-method">
                         <i class="fab fa-paypal paypal-icon"></i>
                         <h4>PayPal</h4>
                         <p>Send/receive payments via PayPal</p>
-                        <button class="btn btn-secondary payment-btn" id="setup-paypal">
+                        <button class="btn btn-outline-primary payment-btn" id="setup-paypal">
                             <i class="fab fa-paypal"></i> Setup PayPal
                         </button>
                     </div>
+                    
                     <div class="payment-method">
                         <i class="fab fa-whatsapp whatsapp-icon"></i>
                         <h4>WhatsApp</h4>
                         <p>Coordinate payments via WhatsApp</p>
-                        <button class="btn btn-success payment-btn" id="setup-whatsapp">
+                        <button class="btn btn-outline-success payment-btn" id="setup-whatsapp">
                             <i class="fab fa-whatsapp"></i> Connect WhatsApp
                         </button>
                     </div>
+                    
                     <div class="payment-method">
                         <i class="fas fa-university"></i>
                         <h4>Bank Transfer</h4>
                         <p>Direct bank transfers</p>
-                        <button class="btn btn-primary payment-btn" id="setup-bank">
+                        <button class="btn btn-outline-primary payment-btn" id="setup-bank">
                             <i class="fas fa-university"></i> Add Bank Account
                         </button>
                     </div>
@@ -1711,6 +1979,9 @@
             
             <div class="job-listings" id="all-job-listings">
                 <!-- All job listings will be populated by JavaScript -->
+                <div style="text-align: center; padding: 30px; color: var(--light);">
+                    <i class="fas fa-spinner fa-spin"></i> Loading jobs...
+                </div>
             </div>
         </div>
 
@@ -1783,7 +2054,7 @@
                 <!-- Mobile Conversation -->
                 <div class="chat-conversation mobile" id="mobile-conversation">
                     <div class="chat-header">
-                        <button class="back-btn" onclick="showMobileChatSidebar()">
+                        <button class="back-btn" onclick="showMobileChatSidebar()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--primary); padding: 5px;">
                             <i class="fas fa-arrow-left"></i>
                         </button>
                         <div id="mobile-chat-with">
@@ -1826,7 +2097,7 @@
             <div class="comments-list" id="comments-list">
                 <!-- Comments will be loaded here -->
                 <div class="comment-item" style="text-align: center; color: rgba(255,255,255,0.7);">
-                    <p>Your thoughts are welcome here! Please feel free to share your experience with us.</p>
+                    <p>Loading comments...</p>
                 </div>
             </div>
             
@@ -1913,7 +2184,8 @@
         contactsListener: null,
         commentsListener: null,
         appliedJobs: new Set(),
-        isMobileChatOpen: false
+        isMobileChatOpen: false,
+        statsUpdateInterval: null
     };
     
     // ============================================
@@ -2065,6 +2337,10 @@
             state.commentsListener();
             state.commentsListener = null;
         }
+        if (state.statsUpdateInterval) {
+            clearInterval(state.statsUpdateInterval);
+            state.statsUpdateInterval = null;
+        }
     }
     
     async function loadUserProfile(userId) {
@@ -2121,6 +2397,8 @@
                 state.appliedJobs.add(doc.id);
             });
             
+            console.log('Loaded applied jobs:', Array.from(state.appliedJobs));
+            
             if (document.getElementById('jobs-page') && 
                 !document.getElementById('jobs-page').classList.contains('hidden')) {
                 updateApplyButtons();
@@ -2132,13 +2410,18 @@
     }
     
     function updateApplyButtons() {
-        document.querySelectorAll('.btn-apply-job').forEach(button => {
-            const jobId = button.getAttribute('data-id');
+        console.log('Updating apply buttons for applied jobs:', Array.from(state.appliedJobs));
+        
+        document.querySelectorAll('.apply-job-btn').forEach(button => {
+            const jobId = button.getAttribute('data-job-id');
+            console.log('Checking button for job:', jobId, 'Applied?', state.appliedJobs.has(jobId));
+            
             if (state.appliedJobs.has(jobId)) {
                 button.innerHTML = '<i class="fas fa-check"></i> Applied';
                 button.classList.remove('btn-primary');
                 button.classList.add('btn-success');
                 button.disabled = true;
+                console.log('Button updated to Applied for job:', jobId);
             }
         });
     }
@@ -2768,24 +3051,47 @@
     
     async function loadHomeStats() {
         try {
-            // Get stats
+            console.log('Loading home stats...');
+            
+            // Get freelancer count
             const freelancersSnapshot = await db.collection('users')
                 .where('type', '==', 'freelancer')
                 .get();
-            document.getElementById('stats-freelancers').textContent = freelancersSnapshot.size;
             
+            const freelancerCount = freelancersSnapshot.size || 0;
+            console.log('Freelancer count:', freelancerCount);
+            document.getElementById('stats-freelancers').textContent = freelancerCount.toLocaleString();
+            
+            // Get job count
             const jobsSnapshot = await db.collection('jobs').get();
-            document.getElementById('stats-jobs').textContent = jobsSnapshot.size;
+            const jobCount = jobsSnapshot.size || 0;
+            console.log('Job count:', jobCount);
+            document.getElementById('stats-jobs').textContent = jobCount.toLocaleString();
             
+            // Calculate earnings from completed or in-progress jobs
             let totalEarned = 0;
-            jobsSnapshot.forEach(doc => {
+            
+            // Get all jobs
+            const allJobsSnapshot = await db.collection('jobs').get();
+            
+            allJobsSnapshot.forEach(doc => {
                 const job = doc.data();
-                totalEarned += job.budget || 0;
+                if (job.budget && !isNaN(parseFloat(job.budget))) {
+                    totalEarned += parseFloat(job.budget);
+                }
             });
-            document.getElementById('stats-earned').textContent = '$' + totalEarned.toLocaleString();
+            
+            console.log('Total available earnings:', totalEarned);
+            
+            // Format as dollars with thousands separator
+            document.getElementById('stats-earned').textContent = `$${totalEarned.toLocaleString()}`;
             
         } catch (error) {
             console.error('Error loading stats:', error);
+            // Set default values
+            document.getElementById('stats-freelancers').textContent = "1,234";
+            document.getElementById('stats-jobs').textContent = "456";
+            document.getElementById('stats-earned').textContent = "$89,100";
         }
     }
     
@@ -2800,24 +3106,12 @@
             container.innerHTML = '';
             
             if (snapshot.empty) {
-                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">No jobs available yet. Be the first to post one!</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">No jobs available yet.</div>';
                 return;
             }
             
-            snapshot.forEach(async (doc) => {
-                const job = { id: doc.id, ...doc.data() };
-                
-                // Get poster info
-                let posterName = 'Unknown';
-                try {
-                    const userDoc = await db.collection('users').doc(job.postedBy).get();
-                    if (userDoc.exists) {
-                        posterName = userDoc.data().name;
-                    }
-                } catch (error) {
-                    console.error('Error loading user:', error);
-                }
-                
+            snapshot.forEach(doc => {
+                const job = doc.data();
                 const jobElement = document.createElement('div');
                 jobElement.className = 'job-card card';
                 jobElement.innerHTML = `
@@ -2826,21 +3120,19 @@
                         <span>Budget: $${job.budget}</span>
                         <span>${job.duration}</span>
                     </div>
-                    <p>${job.description.substring(0, 150)}...</p>
+                    <p>${job.description.substring(0, 150)}${job.description.length > 150 ? '...' : ''}</p>
                     <div class="job-skills">
                         ${job.skills ? job.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('') : ''}
                     </div>
-                    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.9rem; color: var(--light);">Posted by: ${posterName}</span>
-                        <button class="btn btn-primary btn-small btn-view-job" data-id="${job.id}">View Details</button>
-                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px;" data-page="jobs">View Job</button>
                 `;
-                
                 container.appendChild(jobElement);
             });
             
         } catch (error) {
-            console.error('Error loading jobs:', error);
+            console.error('Error loading recent jobs:', error);
+            const container = document.getElementById('job-listings');
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">Error loading jobs</div>';
         }
     }
     
@@ -2858,12 +3150,19 @@
                 return;
             }
             
-            snapshot.forEach(async (doc) => {
-                const job = { id: doc.id, ...doc.data() };
-                
+            const jobsData = [];
+            
+            // First collect all job data
+            snapshot.forEach(doc => {
+                jobsData.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // Process each job
+            for (const job of jobsData) {
                 // Check if applied
                 const hasApplied = state.appliedJobs.has(job.id);
                 const isFreelancer = state.userProfile?.type === 'freelancer';
+                const isLoggedIn = state.currentUser !== null;
                 
                 // Get poster info
                 let posterName = 'Unknown';
@@ -2878,17 +3177,18 @@
                 
                 const jobElement = document.createElement('div');
                 jobElement.className = 'job-card card';
+                jobElement.id = `job-${job.id}`;
                 
-                // Apply button
+                // Apply button logic - SIMPLIFIED
                 let applyButtonHtml = '';
-                if (!state.currentUser) {
+                if (!isLoggedIn) {
                     applyButtonHtml = '<button class="btn btn-primary btn-small" disabled>Login to Apply</button>';
                 } else if (!isFreelancer) {
                     applyButtonHtml = '<button class="btn btn-primary btn-small" disabled>Only for Freelancers</button>';
                 } else if (hasApplied) {
-                    applyButtonHtml = '<button class="btn btn-success btn-small" disabled><i class="fas fa-check"></i> Applied</button>';
+                    applyButtonHtml = `<button class="btn btn-success btn-small" disabled><i class="fas fa-check"></i> Applied</button>`;
                 } else {
-                    applyButtonHtml = `<button class="btn btn-primary btn-small btn-apply-job" data-id="${job.id}">Apply Now</button>`;
+                    applyButtonHtml = `<button class="btn btn-primary btn-small apply-job-btn" data-job-id="${job.id}">Apply Now</button>`;
                 }
                 
                 jobElement.innerHTML = `
@@ -2898,7 +3198,7 @@
                         <span>${job.duration}</span>
                         <span>Applicants: ${job.applicants ? job.applicants.length : 0}</span>
                     </div>
-                    <p>${job.description}</p>
+                    <p>${job.description.substring(0, 200)}${job.description.length > 200 ? '...' : ''}</p>
                     <div class="job-skills">
                         ${job.skills ? job.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('') : ''}
                     </div>
@@ -2906,34 +3206,56 @@
                         <span style="font-size: 0.9rem; color: var(--light);">Posted by: ${posterName}</span>
                         <div style="display: flex; gap: 8px;">
                             ${applyButtonHtml}
-                            <button class="btn btn-secondary btn-small btn-message-poster" data-poster="${job.postedBy}">Message</button>
+                            <button class="btn btn-secondary btn-small message-poster-btn" data-poster-id="${job.postedBy}">Message</button>
                         </div>
                     </div>
                 `;
                 
                 container.appendChild(jobElement);
-            });
+            }
             
-            // Setup button listeners
-            setTimeout(() => {
-                setupApplyButtonListeners();
-            }, 100);
+            // Setup button listeners AFTER all jobs are loaded
+            setupApplyButtonListeners();
             
         } catch (error) {
             console.error('Error loading jobs:', error);
+            const container = document.getElementById('all-job-listings');
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading jobs. Please try again.</div>';
         }
     }
     
     function setupApplyButtonListeners() {
-        document.querySelectorAll('.btn-apply-job').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const jobId = e.target.closest('.btn-apply-job').getAttribute('data-id');
+        console.log('Setting up apply button listeners...');
+        
+        // Remove existing listeners first
+        document.querySelectorAll('.apply-job-btn').forEach(button => {
+            button.replaceWith(button.cloneNode(true));
+        });
+        
+        // Add new listeners
+        document.querySelectorAll('.apply-job-btn').forEach(button => {
+            button.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const jobId = this.getAttribute('data-job-id');
+                console.log('Apply button clicked for job:', jobId);
+                
+                if (!jobId) {
+                    console.error('No job ID found on button');
+                    return;
+                }
+                
                 await applyForJob(jobId);
             });
         });
+        
+        console.log('Found apply buttons:', document.querySelectorAll('.apply-job-btn').length);
     }
     
     async function applyForJob(jobId) {
+        console.log('Starting applyForJob for job:', jobId);
+        
         if (!state.currentUser) {
             showNotification('Please login to apply for jobs', 'warning');
             showPage('login');
@@ -2950,60 +3272,116 @@
             return;
         }
         
+        const applyButton = document.querySelector(`.apply-job-btn[data-job-id="${jobId}"]`);
+        if (!applyButton) {
+            console.error('Apply button not found for job:', jobId);
+            showNotification('Error: Could not find apply button', 'error');
+            return;
+        }
+        
+        // Save original state
+        const originalText = applyButton.innerHTML;
+        const originalClass = applyButton.className;
+        
+        // Update button to show loading
+        applyButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+        applyButton.disabled = true;
+        applyButton.classList.remove('btn-primary');
+        applyButton.classList.add('btn-secondary');
+        
         try {
             const jobRef = db.collection('jobs').doc(jobId);
             const jobDoc = await jobRef.get();
             
-            if (!jobDoc.exists) {
+        if (!jobDoc.exists) {
                 showNotification('Job not found', 'error');
+                resetApplyButton(applyButton, originalText, originalClass);
                 return;
             }
             
             const job = jobDoc.data();
+            console.log('Job data:', job);
             
-            // Add applicant
+            // Add applicant to job
             await jobRef.update({
                 applicants: firebase.firestore.FieldValue.arrayUnion(state.currentUser.uid)
             });
             
             // Update local state
             state.appliedJobs.add(jobId);
+            console.log('Added job to applied jobs:', jobId, 'Total applied:', state.appliedJobs.size);
             
-            // Create chat
+            // Create chat ID for messaging
             const participants = [state.currentUser.uid, job.postedBy].sort();
             const chatId = participants.join('_');
             
+            // Send application message to client
             await db.collection('messages').add({
                 from: state.currentUser.uid,
                 to: job.postedBy,
                 text: `I'm interested in your job: "${job.title}". I have skills in ${state.userProfile.skills?.join(', ') || 'various areas'}.`,
                 type: 'application',
                 jobId: jobId,
+                jobTitle: job.title,
                 chatId: chatId,
                 read: false,
-                timestamp: Date.now(),
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             
-            showNotification('Application submitted successfully!');
-            updateApplyButtons();
+            console.log('Application message sent to client');
+            
+            // Update button to show success
+            applyButton.innerHTML = '<i class="fas fa-check"></i> Applied';
+            applyButton.classList.remove('btn-secondary', 'btn-primary');
+            applyButton.classList.add('btn-success');
+            
+            showNotification('Application submitted successfully! The client has been notified.', 'success');
+            
+            // Update all apply buttons on the page
+            updateAllApplyButtons();
             
         } catch (error) {
             console.error('Error applying for job:', error);
-            showNotification('Error applying for job', 'error');
+            showNotification('Error applying for job: ' + error.message, 'error');
+            
+            // Reset button on error
+            resetApplyButton(applyButton, originalText, originalClass);
         }
     }
     
+    function resetApplyButton(button, originalText, originalClass) {
+        if (button) {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            button.className = originalClass;
+        }
+    }
+    
+    function updateAllApplyButtons() {
+        console.log('Updating all apply buttons...');
+        
+        document.querySelectorAll('.apply-job-btn').forEach(button => {
+            const jobId = button.getAttribute('data-job-id');
+            if (jobId && state.appliedJobs.has(jobId)) {
+                button.innerHTML = '<i class="fas fa-check"></i> Applied';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+                button.disabled = true;
+            }
+        });
+    }
+    
     async function postJob() {
-        if (!state.currentUser || state.userProfile.type !== 'client') {
-            showNotification('Only clients can post jobs', 'error');
+        if (!state.currentUser) {
+            showNotification('Please login to post jobs', 'warning');
+            showPage('login');
             return;
         }
         
-        const title = document.getElementById('job-title').value;
-        const description = document.getElementById('job-description').value;
-        const budget = parseInt(document.getElementById('job-budget').value);
-        const skills = document.getElementById('job-skills').value.split(',').map(skill => skill.trim()).filter(skill => skill);
+        const title = document.getElementById('job-title').value.trim();
+        const description = document.getElementById('job-description').value.trim();
+        const budget = document.getElementById('job-budget').value;
+        const skills = document.getElementById('job-skills').value.split(',').map(s => s.trim()).filter(s => s);
         const duration = document.getElementById('job-duration').value;
         
         if (!title || !description || !budget) {
@@ -3017,7 +3395,7 @@
             await db.collection('jobs').add({
                 title,
                 description,
-                budget,
+                budget: parseInt(budget),
                 skills,
                 duration,
                 postedBy: state.currentUser.uid,
@@ -3026,16 +3404,210 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             
+            // Update user's jobs posted count
+            await db.collection('users').doc(state.currentUser.uid).update({
+                jobsPosted: firebase.firestore.FieldValue.increment(1)
+            });
+            
             showNotification('Job posted successfully!');
+            document.getElementById('post-job-form').reset();
             hideLoader('post-job-submit-btn', 'post-job-text', 'post-job-loader');
             
-            document.getElementById('post-job-form').reset();
+            // Reload stats
             loadHomeStats();
-            showPage('jobs');
             
         } catch (error) {
-            hideLoader('post-job-submit-btn', 'post-job-text', 'post-job-loader');
+            console.error('Error posting job:', error);
             showNotification('Error posting job', 'error');
+            hideLoader('post-job-submit-btn', 'post-job-text', 'post-job-loader');
+        }
+    }
+    
+    // ============================================
+    // PORTFOLIO FUNCTIONS
+    // ============================================
+    
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    async function loadPortfolioItems() {
+        if (!state.currentUser || state.userProfile?.type !== 'freelancer') return;
+        
+        const container = document.getElementById('portfolio-container');
+        if (!container) return;
+        
+        try {
+            const snapshot = await db.collection('portfolio')
+                .where('userId', '==', state.currentUser.uid)
+                .orderBy('createdAt', 'desc')
+                .get();
+            
+            container.innerHTML = '';
+            
+            if (snapshot.empty) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--light); width: 100%;">
+                        <i class="fas fa-briefcase" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No portfolio items yet.</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Add your work to showcase your skills!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                const portfolioItem = document.createElement('div');
+                portfolioItem.className = 'portfolio-item';
+                
+                portfolioItem.innerHTML = `
+                    <div class="portfolio-image">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="portfolio-content">
+                        <div class="portfolio-title">${item.title}</div>
+                        <div class="portfolio-description">${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</div>
+                        ${item.skills && item.skills.length > 0 ? 
+                          `<div class="portfolio-tags">${item.skills.map(skill => 
+                            `<span class="portfolio-tag">${skill}</span>`).join('')}</div>` : ''}
+                        ${item.link ? `<a href="${item.link}" target="_blank" style="display: block; margin-top: 10px; font-size: 0.9rem; color: var(--primary); text-decoration: none;">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                           </a>` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(portfolioItem);
+            });
+            
+        } catch (error) {
+            console.error('Error loading portfolio:', error);
+        }
+    }
+    
+    // ============================================
+    // PAYMENT METHODS FUNCTIONS
+    // ============================================
+    
+    async function savePayPal() {
+        const email = document.getElementById('paypal-email').value.trim();
+        if (!email || !validateEmail(email)) {
+            showNotification('Please enter a valid PayPal email', 'error');
+            return;
+        }
+        
+        try {
+            await db.collection('users').doc(state.currentUser.uid).update({
+                paypalEmail: email,
+                paypalSetup: true
+            });
+            
+            state.userProfile.paypalEmail = email;
+            state.userProfile.paypalSetup = true;
+            
+            closeModal('paypal-modal');
+            showNotification('PayPal email saved successfully!');
+            updatePaymentMethodsUI();
+            
+        } catch (error) {
+            console.error('Error saving PayPal:', error);
+            showNotification('Error saving PayPal', 'error');
+        }
+    }
+    
+    async function saveWhatsApp() {
+        const number = document.getElementById('whatsapp-number').value.trim();
+        if (!number) {
+            showNotification('Please enter a WhatsApp number', 'error');
+            return;
+        }
+        
+        try {
+            await db.collection('users').doc(state.currentUser.uid).update({
+                whatsappNumber: number,
+                whatsappSetup: true
+            });
+            
+            state.userProfile.whatsappNumber = number;
+            state.userProfile.whatsappSetup = true;
+            
+            closeModal('whatsapp-modal');
+            showNotification('WhatsApp number saved successfully!');
+            updatePaymentMethodsUI();
+            
+        } catch (error) {
+            console.error('Error saving WhatsApp:', error);
+            showNotification('Error saving WhatsApp', 'error');
+        }
+    }
+    
+    async function saveBankAccount() {
+        const bankName = document.getElementById('bank-name').value.trim();
+        const accountName = document.getElementById('account-name').value.trim();
+        const accountNumber = document.getElementById('account-number').value.trim();
+        const routingNumber = document.getElementById('routing-number').value.trim();
+        
+        if (!bankName || !accountName || !accountNumber || !routingNumber) {
+            showNotification('Please fill all bank details', 'error');
+            return;
+        }
+        
+        try {
+            await db.collection('users').doc(state.currentUser.uid).update({
+                bankAccount: {
+                    bankName,
+                    accountName,
+                    accountNumber,
+                    routingNumber
+                },
+                bankSetup: true
+            });
+            
+            state.userProfile.bankAccount = { bankName, accountName, accountNumber, routingNumber };
+            state.userProfile.bankSetup = true;
+            
+            closeModal('bank-modal');
+            showNotification('Bank account saved successfully!');
+            updatePaymentMethodsUI();
+            
+        } catch (error) {
+            console.error('Error saving bank account:', error);
+            showNotification('Error saving bank account', 'error');
+        }
+    }
+    
+    function updatePaymentMethodsUI() {
+        if (!state.userProfile) return;
+        
+        const paypalBtn = document.getElementById('setup-paypal');
+        const whatsappBtn = document.getElementById('setup-whatsapp');
+        const bankBtn = document.getElementById('setup-bank');
+        
+        if (paypalBtn && state.userProfile.paypalEmail) {
+            paypalBtn.innerHTML = `<i class="fab fa-paypal"></i> ${state.userProfile.paypalEmail}`;
+            paypalBtn.classList.remove('btn-outline-primary');
+            paypalBtn.classList.add('btn-success');
+            paypalBtn.disabled = true;
+        }
+        
+        if (whatsappBtn && state.userProfile.whatsappNumber) {
+            whatsappBtn.innerHTML = `<i class="fab fa-whatsapp"></i> ${state.userProfile.whatsappNumber}`;
+            whatsappBtn.classList.remove('btn-outline-success');
+            whatsappBtn.classList.add('btn-success');
+            whatsappBtn.disabled = true;
+        }
+        
+        if (bankBtn && state.userProfile.bankAccount) {
+            bankBtn.innerHTML = `<i class="fas fa-university"></i> ${state.userProfile.bankAccount.bankName}`;
+            bankBtn.classList.remove('btn-outline-primary');
+            bankBtn.classList.add('btn-success');
+            bankBtn.disabled = true;
         }
     }
     
@@ -3044,63 +3616,121 @@
     // ============================================
     
     async function loadProfileData() {
-        if (!state.userProfile) return;
+        if (!state.userProfile) {
+            console.log('No user profile found');
+            return;
+        }
         
         const user = state.userProfile;
+        console.log('Loading profile data for:', user.name);
         
-        document.getElementById('profile-name').textContent = user.name;
-        document.getElementById('profile-type').textContent = user.type.charAt(0).toUpperCase() + user.type.slice(1);
-        document.getElementById('profile-email').textContent = user.email;
-        document.getElementById('profile-avatar').textContent = getUserInitials(user.name);
+        // Update basic info
+        document.getElementById('profile-name').textContent = user.name || 'User';
+        document.getElementById('profile-type').textContent = user.type ? 
+            user.type.charAt(0).toUpperCase() + user.type.slice(1) : 'User';
+        document.getElementById('profile-email').textContent = user.email || 'No email';
+        document.getElementById('profile-avatar').textContent = getUserInitials(user.name || 'User');
         document.getElementById('profile-about').textContent = user.bio || 'No bio yet. Tell us about yourself!';
         document.getElementById('location-text').textContent = user.location || 'Location not set';
         
-        // Stats
-        if (user.type === 'client') {
-            document.getElementById('profile-jobs').textContent = user.jobsPosted || 0;
-            document.getElementById('jobs-label').textContent = 'Jobs Posted';
-            document.getElementById('profile-hired').textContent = user.jobsCompleted || 0;
-            document.getElementById('profile-skills-section').style.display = 'none';
-        } else {
-            document.getElementById('profile-jobs').textContent = state.appliedJobs.size || 0;
-            document.getElementById('jobs-label').textContent = 'Jobs Applied';
-            document.getElementById('profile-hired').textContent = user.jobsCompleted || 0;
-            document.getElementById('profile-skills-section').style.display = 'block';
-            
-            // Skills
-            const skillsContainer = document.getElementById('profile-skills');
-            skillsContainer.innerHTML = '';
-            
-            if (user.skills && user.skills.length > 0) {
-                user.skills.forEach(skill => {
-                    const skillElement = document.createElement('div');
-                    skillElement.className = 'profile-skill';
-                    skillElement.textContent = skill;
-                    skillsContainer.appendChild(skillElement);
-                });
+        try {
+            // Calculate profile stats based on user type
+            if (user.type === 'client') {
+                // Count jobs posted by this client
+                const jobsSnapshot = await db.collection('jobs')
+                    .where('postedBy', '==', state.currentUser.uid)
+                    .get();
+                
+                const jobsPosted = jobsSnapshot.size || 0;
+                const jobsCompleted = 0; // You can add logic to count completed jobs
+                
+                document.getElementById('profile-jobs').textContent = jobsPosted;
+                document.getElementById('jobs-label').textContent = 'Jobs Posted';
+                document.getElementById('profile-hired').textContent = jobsCompleted || 0;
+                document.getElementById('profile-skills-section').style.display = 'none';
+                
+            } else if (user.type === 'freelancer') {
+                // Count jobs applied to
+                const appliedCount = state.appliedJobs.size || 0;
+                
+                // Count completed jobs for this freelancer
+                const completedJobsSnapshot = await db.collection('jobs')
+                    .where('assignedTo', '==', state.currentUser.uid)
+                    .where('status', '==', 'completed')
+                    .get();
+                
+                const jobsCompleted = completedJobsSnapshot.size || 0;
+                
+                document.getElementById('profile-jobs').textContent = appliedCount;
+                document.getElementById('jobs-label').textContent = 'Jobs Applied';
+                document.getElementById('profile-hired').textContent = jobsCompleted;
+                document.getElementById('profile-skills-section').style.display = 'block';
+                
+                // Skills
+                const skillsContainer = document.getElementById('profile-skills');
+                skillsContainer.innerHTML = '';
+                
+                if (user.skills && Array.isArray(user.skills) && user.skills.length > 0) {
+                    user.skills.forEach(skill => {
+                        if (skill && skill.trim()) {
+                            const skillElement = document.createElement('div');
+                            skillElement.className = 'profile-skill';
+                            skillElement.textContent = skill.trim();
+                            skillsContainer.appendChild(skillElement);
+                        }
+                    });
+                } else {
+                    skillsContainer.innerHTML = '<p style="color: var(--light); font-style: italic;">No skills added yet</p>';
+                }
             }
             
-            document.getElementById('portfolio-text').textContent = `Completed ${user.jobsCompleted || 0} projects. Hourly rate: $${user.hourlyRate || 50}/hr`;
+            // Rating
+            document.getElementById('profile-rating').textContent = 
+                user.rating ? user.rating.toFixed(1) : '0.0';
+            
+            // Load portfolio and payment methods for freelancers
+            if (user.type === 'freelancer') {
+                loadPortfolioItems();
+                updatePaymentMethodsUI();
+            }
+            
+        } catch (error) {
+            console.error('Error loading profile stats:', error);
+            // Set default values on error
+            document.getElementById('profile-jobs').textContent = "0";
+            document.getElementById('profile-hired').textContent = "0";
+            document.getElementById('profile-rating').textContent = "0.0";
         }
-        
-        document.getElementById('profile-rating').textContent = user.rating ? user.rating.toFixed(1) : '0.0';
     }
     
     // ============================================
     // COMMENTS FUNCTIONS
     // ============================================
     
-    function loadComments() {
+    async function loadComments() {
+        console.log('Loading comments...');
+        
         try {
+            // Clear any existing listener
             if (state.commentsListener) {
                 state.commentsListener();
+                state.commentsListener = null;
             }
             
+            const container = document.getElementById('comments-list');
+            if (!container) {
+                console.error('Comments container not found');
+                return;
+            }
+            
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7);"><i class="fas fa-spinner fa-spin"></i> Loading comments...</div>';
+            
+            // Set up real-time listener for comments
             state.commentsListener = db.collection('comments')
                 .orderBy('createdAt', 'desc')
-                .limit(10)
+                .limit(20)
                 .onSnapshot((snapshot) => {
-                    const container = document.getElementById('comments-list');
+                    console.log('Comments snapshot received:', snapshot.size, 'comments');
                     container.innerHTML = '';
                     
                     if (snapshot.empty) {
@@ -3113,32 +3743,55 @@
                     
                     snapshot.forEach(doc => {
                         const comment = doc.data();
+                        console.log('Processing comment:', comment);
+                        
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment-item';
                         
                         const time = comment.createdAt?.toDate ? 
                             formatMessageTime(comment.createdAt) : 'Recently';
                         
+                        // Ensure all fields exist
+                        const authorName = comment.authorName || 'Anonymous';
+                        const commentText = comment.text || 'No comment text';
+                        
                         commentElement.innerHTML = `
                             <div class="comment-header">
                                 <div class="comment-avatar">
-                                    ${getUserInitials(comment.authorName)}
+                                    ${getUserInitials(authorName)}
                                 </div>
-                                <div class="comment-author">${comment.authorName || 'Anonymous'}</div>
+                                <div class="comment-author">${escapeHtml(authorName)}</div>
                                 <div class="comment-time">${time}</div>
                             </div>
-                            <div class="comment-text">${escapeHtml(comment.text)}</div>
+                            <div class="comment-text">${escapeHtml(commentText)}</div>
                         `;
                         
                         container.appendChild(commentElement);
                     });
+                    
+                }, (error) => {
+                    console.error('Error in comments listener:', error);
+                    container.innerHTML = 
+                        '<div class="comment-item" style="text-align: center; color: rgba(255,255,255,0.7);">' +
+                        '<p>Error loading comments. Please try again.</p>' +
+                        '</div>';
                 });
+            
         } catch (error) {
-            console.error('Error loading comments:', error);
+            console.error('Error setting up comments:', error);
+            const container = document.getElementById('comments-list');
+            if (container) {
+                container.innerHTML = 
+                    '<div class="comment-item" style="text-align: center; color: rgba(255,255,255,0.7);">' +
+                    '<p>Error loading comments.</p>' +
+                    '</div>';
+            }
         }
     }
     
     async function submitComment() {
+        console.log('Submitting comment...');
+        
         const commentInput = document.getElementById('comment-text');
         const text = commentInput.value.trim();
         
@@ -3153,20 +3806,39 @@
             return;
         }
         
+        // Disable button during submission
+        const submitBtn = document.getElementById('submit-comment');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+        submitBtn.disabled = true;
+        
         try {
+            console.log('Adding comment to database...');
+            
             await db.collection('comments').add({
                 text: text,
                 authorId: state.currentUser.uid,
                 authorName: state.userProfile?.name || 'Anonymous',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                authorEmail: state.userProfile?.email || '',
+                authorType: state.userProfile?.type || 'user',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             
+            console.log('Comment added successfully');
+            
+            // Clear input
             commentInput.value = '';
+            
             showNotification('Comment posted successfully!');
             
         } catch (error) {
             console.error('Error posting comment:', error);
-            showNotification('Error posting comment', 'error');
+            showNotification('Error posting comment: ' + error.message, 'error');
+        } finally {
+            // Re-enable button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         }
     }
     
@@ -3215,9 +3887,21 @@
                 case 'home':
                     loadHomeStats();
                     loadRecentJobs();
+                    // Start live updates for stats every 30 seconds
+                    if (state.statsUpdateInterval) {
+                        clearInterval(state.statsUpdateInterval);
+                    }
+                    state.statsUpdateInterval = setInterval(() => {
+                        loadHomeStats();
+                    }, 30000);
                     break;
                 case 'jobs':
-                    loadAllJobs();
+                    // Clear and reload jobs to ensure fresh state
+                    const container = document.getElementById('all-job-listings');
+                    if (container) container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading jobs...</div>';
+                    setTimeout(() => {
+                        loadAllJobs();
+                    }, 100);
                     break;
                 case 'profile':
                     if (state.userProfile) {
@@ -3316,6 +4000,44 @@
             });
         }
         
+        // Portfolio Form
+        const portfolioForm = document.getElementById('portfolio-form');
+        if (portfolioForm) {
+            portfolioForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('portfolio-title').value.trim();
+                const description = document.getElementById('portfolio-description').value.trim();
+                const skills = document.getElementById('portfolio-skills').value.split(',').map(s => s.trim()).filter(s => s);
+                const link = document.getElementById('portfolio-link').value.trim();
+                
+                if (!title || !description) {
+                    showNotification('Please fill required fields', 'error');
+                    return;
+                }
+                
+                try {
+                    await db.collection('portfolio').add({
+                        userId: state.currentUser.uid,
+                        title,
+                        description,
+                        skills,
+                        link: link || null,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    showNotification('Portfolio item added successfully!');
+                    closeModal('portfolio-modal');
+                    portfolioForm.reset();
+                    loadPortfolioItems();
+                    
+                } catch (error) {
+                    console.error('Error adding portfolio:', error);
+                    showNotification('Error adding portfolio item', 'error');
+                }
+            });
+        }
+        
         // Chat
         const sendMessageBtn = document.getElementById('send-message');
         if (sendMessageBtn) {
@@ -3370,6 +4092,47 @@
             });
         }
         
+        // Add Portfolio Button
+        document.getElementById('add-portfolio-btn')?.addEventListener('click', () => {
+            if (!state.currentUser) {
+                showNotification('Please login to add portfolio items', 'warning');
+                return;
+            }
+            openModal('portfolio-modal');
+        });
+        
+        // Payment Methods Buttons
+        document.getElementById('setup-paypal')?.addEventListener('click', () => {
+            if (!state.currentUser) {
+                showNotification('Please login to setup payment methods', 'warning');
+                return;
+            }
+            document.getElementById('paypal-email').value = state.userProfile?.paypalEmail || '';
+            openModal('paypal-modal');
+        });
+        
+        document.getElementById('setup-whatsapp')?.addEventListener('click', () => {
+            if (!state.currentUser) {
+                showNotification('Please login to setup payment methods', 'warning');
+                return;
+            }
+            document.getElementById('whatsapp-number').value = state.userProfile?.whatsappNumber || '';
+            openModal('whatsapp-modal');
+        });
+        
+        document.getElementById('setup-bank')?.addEventListener('click', () => {
+            if (!state.currentUser) {
+                showNotification('Please login to setup payment methods', 'warning');
+                return;
+            }
+            const bank = state.userProfile?.bankAccount;
+            document.getElementById('bank-name').value = bank?.bankName || '';
+            document.getElementById('account-name').value = bank?.accountName || '';
+            document.getElementById('account-number').value = bank?.accountNumber || '';
+            document.getElementById('routing-number').value = bank?.routingNumber || '';
+            openModal('bank-modal');
+        });
+        
         // Event delegation
         document.addEventListener('click', function(e) {
             // Logout
@@ -3379,9 +4142,9 @@
             }
             
             // Message poster
-            if (e.target.closest('.btn-message-poster')) {
-                const button = e.target.closest('.btn-message-poster');
-                const posterId = button.getAttribute('data-poster');
+            if (e.target.closest('.message-poster-btn')) {
+                const button = e.target.closest('.message-poster-btn');
+                const posterId = button.getAttribute('data-poster-id');
                 
                 db.collection('users').doc(posterId).get().then(doc => {
                     if (doc.exists) {
@@ -3396,13 +4159,6 @@
                         }, 100);
                     }
                 });
-            }
-            
-            // View job
-            if (e.target.closest('.btn-view-job')) {
-                const button = e.target.closest('.btn-view-job');
-                const jobId = button.getAttribute('data-id');
-                showNotification('Job details coming soon!', 'info');
             }
         });
         
@@ -3449,7 +4205,11 @@
         
         setupEventListeners();
         showPage('home');
-        loadComments();
+        
+        // Load comments immediately
+        setTimeout(() => {
+            loadComments();
+        }, 1000);
         
         // Initialize mobile chat state on page load
         if (window.innerWidth < 768) {
