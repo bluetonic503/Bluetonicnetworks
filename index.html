@@ -4865,6 +4865,262 @@
             showMobileChatSidebar();
         }
     });
+
+    
+// Success Stories Injection - Add this after your existing script
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit to ensure DOM is fully loaded
+    setTimeout(() => {
+        addSuccessStories();
+    }, 1000);
+});
+
+function addSuccessStories() {
+    // Add success stories section to home page
+    const homePage = document.getElementById('home-page');
+    if (homePage) {
+        const successStoriesHTML = `
+            <div class="features-section" style="margin-top: 50px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">Success Stories & Quick Hiring Wins</h2>
+                <div class="features-grid">
+                    <!-- Story 1 -->
+                    <div class="feature-card" style="animation: fadeIn 0.5s ease-out;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h3>Website Built in 48 Hours</h3>
+                        <p style="color: var(--light); font-size: 0.9rem;">"I needed an e-commerce site urgently. Posted on Bluetonic and had 3 freelancers bidding within 1 hour. Project completed in 2 days!"</p>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                            <strong style="color: var(--success);">Sarah M.</strong>
+                            <div style="font-size: 0.8rem; color: var(--light);">Client from Nairobi</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Story 2 -->
+                    <div class="feature-card" style="animation: fadeIn 0.5s ease-out; animation-delay: 0.1s;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>App Developer Hired in 30 Minutes</h3>
+                        <p style="color: var(--light); font-size: 0.9rem;">"Posted my mobile app project at 9 AM, had 5 qualified candidates by 9:30 AM. Started development same day!"</p>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                            <strong style="color: var(--primary);">David K.</strong>
+                            <div style="font-size: 0.8rem; color: var(--light);">Startup Founder, Mombasa</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Story 3 -->
+                    <div class="feature-card" style="animation: fadeIn 0.5s ease-out; animation-delay: 0.2s;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Logo Design in 4 Hours</h3>
+                        <p style="color: var(--light); font-size: 0.9rem;">"Urgent logo needed for a product launch. Found a designer immediately, received 3 concepts in 4 hours. Incredible speed!"</p>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                            <strong style="color: var(--warning);">Grace W.</strong>
+                            <div style="font-size: 0.8rem; color: var(--light);">Business Owner, Kisumu</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Completed Projects Section -->
+            <div class="features-section" style="margin-top: 40px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">Recently Completed Projects</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 25px;">
+                    <!-- Project 1 -->
+                    <div class="card" style="animation: fadeIn 0.5s ease-out;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0;">E-commerce Website</h3>
+                            <span class="skill-tag" style="background: var(--success); color: white;">Completed</span>
+                        </div>
+                        <p style="color: var(--light); font-size: 0.9rem; margin-bottom: 15px;">Full online store with payment integration, completed in 5 days.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.85rem; color: var(--light);">Budget: <strong style="color: var(--success);">$1,500</strong></div>
+                                <div style="font-size: 0.85rem; color: var(--light);">Timeline: <strong>5 days</strong></div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.85rem; color: var(--light);">Client satisfaction:</div>
+                                <div style="color: var(--warning);">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project 2 -->
+                    <div class="card" style="animation: fadeIn 0.5s ease-out; animation-delay: 0.1s;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0;">Mobile App MVP</h3>
+                            <span class="skill-tag" style="background: var(--success); color: white;">Delivered</span>
+                        </div>
+                        <p style="color: var(--light); font-size: 0.9rem; margin-bottom: 15px;">Food delivery app with real-time tracking, built in 2 weeks.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.85rem; color: var(--light);">Budget: <strong style="color: var(--success);">$3,200</strong></div>
+                                <div style="font-size: 0.85rem; color: var(--light);">Timeline: <strong>2 weeks</strong></div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.85rem; color: var(--light);">Client satisfaction:</div>
+                                <div style="color: var(--warning);">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project 3 -->
+                    <div class="card" style="animation: fadeIn 0.5s ease-out; animation-delay: 0.2s;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0;">Brand Identity Package</h3>
+                            <span class="skill-tag" style="background: var(--success); color: white;">Completed</span>
+                        </div>
+                        <p style="color: var(--light); font-size: 0.9rem; margin-bottom: 15px;">Logo, business cards, and social media kit delivered in 3 days.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.85rem; color: var(--light);">Budget: <strong style="color: var(--success);">$450</strong></div>
+                                <div style="font-size: 0.85rem; color: var(--light);">Timeline: <strong>3 days</strong></div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.85rem; color: var(--light);">Client satisfaction:</div>
+                                <div style="color: var(--warning);">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats for Success -->
+            <div class="card" style="margin-top: 40px; text-align: center; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 5px;">24h</div>
+                        <div>Average Hiring Time</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 5px;">98%</div>
+                        <div>Client Satisfaction Rate</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 5px;">1,200+</div>
+                        <div>Projects Completed</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 5px;">4.8★</div>
+                        <div>Average Rating</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Insert before the comments section
+        const featuresSection = homePage.querySelector('.features-section');
+        if (featuresSection) {
+            featuresSection.insertAdjacentHTML('afterend', successStoriesHTML);
+        }
+    }
+    
+    // Add quick success story to jobs page
+    const jobsPage = document.getElementById('jobs-page');
+    if (jobsPage) {
+        const quickHireHTML = `
+            <div class="card" style="margin-bottom: 30px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 4px solid var(--success);">
+                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--success); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin-bottom: 5px;">Quick Hire Success Story</h3>
+                        <p style="color: var(--light); margin: 0; font-size: 0.9rem;">
+                            "Posted a web development job at 10 AM, interviewed 3 candidates by noon, 
+                            hired one at 2 PM, and had the first deliverable by end of day. 
+                            Bluetonic makes hiring incredibly efficient!"
+                        </p>
+                        <div style="margin-top: 10px; font-size: 0.85rem;">
+                            <strong>Mark T.</strong> • Just hired a React developer
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const jobListings = jobsPage.querySelector('#all-job-listings');
+        if (jobListings && jobListings.parentNode) {
+            jobListings.parentNode.insertAdjacentHTML('afterbegin', quickHireHTML);
+        }
+    }
+    
+    // Add freelancer success to freelancers page
+    const freelancersPage = document.getElementById('freelancers-page');
+    if (freelancersPage) {
+        const freelancerSuccessHTML = `
+            <div class="card" style="margin-bottom: 30px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-left: 4px solid var(--success);">
+                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--success); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin-bottom: 5px;">Freelancer Success Story</h3>
+                        <p style="color: var(--light); margin: 0; font-size: 0.9rem;">
+                            "Joined Bluetonic last month and landed 4 projects worth $5,200 total. 
+                            The direct communication with clients and quick payment setup made everything smooth. 
+                            My best month freelancing ever!"
+                        </p>
+                        <div style="margin-top: 10px; font-size: 0.85rem;">
+                            <strong>James K.</strong> • Full-Stack Developer • Earned $5,200 in 30 days
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const searchCard = freelancersPage.querySelector('.card');
+        if (searchCard && searchCard.parentNode) {
+            searchCard.parentNode.insertAdjacentHTML('afterbegin', freelancerSuccessHTML);
+        }
+    }
+    
+    // Add success animation to stats
+    const stats = document.querySelectorAll('.stat-number');
+    stats.forEach((stat, index) => {
+        const originalValue = stat.textContent;
+        stat.textContent = '0';
+        
+        setTimeout(() => {
+            let current = 0;
+            const target = parseInt(originalValue.replace(/[^0-9]/g, ''));
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    stat.textContent = originalValue;
+                    clearInterval(timer);
+                } else {
+                    if (originalValue.includes('$')) {
+                        stat.textContent = '$' + Math.floor(current).toLocaleString();
+                    } else {
+                        stat.textContent = Math.floor(current).toLocaleString();
+                    }
+                }
+            }, 20);
+        }, 500 + (index * 300));
+    });
+}
     </script>
 </body>
-</html>
+    </html>
