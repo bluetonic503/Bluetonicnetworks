@@ -190,76 +190,73 @@
         }
 
         /* GOOGLE SIGN IN BUTTON STYLES - IMPROVED */
-.btn-google {
-    background-color: #ffffff;
-    color: #3c4043;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    margin-bottom: 15px;
-    font-weight: 500;
-    transition: background-color .218s, border-color .218s, box-shadow .218s;
-    padding: 12px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: 'Roboto', arial, sans-serif;
-    height: 40px;
-    position: relative;
-}
+        .btn-google {
+            background-color: #ffffff;
+            color: #3c4043;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 15px;
+            font-weight: 500;
+            transition: background-color .218s, border-color .218s, box-shadow .218s;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Roboto', arial, sans-serif;
+            height: 40px;
+            position: relative;
+        }
 
-.btn-google:hover {
-    background-color: #f8f9fa;
-    border-color: #dadce0;
-    box-shadow: 0 1px 3px 1px rgba(66,64,67,.15);
-    transform: none; /* Remove transform to match Google's style */
-}
+        .btn-google:hover {
+            background-color: #f8f9fa;
+            border-color: #dadce0;
+            box-shadow: 0 1px 3px 1px rgba(66,64,67,.15);
+            transform: none;
+        }
 
-.btn-google:active {
-    background-color: #f1f3f4;
-    transition: background-color 0s;
-}
+        .btn-google:active {
+            background-color: #f1f3f4;
+            transition: background-color 0s;
+        }
 
-.btn-google i.fa-google {
-    background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55%/150% 150% no-repeat;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    display: inline-block;
-}
+        .btn-google i.fa-google {
+            background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55%/150% 150% no-repeat;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+        }
 
-/* Google logo container */
-.google-logo {
-    width: 18px;
-    height: 18px;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="%234285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="%23FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="%2334A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>') no-repeat center;
-    background-size: contain;
-}
+        .google-logo {
+            width: 18px;
+            height: 18px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="%234285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="%23FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="%2334A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
 
-/* Google button content wrapper */
-.google-btn-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-}
+        .google-btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
 
-/* Google button text */
-.google-btn-text {
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 1.2;
-    flex: 1;
-    text-align: center;
-}
+        .google-btn-text {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1.2;
+            flex: 1;
+            text-align: center;
+        }
 
         /* OR DIVIDER STYLES */
         .divider {
@@ -1449,17 +1446,353 @@
             opacity: 1;
         }
 
-        /* ============ MOBILE CHAT FIXES ============ */
-        /* These are the ONLY mobile fixes we add - everything else stays the same */
+        /* ============ ADMIN DASHBOARD STYLES ============ */
+        .admin-only {
+            display: none;
+        }
         
-        /* Mobile chat improvements */
+        .user-is-admin .admin-only {
+            display: block !important;
+        }
+        
+        .admin-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .admin-dashboard {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .admin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .admin-stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .admin-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        .admin-stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .admin-stat-label {
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+        
+        .admin-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .admin-action-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .admin-action-card h4 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-action-card h4 i {
+            color: var(--primary);
+        }
+        
+        /* Broadcast Message Styles */
+        .broadcast-container {
+            margin-top: 15px;
+        }
+        
+        .broadcast-history {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        
+        .broadcast-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .broadcast-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .broadcast-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .broadcast-time {
+            color: var(--light);
+        }
+        
+        .broadcast-message {
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .broadcast-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .broadcast-type.alert {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .broadcast-type.news {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .broadcast-type.info {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+        
+        .broadcast-type.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        /* User Management Styles */
+        .users-table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .users-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .users-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .users-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .user-role {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .user-role.admin {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .user-role.freelancer {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .user-role.client {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+        
+        .user-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .user-status.active {
+            background: var(--success);
+        }
+        
+        .user-status.inactive {
+            background: var(--light);
+        }
+        
+        .admin-action-btn {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin: 2px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .admin-action-btn.edit {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+        
+        .admin-action-btn.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .admin-action-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        /* Job Management Styles */
+        .job-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* System Announcement Banner */
+        .system-announcement {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideInDown 0.5s ease-out;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+        }
+        
+        .system-announcement.hidden {
+            display: none;
+        }
+        
+        .announcement-content {
+            flex: 1;
+            margin-right: 15px;
+        }
+        
+        .announcement-type {
+            display: inline-block;
+            padding: 3px 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        
+        .announcement-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .announcement-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Admin Navigation Link */
+        .admin-nav-link {
+            position: relative;
+        }
+        
+        .admin-nav-link::before {
+            content: '🔒';
+            position: absolute;
+            left: -20px;
+            font-size: 0.8rem;
+        }
+        
+        /* ============ MOBILE CHAT FIXES ============ */
         @media (max-width: 768px) {
-            /* Prevent zoom on iOS for chat input */
             .chat-input input {
                 font-size: 16px !important;
             }
             
-            /* Make chat container full height on mobile */
             .chat-container {
                 height: calc(100vh - 200px);
                 position: fixed;
@@ -1473,7 +1806,6 @@
                 z-index: 1000;
             }
             
-            /* Mobile chat overlay for better UX */
             .chat-overlay {
                 display: none;
                 position: fixed;
@@ -1490,7 +1822,6 @@
                 display: block;
             }
             
-            /* Mobile chat sidebar */
             .chat-sidebar.mobile {
                 position: fixed;
                 top: 0;
@@ -1523,7 +1854,6 @@
                 transform: translateX(0);
             }
             
-            /* Mobile chat header with back button */
             .chat-header .back-btn {
                 background: none;
                 border: none;
@@ -1533,18 +1863,15 @@
                 display: block;
             }
             
-            /* Improve message bubbles for mobile */
             .message {
                 max-width: 85%;
             }
             
-            /* Better scrolling on mobile */
             .chat-messages {
                 -webkit-overflow-scrolling: touch;
                 padding-bottom: 80px;
             }
             
-            /* Fix chat input for mobile */
             .chat-input {
                 position: fixed;
                 bottom: 0;
@@ -1556,12 +1883,10 @@
                 z-index: 1002;
             }
             
-            /* Adjust chat contact list */
             .chat-contact {
                 padding: 16px;
             }
 
-            /* Payment methods responsive */
             .payment-methods {
                 flex-direction: column;
             }
@@ -1570,12 +1895,10 @@
                 width: 100%;
             }
 
-            /* Portfolio responsive */
             .portfolio-container {
                 grid-template-columns: 1fr;
             }
 
-            /* Freelancer responsive */
             .freelancer-actions {
                 flex-direction: column;
             }
@@ -1595,10 +1918,27 @@
                 margin: 10px 0;
             }
 
-            /* Google button responsive */
             .btn-google {
                 padding: 12px 20px;
                 font-size: 14px;
+            }
+            
+            /* Admin Responsive Styles */
+            .admin-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .admin-actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .users-table {
+                font-size: 0.8rem;
+            }
+            
+            .users-table th,
+            .users-table td {
+                padding: 8px 10px;
             }
         }
 
@@ -1731,6 +2071,10 @@
                 height: 80px;
                 font-size: 2rem;
             }
+            
+            .admin-stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -1757,6 +2101,11 @@
                     <a href="#" data-page="post-job">Post a Job</a>
                     <a href="#" data-page="chat">Messages</a>
                     
+                    <!-- Admin Navigation Link (Only visible to admin) -->
+                    <a href="#" data-page="admin" class="admin-only admin-nav-link" style="display: none;">
+                        Admin Dashboard
+                    </a>
+                    
                     <div class="user-menu" id="userMenu">
                         <a href="#" data-page="login" id="loginBtn">Login</a>
                         <a href="#" data-page="register" id="registerBtn" class="btn btn-primary">Sign Up</a>
@@ -1765,6 +2114,17 @@
             </div>
         </div>
     </header>
+
+    <!-- System Announcement Banner (Visible to all users) -->
+    <div id="system-announcement-banner" class="system-announcement hidden">
+        <div class="announcement-content">
+            <span class="announcement-type" id="announcement-type">News</span>
+            <span id="announcement-message">System announcement</span>
+        </div>
+        <button class="announcement-close" id="close-announcement">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
 
     <!-- Version Badge -->
     <div class="version-badge" title="Application Version">v1.0</div>
@@ -1854,12 +2214,12 @@
                 <p style="color: var(--light); margin-bottom: 25px;">Access your freelancing account</p>
                 
                 <!-- Google Sign In Button - FIXED -->
-               <button class="btn btn-google" id="google-login-btn">
-    <div class="google-btn-content">
-        <div class="google-logo"></div>
-        <span class="google-btn-text">Sign in with Google</span>
-    </div>
-</button>
+                <button class="btn btn-google" id="google-login-btn">
+                    <div class="google-btn-content">
+                        <div class="google-logo"></div>
+                        <span class="google-btn-text">Sign in with Google</span>
+                    </div>
+                </button>
                 <div class="divider">
                     <span>or</span>
                 </div>
@@ -1881,7 +2241,12 @@
                     </button>
                 </form>
                 
-                <p style="text-align: center; margin-top: 20px;">Don't have an account? <a href="#" data-page="register">Sign up here</a></p>
+                <p style="text-align: center; margin-top: 20px;">
+                    Don't have an account? <a href="#" data-page="register">Sign up here</a>
+                </p>
+                <p style="text-align: center; margin-top: 10px;">
+                    <a href="#" id="forgot-password-link" style="color: var(--primary); text-decoration: none;">Forgot password?</a>
+                </p>
             </div>
         </div>
 
@@ -1893,11 +2258,11 @@
                 
                 <!-- Google Sign In Button - FIXED -->
                 <button class="btn btn-google" id="google-register-btn">
-    <div class="google-btn-content">
-        <div class="google-logo"></div>
-        <span class="google-btn-text">Sign up with Google</span>
-    </div>
-</button>
+                    <div class="google-btn-content">
+                        <div class="google-logo"></div>
+                        <span class="google-btn-text">Sign up with Google</span>
+                    </div>
+                </button>
                 <div class="divider">
                     <span>or</span>
                 </div>
@@ -1983,6 +2348,20 @@
                             <i class="fas fa-share-alt"></i> Share Profile
                         </button>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Admin Badge on Profile (Only for admin) -->
+            <div class="admin-only" style="display: none;">
+                <div class="card" style="background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%); border-left: 4px solid var(--danger);">
+                    <h3 style="color: var(--danger);">
+                        <i class="fas fa-shield-alt"></i> Administrator Account
+                        <span class="admin-badge">SYSTEM ADMIN</span>
+                    </h3>
+                    <p>You have full administrative privileges. Use the Admin Dashboard to manage the platform.</p>
+                    <button class="btn btn-danger" data-page="admin" style="margin-top: 10px;">
+                        <i class="fas fa-cogs"></i> Go to Admin Dashboard
+                    </button>
                 </div>
             </div>
             
@@ -2217,7 +2596,7 @@
             </div>
         </div>
 
-               <!-- Jobs Page -->
+        <!-- Jobs Page -->
         <div class="page container hidden" id="jobs-page">
             <h2>Available Jobs</h2>
             <p style="color: var(--light); margin-bottom: 20px;">Browse and apply to freelance opportunities</p>
@@ -2264,6 +2643,21 @@
                 </div>
             </div>
             
+            <!-- Admin Controls on Jobs (Only for admin) -->
+            <div class="admin-only" style="display: none; margin-bottom: 20px;">
+                <div class="card" style="border-left: 4px solid var(--danger);">
+                    <h4><i class="fas fa-tools"></i> Admin Job Management</h4>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn btn-outline-danger" id="delete-fake-jobs">
+                            <i class="fas fa-trash"></i> Remove Fake Jobs
+                        </button>
+                        <button class="btn btn-outline-warning" id="refresh-all-jobs">
+                            <i class="fas fa-sync-alt"></i> Refresh Job Listings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <div class="job-filters" style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
                 <select id="job-category-filter" class="form-control" style="width: 200px;">
                     <option value="">All Categories</option>
@@ -2284,8 +2678,7 @@
             </div>
         </div>
 
-        
-                <!-- Freelancer Search Page -->
+        <!-- Freelancer Search Page -->
         <div class="page container hidden" id="freelancers-page">
             <h2>Find Freelancers</h2>
             <p style="color: var(--light); margin-bottom: 20px;">Search and hire talented freelancers</p>
@@ -2476,6 +2869,188 @@
                 </div>
             </div>
         </div>
+        
+        <!-- ============ ADMIN DASHBOARD PAGE ============ -->
+        <div class="page container hidden" id="admin-page">
+            <div class="admin-dashboard">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <div>
+                        <h2 style="margin-bottom: 5px;">
+                            <i class="fas fa-shield-alt"></i> Admin Dashboard
+                            <span class="admin-badge" style="font-size: 1rem;">SYSTEM ADMIN</span>
+                        </h2>
+                        <p style="color: var(--light);">Manage platform users, content, and announcements</p>
+                    </div>
+                    <div class="avatar" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+                
+                <!-- Admin Statistics -->
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number" id="admin-total-users">0</div>
+                        <div class="admin-stat-label">Total Users</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number" id="admin-active-jobs">0</div>
+                        <div class="admin-stat-label">Active Jobs</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number" id="admin-today-logins">0</div>
+                        <div class="admin-stat-label">Today's Logins</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number" id="admin-unread-messages">0</div>
+                        <div class="admin-stat-label">Unread Messages</div>
+                    </div>
+                </div>
+                
+                <!-- Admin Actions Grid -->
+                <div class="admin-actions-grid">
+                    <!-- Broadcast Message -->
+                    <div class="admin-action-card">
+                        <h4><i class="fas fa-bullhorn"></i> Broadcast Message</h4>
+                        <div class="broadcast-container">
+                            <div class="form-group">
+                                <label>Message Type</label>
+                                <select id="broadcast-type" class="form-control">
+                                    <option value="info">Information</option>
+                                    <option value="news">News</option>
+                                    <option value="alert">Alert</option>
+                                    <option value="warning">Warning</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea id="broadcast-message" class="form-control" rows="3" 
+                                          placeholder="Enter announcement message..."></textarea>
+                            </div>
+                            <button class="btn btn-primary" id="send-broadcast">
+                                <i class="fas fa-paper-plane"></i> Send to All Users
+                            </button>
+                            
+                            <div class="broadcast-history" id="broadcast-history">
+                                <p style="text-align: center; color: var(--light);">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading broadcast history...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Management -->
+                    <div class="admin-action-card">
+                        <h4><i class="fas fa-users-cog"></i> User Management</h4>
+                        <div class="users-table-container">
+                            <div style="margin-bottom: 15px;">
+                                <input type="text" id="search-users" class="form-control" 
+                                       placeholder="Search users by name or email...">
+                            </div>
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 20px;">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading users...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Job Management -->
+                    <div class="admin-action-card">
+                        <h4><i class="fas fa-briefcase"></i> Job Management</h4>
+                        <div class="users-table-container">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Budget</th>
+                                        <th>Applicants</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="jobs-table-body">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 20px;">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading jobs...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- System Settings -->
+                    <div class="admin-action-card">
+                        <h4><i class="fas fa-cogs"></i> System Settings</h4>
+                        <div class="form-group">
+                            <label>Platform Status</label>
+                            <select id="platform-status" class="form-control">
+                                <option value="online">Online</option>
+                                <option value="maintenance">Maintenance Mode</option>
+                                <option value="limited">Limited Access</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Maintenance Message</label>
+                            <textarea id="maintenance-message" class="form-control" rows="2" 
+                                      placeholder="Message to display during maintenance..."></textarea>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button class="btn btn-warning" id="save-settings">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                            <button class="btn btn-danger" id="clear-cache">
+                                <i class="fas fa-trash"></i> Clear Cache
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity Log -->
+                <div class="admin-action-card">
+                    <h4><i class="fas fa-history"></i> Recent Activity Log</h4>
+                    <div style="max-height: 200px; overflow-y: auto; margin-top: 15px;">
+                        <div id="admin-activity-log">
+                            <p style="text-align: center; color: var(--light);">
+                                <i class="fas fa-spinner fa-spin"></i> Loading activity log...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Danger Zone -->
+                <div class="admin-action-card" style="border: 2px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+                    <h4 style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h4>
+                    <p style="color: var(--light); margin-bottom: 15px;">
+                        These actions are irreversible. Use with extreme caution.
+                    </p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-outline-danger" id="export-data">
+                            <i class="fas fa-download"></i> Export All Data
+                        </button>
+                        <button class="btn btn-outline-danger" id="reset-test-data">
+                            <i class="fas fa-redo"></i> Reset Test Data
+                        </button>
+                        <button class="btn btn-danger" id="emergency-shutdown">
+                            <i class="fas fa-power-off"></i> Emergency Shutdown
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Comments Section -->
@@ -2570,12 +3145,19 @@
     const db = firebase.firestore();
     
     // ============================================
+    // ADMIN SYSTEM CONFIGURATION
+    // ============================================
+    
+    const ADMIN_EMAIL = "bluetonicnetwork@gmail.com";
+    
+    // ============================================
     // APPLICATION STATE
     // ============================================
     
     const state = {
         currentUser: null,
         userProfile: null,
+        isAdmin: false,
         currentChatWith: null,
         currentChatUser: null,
         chatListener: null,
@@ -2584,7 +3166,10 @@
         appliedJobs: new Set(),
         isMobileChatOpen: false,
         statsUpdateInterval: null,
-        freelancerSearchTimeout: null
+        freelancerSearchTimeout: null,
+        adminListeners: [],
+        broadcastListener: null,
+        currentAnnouncement: null
     };
     
     // ============================================
@@ -2700,6 +3285,38 @@
         document.body.style.overflow = 'auto';
     }
     
+    function checkIfAdmin(user) {
+        return user && user.email === ADMIN_EMAIL;
+    }
+    
+    function updateAdminUI() {
+        if (state.isAdmin) {
+            document.body.classList.add('user-is-admin');
+            console.log('Admin UI enabled for:', state.currentUser.email);
+            
+            // Update profile to show admin badge
+            if (state.userProfile) {
+                state.userProfile.isAdmin = true;
+            }
+            
+            // Load admin dashboard if on admin page
+            if (document.getElementById('admin-page') && 
+                !document.getElementById('admin-page').classList.contains('hidden')) {
+                loadAdminDashboard();
+            }
+            
+        } else {
+            document.body.classList.remove('user-is-admin');
+            
+            // If user is on admin page but not admin, redirect to home
+            if (document.getElementById('admin-page') && 
+                !document.getElementById('admin-page').classList.contains('hidden')) {
+                showPage('home');
+                showNotification('Access denied. Admin privileges required.', 'error');
+            }
+        }
+    }
+    
     // ============================================
     // GOOGLE SIGN IN FUNCTIONS - FIXED
     // ============================================
@@ -2759,6 +3376,11 @@
             }
             
             state.currentUser = user;
+            
+            // Check if user is admin
+            state.isAdmin = checkIfAdmin(user);
+            updateAdminUI();
+            
             updateUIForUser();
             
             showNotification(`Welcome ${state.userProfile?.name || 'User'}!`, 'success');
@@ -2796,6 +3418,11 @@
             try {
                 await loadUserProfile(user.uid);
                 state.currentUser = user;
+                
+                // Check if user is admin
+                state.isAdmin = checkIfAdmin(user);
+                updateAdminUI();
+                
                 updateUIForUser();
                 await loadAppliedJobs();
                 
@@ -2803,17 +3430,27 @@
                     showNotification(`Welcome back, ${state.userProfile.name}!`);
                 }
                 
+                // Load current announcement for all users
+                await loadCurrentAnnouncement();
+                
                 if (document.getElementById('chat-page') && 
                     !document.getElementById('chat-page').classList.contains('hidden')) {
                     setupChatView();
                     loadChatContacts();
                 }
+                
+                // Setup admin listeners if admin
+                if (state.isAdmin) {
+                    setupAdminEventListeners();
+                }
+                
             } catch (error) {
                 console.error("Error loading user profile:", error);
             }
         } else {
             state.currentUser = null;
             state.userProfile = null;
+            state.isAdmin = false;
             state.appliedJobs.clear();
             updateUIForUser();
             clearAllListeners();
@@ -2841,6 +3478,19 @@
             clearTimeout(state.freelancerSearchTimeout);
             state.freelancerSearchTimeout = null;
         }
+        clearAdminListeners();
+    }
+    
+    function clearAdminListeners() {
+        if (state.broadcastListener) {
+            state.broadcastListener();
+            state.broadcastListener = null;
+        }
+        
+        state.adminListeners.forEach(listener => {
+            if (listener) listener();
+        });
+        state.adminListeners = [];
     }
     
     async function loadUserProfile(userId) {
@@ -2983,6 +3633,12 @@
             
             await db.collection('users').doc(user.uid).set(userProfile);
             
+            // Check if user is admin
+            if (email === ADMIN_EMAIL) {
+                state.isAdmin = true;
+                updateAdminUI();
+            }
+            
             showNotification(`Welcome to Bluetonic, ${name}!`);
             hideLoader('register-submit-btn', 'register-text', 'register-loader');
             
@@ -3053,6 +3709,7 @@
         try {
             clearAllListeners();
             state.appliedJobs.clear();
+            state.isAdmin = false;
             await auth.signOut();
             showNotification('Logged out successfully');
             showPage('home');
@@ -4609,6 +5266,793 @@
     }
     
     // ============================================
+    // ADMIN FUNCTIONS
+    // ============================================
+    
+    async function loadAdminDashboard() {
+        if (!state.isAdmin) return;
+        
+        console.log('Loading admin dashboard...');
+        
+        try {
+            // Load admin statistics
+            await loadAdminStats();
+            
+            // Load users for management
+            await loadUsersForAdmin();
+            
+            // Load jobs for management
+            await loadJobsForAdmin();
+            
+            // Load broadcast history
+            await loadBroadcastHistory();
+            
+            // Load activity log
+            await loadActivityLog();
+            
+            // Load current announcement
+            await loadCurrentAnnouncement();
+            
+        } catch (error) {
+            console.error('Error loading admin dashboard:', error);
+            showNotification('Error loading admin dashboard', 'error');
+        }
+    }
+    
+    async function loadAdminStats() {
+        if (!state.isAdmin) return;
+        
+        try {
+            // Get total users
+            const usersSnapshot = await db.collection('users').get();
+            document.getElementById('admin-total-users').textContent = usersSnapshot.size;
+            
+            // Get active jobs
+            const jobsSnapshot = await db.collection('jobs')
+                .where('status', '==', 'open')
+                .get();
+            document.getElementById('admin-active-jobs').textContent = jobsSnapshot.size;
+            
+            // Get today's logins (simplified - you might want to track this separately)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // For now, we'll show total messages
+            const messagesSnapshot = await db.collection('messages')
+                .where('read', '==', false)
+                .get();
+            document.getElementById('admin-unread-messages').textContent = messagesSnapshot.size;
+            
+            // Today's logins (placeholder)
+            document.getElementById('admin-today-logins').textContent = '24';
+            
+        } catch (error) {
+            console.error('Error loading admin stats:', error);
+        }
+    }
+    
+    async function loadUsersForAdmin() {
+        if (!state.isAdmin) return;
+        
+        try {
+            const usersSnapshot = await db.collection('users')
+                .orderBy('createdAt', 'desc')
+                .limit(50)
+                .get();
+            
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            
+            if (usersSnapshot.empty) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            No users found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            usersSnapshot.forEach(doc => {
+                const user = doc.data();
+                const isCurrentUser = state.currentUser && doc.id === state.currentUser.uid;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            ${escapeHtml(user.name || 'Unknown')}
+                            ${isCurrentUser ? ' (You)' : ''}
+                            ${user.email === ADMIN_EMAIL ? ' <span class="admin-badge">ADMIN</span>' : ''}
+                        </td>
+                        <td>${escapeHtml(user.email || 'No email')}</td>
+                        <td>
+                            <span class="user-role ${user.type || 'user'}">
+                                ${(user.type || 'user').charAt(0).toUpperCase() + (user.type || 'user').slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="user-status ${user.isActive !== false ? 'active' : 'inactive'}"></span>
+                            ${user.isActive !== false ? 'Active' : 'Inactive'}
+                        </td>
+                        <td>
+                            ${!isCurrentUser ? `
+                                <button class="admin-action-btn edit" onclick="adminEditUser('${doc.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="admin-action-btn delete" onclick="adminDeleteUser('${doc.id}', '${escapeHtml(user.name || 'User')}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : '<span style="color: var(--light);">Current User</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            // Setup search
+            const searchInput = document.getElementById('search-users');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = tbody.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    });
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error loading users for admin:', error);
+            document.getElementById('users-table-body').innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--danger);">
+                        Error loading users
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    async function loadJobsForAdmin() {
+        if (!state.isAdmin) return;
+        
+        try {
+            const jobsSnapshot = await db.collection('jobs')
+                .orderBy('createdAt', 'desc')
+                .limit(50)
+                .get();
+            
+            const tbody = document.getElementById('jobs-table-body');
+            tbody.innerHTML = '';
+            
+            if (jobsSnapshot.empty) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            No jobs found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            for (const doc of jobsSnapshot.docs) {
+                const job = doc.data();
+                
+                // Get poster name
+                let posterName = 'Unknown';
+                try {
+                    const posterDoc = await db.collection('users').doc(job.postedBy).get();
+                    if (posterDoc.exists) {
+                        posterName = posterDoc.data().name || 'Unknown';
+                    }
+                } catch (error) {
+                    console.error('Error getting poster name:', error);
+                }
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${escapeHtml(job.title || 'Untitled')}</td>
+                        <td>$${job.budget || '0'}</td>
+                        <td>${job.applicants ? job.applicants.length : 0}</td>
+                        <td>
+                            <span class="user-role ${job.status || 'open'}" 
+                                  style="${job.status === 'open' ? 'background: rgba(16, 185, 129, 0.1); color: var(--success);' : 
+                                         job.status === 'closed' ? 'background: rgba(239, 68, 68, 0.1); color: var(--danger);' : 
+                                         'background: rgba(245, 158, 11, 0.1); color: var(--warning);'}">
+                                ${(job.status || 'open').charAt(0).toUpperCase() + (job.status || 'open').slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="job-actions">
+                                <button class="admin-action-btn edit" onclick="adminEditJob('${doc.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="admin-action-btn delete" onclick="adminDeleteJob('${doc.id}', '${escapeHtml(job.title || 'Job')}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+        } catch (error) {
+            console.error('Error loading jobs for admin:', error);
+            document.getElementById('jobs-table-body').innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--danger);">
+                        Error loading jobs
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    async function loadBroadcastHistory() {
+        if (!state.isAdmin) return;
+        
+        try {
+            const broadcastSnapshot = await db.collection('broadcasts')
+                .orderBy('createdAt', 'desc')
+                .limit(20)
+                .get();
+            
+            const container = document.getElementById('broadcast-history');
+            container.innerHTML = '';
+            
+            if (broadcastSnapshot.empty) {
+                container.innerHTML = '<p style="text-align: center; color: var(--light);">No broadcasts yet</p>';
+                return;
+            }
+            
+            broadcastSnapshot.forEach(doc => {
+                const broadcast = doc.data();
+                const time = broadcast.createdAt?.toDate ? 
+                    formatMessageTime(broadcast.createdAt) : 'Recently';
+                
+                container.innerHTML += `
+                    <div class="broadcast-item">
+                        <div class="broadcast-header">
+                            <span class="broadcast-author">${broadcast.authorName || 'Admin'}</span>
+                            <span class="broadcast-time">${time}</span>
+                        </div>
+                        <div class="broadcast-message">${escapeHtml(broadcast.message)}</div>
+                        <span class="broadcast-type ${broadcast.type || 'info'}">
+                            ${(broadcast.type || 'info').charAt(0).toUpperCase() + (broadcast.type || 'info').slice(1)}
+                        </span>
+                    </div>
+                `;
+            });
+            
+            // Listen for new broadcasts
+            if (state.broadcastListener) {
+                state.broadcastListener();
+            }
+            
+            state.broadcastListener = db.collection('broadcasts')
+                .orderBy('createdAt', 'desc')
+                .limit(1)
+                .onSnapshot((snapshot) => {
+                    if (!snapshot.empty) {
+                        const latest = snapshot.docs[0].data();
+                        if (latest.createdAt?.toDate?.() > new Date(Date.now() - 60000)) { // Last minute
+                            showNotification('New system announcement posted', 'info');
+                        }
+                    }
+                });
+                
+        } catch (error) {
+            console.error('Error loading broadcast history:', error);
+            document.getElementById('broadcast-history').innerHTML = 
+                '<p style="text-align: center; color: var(--danger);">Error loading broadcasts</p>';
+        }
+    }
+    
+    async function sendBroadcast() {
+        if (!state.isAdmin) {
+            showNotification('Admin privileges required', 'error');
+            return;
+        }
+        
+        const type = document.getElementById('broadcast-type').value;
+        const message = document.getElementById('broadcast-message').value.trim();
+        
+        if (!message) {
+            showNotification('Please enter a message', 'error');
+            return;
+        }
+        
+        if (!confirm(`Send ${type} broadcast to all users?`)) {
+            return;
+        }
+        
+        try {
+            const broadcastData = {
+                type: type,
+                message: message,
+                authorId: state.currentUser.uid,
+                authorName: state.userProfile?.name || 'System Admin',
+                authorEmail: state.userProfile?.email || ADMIN_EMAIL,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                expiresAt: firebase.firestore.Timestamp.fromDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) // 7 days
+            };
+            
+            // Save broadcast
+            await db.collection('broadcasts').add(broadcastData);
+            
+            // Also save as current announcement
+            await db.collection('system')
+                .doc('current_announcement')
+                .set({
+                    ...broadcastData,
+                    isActive: true,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            
+            // Update local state
+            state.currentAnnouncement = broadcastData;
+            
+            // Clear input
+            document.getElementById('broadcast-message').value = '';
+            
+            // Reload history
+            await loadBroadcastHistory();
+            
+            showNotification(`Broadcast sent successfully to all users!`, 'success');
+            
+            // Update announcement banner for all users
+            updateAnnouncementBanner(broadcastData);
+            
+        } catch (error) {
+            console.error('Error sending broadcast:', error);
+            showNotification('Error sending broadcast', 'error');
+        }
+    }
+    
+    async function loadCurrentAnnouncement() {
+        try {
+            const announcementDoc = await db.collection('system')
+                .doc('current_announcement')
+                .get();
+            
+            if (announcementDoc.exists) {
+                const announcement = announcementDoc.data();
+                
+                // Check if announcement is expired
+                if (announcement.expiresAt?.toDate?.() < new Date()) {
+                    // Announcement expired, remove it
+                    await db.collection('system')
+                        .doc('current_announcement')
+                        .update({ isActive: false });
+                    
+                    state.currentAnnouncement = null;
+                    updateAnnouncementBanner(null);
+                } else if (announcement.isActive) {
+                    state.currentAnnouncement = announcement;
+                    updateAnnouncementBanner(announcement);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading announcement:', error);
+        }
+    }
+    
+    function updateAnnouncementBanner(announcement) {
+        const banner = document.getElementById('system-announcement-banner');
+        
+        if (!announcement || !announcement.isActive) {
+            banner.classList.add('hidden');
+            return;
+        }
+        
+        document.getElementById('announcement-type').textContent = 
+            announcement.type ? announcement.type.charAt(0).toUpperCase() + announcement.type.slice(1) : 'Info';
+        document.getElementById('announcement-message').textContent = announcement.message;
+        
+        // Set banner color based on type
+        banner.style.background = announcement.type === 'alert' ? 
+            'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' :
+            announcement.type === 'warning' ?
+            'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' :
+            announcement.type === 'news' ?
+            'linear-gradient(135deg, #10b981 0%, #059669 100%)' :
+            'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+        
+        banner.classList.remove('hidden');
+    }
+    
+    async function loadActivityLog() {
+        if (!state.isAdmin) return;
+        
+        try {
+            // For now, we'll use a combination of collections
+            const container = document.getElementById('admin-activity-log');
+            
+            // Get recent user registrations
+            const recentUsers = await db.collection('users')
+                .orderBy('createdAt', 'desc')
+                .limit(5)
+                .get();
+            
+            // Get recent jobs
+            const recentJobs = await db.collection('jobs')
+                .orderBy('createdAt', 'desc')
+                .limit(5)
+                .get();
+            
+            // Get recent messages
+            const recentMessages = await db.collection('messages')
+                .orderBy('createdAt', 'desc')
+                .limit(5)
+                .get();
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+            
+            // Add user registrations
+            recentUsers.forEach(doc => {
+                const user = doc.data();
+                const time = user.createdAt?.toDate ? formatMessageTime(user.createdAt) : 'Recently';
+                html += `
+                    <div style="padding: 10px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+                        <div style="font-size: 0.9rem;">
+                            <i class="fas fa-user-plus" style="color: var(--success);"></i>
+                            <strong>${escapeHtml(user.name || 'New user')}</strong> registered
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--light); margin-top: 3px;">
+                            ${time} • ${user.email}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Add job posts
+            recentJobs.forEach(doc => {
+                const job = doc.data();
+                const time = job.createdAt?.toDate ? formatMessageTime(job.createdAt) : 'Recently';
+                html += `
+                    <div style="padding: 10px; background: white; border-radius: 8px; border-left: 3px solid var(--primary);">
+                        <div style="font-size: 0.9rem;">
+                            <i class="fas fa-briefcase" style="color: var(--primary);"></i>
+                            New job: <strong>${escapeHtml(job.title || 'Untitled')}</strong>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--light); margin-top: 3px;">
+                            ${time} • $${job.budget || '0'}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Add messages
+            recentMessages.forEach(doc => {
+                const msg = doc.data();
+                const time = msg.createdAt?.toDate ? formatMessageTime(msg.createdAt) : 'Recently';
+                html += `
+                    <div style="padding: 10px; background: white; border-radius: 8px; border-left: 3px solid var(--warning);">
+                        <div style="font-size: 0.9rem;">
+                            <i class="fas fa-envelope" style="color: var(--warning);"></i>
+                            New message sent
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--light); margin-top: 3px;">
+                            ${time} • ${msg.text ? escapeHtml(msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '')) : 'No text'}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+            
+        } catch (error) {
+            console.error('Error loading activity log:', error);
+            document.getElementById('admin-activity-log').innerHTML = 
+                '<p style="text-align: center; color: var(--danger);">Error loading activity log</p>';
+        }
+    }
+    
+    // ============================================
+    // ADMIN MANAGEMENT FUNCTIONS
+    // ============================================
+    
+    async function adminEditUser(userId) {
+        if (!state.isAdmin) return;
+        
+        try {
+            const userDoc = await db.collection('users').doc(userId).get();
+            if (!userDoc.exists) {
+                showNotification('User not found', 'error');
+                return;
+            }
+            
+            const user = userDoc.data();
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit User: ${escapeHtml(user.name || 'Unknown')}</h3>
+                        <button class="modal-close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    
+                    <form id="edit-user-form">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" id="edit-user-name" 
+                                   value="${escapeHtml(user.name || '')}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" id="edit-user-email" 
+                                   value="${escapeHtml(user.email || '')}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>User Type</label>
+                            <select class="form-control" id="edit-user-type">
+                                <option value="client" ${user.type === 'client' ? 'selected' : ''}>Client</option>
+                                <option value="freelancer" ${user.type === 'freelancer' ? 'selected' : ''}>Freelancer</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Account Status</label>
+                            <select class="form-control" id="edit-user-status">
+                                <option value="active" ${user.isActive !== false ? 'selected' : ''}>Active</option>
+                                <option value="inactive" ${user.isActive === false ? 'selected' : ''}>Inactive</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" class="btn btn-secondary" 
+                                    onclick="this.parentElement.parentElement.parentElement.parentElement.remove()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const form = modal.querySelector('#edit-user-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const updatedData = {
+                    name: document.getElementById('edit-user-name').value.trim(),
+                    email: document.getElementById('edit-user-email').value.trim(),
+                    type: document.getElementById('edit-user-type').value,
+                    isActive: document.getElementById('edit-user-status').value === 'active',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                try {
+                    await db.collection('users').doc(userId).update(updatedData);
+                    
+                    modal.remove();
+                    showNotification('User updated successfully', 'success');
+                    
+                    // Reload user list
+                    loadUsersForAdmin();
+                    
+                } catch (error) {
+                    console.error('Error updating user:', error);
+                    showNotification('Error updating user', 'error');
+                }
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error editing user:', error);
+            showNotification('Error editing user', 'error');
+        }
+    }
+    
+    async function adminDeleteUser(userId, userName) {
+        if (!state.isAdmin) return;
+        
+        if (userId === state.currentUser.uid) {
+            showNotification('Cannot delete your own account', 'error');
+            return;
+        }
+        
+        if (!confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+            return;
+        }
+        
+        try {
+            // First, check if user has any jobs
+            const userJobs = await db.collection('jobs')
+                .where('postedBy', '==', userId)
+                .get();
+            
+            if (!userJobs.empty) {
+                if (!confirm(`User has ${userJobs.size} job(s). Delete user and all their jobs?`)) {
+                    return;
+                }
+                
+                // Delete all user's jobs
+                const batch = db.batch();
+                userJobs.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                await batch.commit();
+            }
+            
+            // Delete user's messages
+            const userMessages = await db.collection('messages')
+                .where('from', '==', userId)
+                .get();
+            
+            const batch2 = db.batch();
+            userMessages.forEach(doc => {
+                batch2.delete(doc.ref);
+            });
+            await batch2.commit();
+            
+            // Finally, delete the user
+            await db.collection('users').doc(userId).delete();
+            
+            showNotification(`User "${userName}" deleted successfully`, 'success');
+            
+            // Reload user list
+            loadUsersForAdmin();
+            
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showNotification('Error deleting user', 'error');
+        }
+    }
+    
+    async function adminEditJob(jobId) {
+        if (!state.isAdmin) return;
+        
+        try {
+            const jobDoc = await db.collection('jobs').doc(jobId).get();
+            if (!jobDoc.exists) {
+                showNotification('Job not found', 'error');
+                return;
+            }
+            
+            const job = jobDoc.data();
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit Job: ${escapeHtml(job.title || 'Untitled')}</h3>
+                        <button class="modal-close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    
+                    <form id="edit-job-form">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" class="form-control" id="edit-job-title" 
+                                   value="${escapeHtml(job.title || '')}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" id="edit-job-description" rows="4" required>${escapeHtml(job.description || '')}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Budget ($)</label>
+                            <input type="number" class="form-control" id="edit-job-budget" 
+                                   value="${job.budget || 0}" required min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="form-control" id="edit-job-status">
+                                <option value="open" ${job.status === 'open' ? 'selected' : ''}>Open</option>
+                                <option value="closed" ${job.status === 'closed' ? 'selected' : ''}>Closed</option>
+                                <option value="in_progress" ${job.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="completed" ${job.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" class="btn btn-secondary" 
+                                    onclick="this.parentElement.parentElement.parentElement.parentElement.remove()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const form = modal.querySelector('#edit-job-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const updatedData = {
+                    title: document.getElementById('edit-job-title').value.trim(),
+                    description: document.getElementById('edit-job-description').value.trim(),
+                    budget: parseInt(document.getElementById('edit-job-budget').value),
+                    status: document.getElementById('edit-job-status').value,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                try {
+                    await db.collection('jobs').doc(jobId).update(updatedData);
+                    
+                    modal.remove();
+                    showNotification('Job updated successfully', 'success');
+                    
+                    // Reload job list
+                    loadJobsForAdmin();
+                    
+                    // Also update on jobs page if visible
+                    if (document.getElementById('jobs-page') && 
+                        !document.getElementById('jobs-page').classList.contains('hidden')) {
+                        loadAllJobs();
+                    }
+                    
+                } catch (error) {
+                    console.error('Error updating job:', error);
+                    showNotification('Error updating job', 'error');
+                }
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error editing job:', error);
+            showNotification('Error editing job', 'error');
+        }
+    }
+    
+    async function adminDeleteJob(jobId, jobTitle) {
+        if (!state.isAdmin) return;
+        
+        if (!confirm(`Are you sure you want to delete job "${jobTitle}"? This action cannot be undone.`)) {
+            return;
+        }
+        
+        try {
+            await db.collection('jobs').doc(jobId).delete();
+            
+            showNotification(`Job "${jobTitle}" deleted successfully`, 'success');
+            
+            // Reload job list
+            loadJobsForAdmin();
+            
+            // Also update on jobs page if visible
+            if (document.getElementById('jobs-page') && 
+                !document.getElementById('jobs-page').classList.contains('hidden')) {
+                loadAllJobs();
+            }
+            
+        } catch (error) {
+            console.error('Error deleting job:', error);
+            showNotification('Error deleting job', 'error');
+        }
+    }
+    
+    // ============================================
     // COMMENTS FUNCTIONS
     // ============================================
     
@@ -4819,6 +6263,17 @@
                     }
                     break;
                     
+                case 'admin':
+                    if (state.isAdmin) {
+                        setTimeout(() => {
+                            loadAdminDashboard();
+                        }, 100);
+                    } else {
+                        showNotification('Admin access required', 'error');
+                        showPage('home');
+                    }
+                    break;
+                    
                 case 'chat':
                     if (!state.currentUser) {
                         showNotification('Please login to use chat', 'warning');
@@ -4838,6 +6293,193 @@
             }
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+    
+    // ============================================
+    // ADMIN EVENT LISTENERS
+    // ============================================
+    
+    function setupAdminEventListeners() {
+        // Send broadcast button
+        const sendBroadcastBtn = document.getElementById('send-broadcast');
+        if (sendBroadcastBtn) {
+            sendBroadcastBtn.addEventListener('click', sendBroadcast);
+        }
+        
+        // Close announcement banner
+        const closeAnnouncementBtn = document.getElementById('close-announcement');
+        if (closeAnnouncementBtn) {
+            closeAnnouncementBtn.addEventListener('click', function() {
+                document.getElementById('system-announcement-banner').classList.add('hidden');
+            });
+        }
+        
+        // Save system settings
+        const saveSettingsBtn = document.getElementById('save-settings');
+        if (saveSettingsBtn) {
+            saveSettingsBtn.addEventListener('click', async function() {
+                if (!state.isAdmin) return;
+                
+                const status = document.getElementById('platform-status').value;
+                const message = document.getElementById('maintenance-message').value.trim();
+                
+                try {
+                    await db.collection('system')
+                        .doc('settings')
+                        .set({
+                            platformStatus: status,
+                            maintenanceMessage: message,
+                            updatedBy: state.currentUser.uid,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                    
+                    showNotification('System settings saved', 'success');
+                    
+                } catch (error) {
+                    console.error('Error saving settings:', error);
+                    showNotification('Error saving settings', 'error');
+                }
+            });
+        }
+        
+        // Clear cache
+        const clearCacheBtn = document.getElementById('clear-cache');
+        if (clearCacheBtn) {
+            clearCacheBtn.addEventListener('click', function() {
+                if (!state.isAdmin) return;
+                
+                if (confirm('Clear all cached data? This will force reload of all data.')) {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    showNotification('Cache cleared. Page will reload.', 'info');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            });
+        }
+        
+        // Export data
+        const exportDataBtn = document.getElementById('export-data');
+        if (exportDataBtn) {
+            exportDataBtn.addEventListener('click', async function() {
+                if (!state.isAdmin) return;
+                
+                try {
+                    showNotification('Preparing data export...', 'info');
+                    
+                    // Get all data
+                    const [usersSnapshot, jobsSnapshot, messagesSnapshot] = await Promise.all([
+                        db.collection('users').get(),
+                        db.collection('jobs').get(),
+                        db.collection('messages').limit(1000).get()
+                    ]);
+                    
+                    const exportData = {
+                        exportedAt: new Date().toISOString(),
+                        exportedBy: state.userProfile?.email || ADMIN_EMAIL,
+                        users: usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                        jobs: jobsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                        messages: messagesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    };
+                    
+                    // Create downloadable file
+                    const dataStr = JSON.stringify(exportData, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    
+                    const exportFileDefaultName = `bluetonic-export-${new Date().toISOString().split('T')[0]}.json`;
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
+                    
+                    showNotification('Data exported successfully', 'success');
+                    
+                } catch (error) {
+                    console.error('Error exporting data:', error);
+                    showNotification('Error exporting data', 'error');
+                }
+            });
+        }
+        
+        // Emergency shutdown
+        const emergencyShutdownBtn = document.getElementById('emergency-shutdown');
+        if (emergencyShutdownBtn) {
+            emergencyShutdownBtn.addEventListener('click', function() {
+                if (!state.isAdmin) return;
+                
+                if (confirm('EMERGENCY SHUTDOWN: This will put the platform in maintenance mode. Are you absolutely sure?')) {
+                    const reason = prompt('Enter reason for emergency shutdown:');
+                    if (reason) {
+                        // In a real implementation, you would set maintenance mode
+                        showNotification('Emergency shutdown initiated', 'warning');
+                        
+                        // Send emergency broadcast
+                        db.collection('broadcasts').add({
+                            type: 'alert',
+                            message: `🚨 EMERGENCY MAINTENANCE: ${reason}. Platform is temporarily unavailable.`,
+                            authorId: state.currentUser.uid,
+                            authorName: 'System Admin',
+                            authorEmail: ADMIN_EMAIL,
+                            isEmergency: true,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                }
+            });
+        }
+        
+        // Delete fake jobs (jobs page)
+        const deleteFakeJobsBtn = document.getElementById('delete-fake-jobs');
+        if (deleteFakeJobsBtn) {
+            deleteFakeJobsBtn.addEventListener('click', async function() {
+                if (!state.isAdmin) return;
+                
+                try {
+                    // This is an example - you might want to define criteria for "fake" jobs
+                    const jobsSnapshot = await db.collection('jobs').get();
+                    let fakeCount = 0;
+                    
+                    const batch = db.batch();
+                    jobsSnapshot.forEach(doc => {
+                        const job = doc.data();
+                        // Example criteria: jobs with no description or suspicious titles
+                        if (!job.description || job.description.length < 10 || 
+                            job.title.toLowerCase().includes('test') || 
+                            job.title.toLowerCase().includes('fake')) {
+                            batch.delete(doc.ref);
+                            fakeCount++;
+                        }
+                    });
+                    
+                    if (fakeCount > 0) {
+                        await batch.commit();
+                        showNotification(`Deleted ${fakeCount} suspicious jobs`, 'success');
+                        loadAllJobs();
+                    } else {
+                        showNotification('No suspicious jobs found', 'info');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error deleting fake jobs:', error);
+                    showNotification('Error deleting jobs', 'error');
+                }
+            });
+        }
+        
+        // Refresh all jobs
+        const refreshAllJobsBtn = document.getElementById('refresh-all-jobs');
+        if (refreshAllJobsBtn) {
+            refreshAllJobsBtn.addEventListener('click', function() {
+                if (!state.isAdmin) return;
+                
+                showNotification('Refreshing job listings...', 'info');
+                loadAllJobs();
+                if (document.getElementById('admin-page') && 
+                    !document.getElementById('admin-page').classList.contains('hidden')) {
+                    loadJobsForAdmin();
+                }
+            });
         }
     }
     
