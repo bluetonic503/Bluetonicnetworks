@@ -721,7 +721,9 @@
             box-shadow: 0 3px 10px rgba(37, 99, 235, 0.15);
         }
 
-        /* ENHANCED CHAT SECTION */
+        /* ============ SIMPLIFIED UNIFIED CHAT LAYOUT ============ */
+        /* CHANGED: Removed separate mobile/desktop toggle logic and replaced with responsive design */
+        
         .chat-container {
             display: flex;
             height: 600px;
@@ -731,6 +733,7 @@
             animation: fadeIn 0.3s ease-out;
             background: white;
             margin-top: 20px;
+            /* Simplified: single container for all devices */
         }
 
         .chat-sidebar {
@@ -741,6 +744,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            /* Simplified: no separate mobile class */
         }
 
         .chat-conversation {
@@ -749,6 +753,7 @@
             flex-direction: column;
             background: linear-gradient(180deg, var(--chat-bg) 0%, #D5DBDB 100%);
             position: relative;
+            /* Simplified: no separate mobile class */
         }
 
         .chat-header {
@@ -849,16 +854,19 @@
             align-items: center;
             gap: 10px;
             min-height: 62px;
+            /* CHANGED: Added for better mobile support */
+            position: relative;
         }
 
         .chat-input input {
             flex: 1;
-            padding: 10px 16px;
+            padding: 12px 16px; /* CHANGED: Increased padding for better touch targets */
             border: 1px solid #ddd;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 16px; /* CHANGED: Larger font for mobile readability */
             transition: all 0.2s ease;
             background: white;
+            min-height: 44px; /* CHANGED: Better touch target size */
         }
 
         .chat-input input:focus {
@@ -926,6 +934,28 @@
             justify-content: center;
             font-size: 0.65rem;
             margin-top: 2px;
+        }
+
+        /* CHANGED: Chat header with back button for mobile */
+        .chat-header .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--primary);
+            display: none; /* Hidden by default, shown on mobile */
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        /* CHANGED: Remove the complex mobile overlay system */
+        .chat-overlay {
+            display: none !important; /* Remove overlay system */
+        }
+
+        /* CHANGED: Remove the separate mobile chat container */
+        .mobile-chat-container {
+            display: none !important; /* Remove separate mobile container */
         }
 
         /* Enhanced Profile Page */
@@ -1787,106 +1817,157 @@
             font-size: 0.8rem;
         }
         
-        /* ============ MOBILE CHAT FIXES ============ */
-        @media (max-width: 768px) {
-            .chat-input input {
-                font-size: 16px !important;
-            }
-            
+        /* ============ SIMPLIFIED RESPONSIVE CHAT DESIGN ============ */
+        /* CHANGED: Single responsive design that works on all devices - no device toggles */
+
+        @media (max-width: 992px) {
             .chat-container {
-                height: calc(100vh - 200px);
-                position: fixed;
-                top: 70px;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                margin: 0;
-                border-radius: 0;
-                border: none;
-                z-index: 1000;
+                height: 550px; /* Slightly smaller on tablets */
             }
             
-            .chat-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 999;
-                pointer-events: auto;
+            .chat-sidebar {
+                width: 280px; /* Slightly narrower on tablets */
             }
             
-            .chat-overlay.active {
-                display: block;
+            .hero h1 {
+                font-size: 2.2rem;
             }
             
-            .chat-sidebar.mobile {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: white;
-                z-index: 1001;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
+            .stats {
+                gap: 15px;
             }
             
-            .chat-sidebar.mobile.active {
-                transform: translateX(0);
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* MOBILE: Stack sidebar and conversation vertically */
+            .chat-container {
+                flex-direction: column;
+                height: calc(100vh - 180px); /* Full height minus header */
+                position: relative;
+                margin: 10px;
+                border-radius: 12px;
+                /* No fixed positioning - stays in document flow */
             }
             
-            .chat-conversation.mobile {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(180deg, var(--chat-bg) 0%, #D5DBDB 100%);
-                z-index: 1001;
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
+            .chat-sidebar {
+                width: 100%;
+                height: 40%; /* Takes 40% of container on mobile */
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                /* No mobile-specific transformations */
             }
             
-            .chat-conversation.mobile.active {
-                transform: translateX(0);
+            .chat-conversation {
+                height: 60%; /* Takes 60% of container on mobile */
+                /* No mobile-specific transformations */
             }
             
+            /* Show back button in chat header on mobile */
             .chat-header .back-btn {
-                background: none;
-                border: none;
-                font-size: 20px;
-                cursor: pointer;
-                color: var(--primary);
                 display: block;
             }
             
+            /* Make messages slightly wider on mobile */
             .message {
                 max-width: 85%;
             }
             
+            /* Improve chat input for mobile */
+            .chat-input {
+                padding: 10px 12px;
+                min-height: 56px;
+            }
+            
+            .chat-input input {
+                padding: 10px 14px;
+                font-size: 16px; /* Ensure readable text on mobile */
+            }
+            
+            /* Chat contact improvements for mobile */
+            .chat-contact {
+                padding: 14px 12px; /* Slightly larger touch target */
+            }
+            
+            /* Ensure smooth scrolling on mobile */
             .chat-messages {
                 -webkit-overflow-scrolling: touch;
-                padding-bottom: 80px;
             }
             
-            .chat-input {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: #f0f0f0;
-                padding: 10px 16px;
-                border-top: 1px solid #ddd;
-                z-index: 1002;
-            }
-            
-            .chat-contact {
-                padding: 16px;
+            /* Original responsive styles */
+            .mobile-menu-btn {
+                display: block;
             }
 
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.2s;
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .profile-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .profile-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
             .payment-methods {
                 flex-direction: column;
             }
@@ -1942,110 +2023,36 @@
             }
         }
 
-        /* ============ ORIGINAL RESPONSIVE DESIGN ============ */
-        @media (max-width: 992px) {
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-            
-            .stats {
-                gap: 15px;
-            }
-            
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .chat-container {
-                height: 550px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .nav-links {
-                position: fixed;
-                top: 70px;
-                left: 0;
-                right: 0;
-                background-color: white;
-                flex-direction: column;
-                padding: 20px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-                transform: translateY(-100%);
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.2s;
-                z-index: 999;
-            }
-
-            .nav-links.active {
-                transform: translateY(0);
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .hero h1 {
-                font-size: 1.8rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .stats {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .chat-container {
-                flex-direction: column;
-                height: 700px;
-            }
-
-            .chat-sidebar {
-                width: 100%;
-                height: 250px;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-            }
-
-            .logo-img {
-                width: 40px;
-                height: 40px;
-            }
-
-            .profile-stats {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .profile-actions {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 25px;
-            }
-        }
-
         @media (max-width: 576px) {
+            /* Small mobile optimizations */
+            .chat-container {
+                height: calc(100vh - 160px);
+                margin: 8px;
+                border-radius: 10px;
+            }
+            
+            .chat-sidebar {
+                height: 45%; /* Adjust ratio for very small screens */
+            }
+            
+            .chat-conversation {
+                height: 55%;
+            }
+            
+            .message {
+                max-width: 90%; /* Even wider on very small screens */
+                padding: 10px 14px; /* More padding for readability */
+            }
+            
+            .chat-input {
+                padding: 8px 10px;
+            }
+            
+            .chat-input input {
+                padding: 10px 12px;
+            }
+            
+            /* Original small screen styles */
             .hero {
                 padding: 30px 15px;
             }
@@ -2060,10 +2067,6 @@
 
             .form-container {
                 padding: 0 15px;
-            }
-
-            .chat-container {
-                height: calc(100vh - 200px);
             }
 
             .profile-avatar {
@@ -2129,7 +2132,7 @@
     <!-- Version Badge -->
     <div class="version-badge" title="Application Version">v1.0</div>
 
-    <!-- Chat Mobile Overlay -->
+    <!-- Chat Mobile Overlay - CHANGED: Hidden as we're removing overlay system -->
     <div class="chat-overlay" id="chatOverlay"></div>
 
     <!-- Main App Container -->
@@ -2775,15 +2778,16 @@
             </div>
         </div>
 
-        <!-- Chat Page - MOBILE FIXED -->
+        <!-- Chat Page - CHANGED: Simplified Unified Layout -->
         <div class="page container hidden" id="chat-page">
             <h2>Messages</h2>
             <p style="color: var(--light); margin-bottom: 5px;">Communicate with clients or freelancers</p>
             
-            <!-- Desktop Chat Container -->
-            <div class="chat-container hidden" id="desktop-chat">
+            <!-- Unified Chat Container - Works on both mobile and desktop -->
+            <div class="chat-container">
+                <!-- Sidebar - Shows contacts -->
                 <div class="chat-sidebar">
-                    <div class="chat-header" style="justify-content: center;">
+                    <div class="chat-header">
                         <span>Conversations</span>
                         <span id="unread-count" style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; display: none;">0</span>
                     </div>
@@ -2796,10 +2800,13 @@
                     </div>
                 </div>
                 
+                <!-- Conversation Area - Shows messages -->
                 <div class="chat-conversation">
-                    <div class="chat-header" id="chat-with">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fas fa-user-circle" style="font-size: 1.5rem; color: var(--light);"></i>
+                    <div class="chat-header">
+                        <button class="back-btn" id="chat-back-btn" style="display: none;">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div id="chat-with">
                             <span>Select a conversation</span>
                         </div>
                     </div>
@@ -2812,57 +2819,8 @@
                     </div>
                     
                     <div class="chat-input" id="chat-input-area" style="display: none;">
-                        <button class="btn btn-secondary btn-small" id="attach-btn">
-                            <i class="fas fa-paperclip"></i>
-                        </button>
                         <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off">
                         <button class="btn btn-primary" id="send-message">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Mobile Chat Container -->
-            <div class="mobile-chat-container hidden" id="mobile-chat">
-                <!-- Mobile Sidebar -->
-                <div class="chat-sidebar mobile" id="mobile-sidebar">
-                    <div class="chat-header">
-                        <span>Conversations</span>
-                        <button class="btn btn-secondary btn-small" onclick="loadChatContacts()">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
-                    <div id="mobile-chat-contacts">
-                        <div style="padding: 30px; text-align: center; color: var(--light);">
-                            <i class="fas fa-comments" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                            <p>No conversations yet</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Mobile Conversation -->
-                <div class="chat-conversation mobile" id="mobile-conversation">
-                    <div class="chat-header">
-                        <button class="back-btn" onclick="showMobileChatSidebar()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--primary); padding: 5px;">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <div id="mobile-chat-with">
-                            <span>Select a conversation</span>
-                        </div>
-                        <div></div>
-                    </div>
-                    
-                    <div class="chat-messages" id="mobile-chat-messages">
-                        <div style="text-align: center; padding: 40px; color: var(--light);">
-                            <i class="fas fa-comment" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <p>Select a conversation to start chatting</p>
-                        </div>
-                    </div>
-                    
-                    <div class="chat-input" id="mobile-chat-input" style="display: none;">
-                        <input type="text" id="mobile-message-input" placeholder="Type your message..." autocomplete="off">
-                        <button class="btn btn-primary" id="mobile-send-message">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -3164,12 +3122,13 @@
         contactsListener: null,
         commentsListener: null,
         appliedJobs: new Set(),
-        isMobileChatOpen: false,
+        // CHANGED: Removed mobile chat toggle state
         statsUpdateInterval: null,
         freelancerSearchTimeout: null,
         adminListeners: [],
         broadcastListener: null,
-        currentAnnouncement: null
+        currentAnnouncement: null,
+        reliableTimeouts: new Map()
     };
     
     // ============================================
@@ -3189,14 +3148,18 @@
         
         document.body.appendChild(notification);
         
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             notification.style.animation = 'notificationSlide 0.3s ease-out reverse';
-            setTimeout(() => {
+            const removeTimeoutId = setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
+                state.reliableTimeouts.delete(timeoutId);
+                state.reliableTimeouts.delete(removeTimeoutId);
             }, 300);
+            state.reliableTimeouts.set(removeTimeoutId, true);
         }, duration);
+        state.reliableTimeouts.set(timeoutId, true);
     }
     
     function showLoader(buttonId, textId, loaderId) {
@@ -3478,6 +3441,13 @@
             clearTimeout(state.freelancerSearchTimeout);
             state.freelancerSearchTimeout = null;
         }
+        
+        // Clear all reliable timeouts
+        state.reliableTimeouts.forEach((_, timeoutId) => {
+            clearTimeout(timeoutId);
+        });
+        state.reliableTimeouts.clear();
+        
         clearAdminListeners();
     }
     
@@ -3720,76 +3690,31 @@
     }
     
     // ============================================
-    // MOBILE CHAT FUNCTIONS
+    // SIMPLIFIED CHAT FUNCTIONS (No Mobile/Desktop Toggle)
     // ============================================
     
     function setupChatView() {
-        const isMobile = window.innerWidth < 768;
-        const desktopChat = document.getElementById('desktop-chat');
-        const mobileChat = document.getElementById('mobile-chat');
-        
-        if (isMobile) {
-            desktopChat.classList.add('hidden');
-            mobileChat.classList.remove('hidden');
-            
-            document.getElementById('mobile-sidebar').classList.add('active');
-            document.getElementById('mobile-conversation').classList.remove('active');
-            document.getElementById('chatOverlay').classList.remove('active');
-            state.isMobileChatOpen = false;
-            
-            document.getElementById('mobile-chat-input').style.display = 'none';
-            document.getElementById('mobile-chat-with').innerHTML = '<span>Select a conversation</span>';
-            document.getElementById('mobile-chat-messages').innerHTML = 
-                '<div style="text-align: center; padding: 40px; color: var(--light);"><i class="fas fa-comment"></i><p>Select a conversation to start chatting</p></div>';
+        // Simplified: Show/hide back button based on screen size
+        const backBtn = document.getElementById('chat-back-btn');
+        if (window.innerWidth < 768) {
+            backBtn.style.display = 'block';
         } else {
-            desktopChat.classList.remove('hidden');
-            mobileChat.classList.add('hidden');
-            
-            document.getElementById('chat-input-area').style.display = 'none';
-            document.getElementById('chat-with').innerHTML = '<span>Select a conversation</span>';
-            document.getElementById('chat-messages').innerHTML = 
-                '<div style="text-align: center; padding: 40px; color: var(--light);"><i class="fas fa-comment"></i><p>Select a conversation to start chatting</p></div>';
+            backBtn.style.display = 'none';
         }
-    }
-    
-    function showMobileChatSidebar() {
-        document.getElementById('mobile-sidebar').classList.add('active');
-        document.getElementById('mobile-conversation').classList.remove('active');
-        document.getElementById('chatOverlay').classList.remove('active');
-        state.isMobileChatOpen = false;
-        
-        state.currentChatWith = null;
-        state.currentChatUser = null;
-        
-        if (state.chatListener) {
-            state.chatListener();
-            state.chatListener = null;
-        }
-    }
-    
-    function showMobileChatConversation() {
-        document.getElementById('mobile-sidebar').classList.remove('active');
-        document.getElementById('mobile-conversation').classList.add('active');
-        document.getElementById('chatOverlay').classList.add('active');
-        state.isMobileChatOpen = true;
     }
     
     async function loadChatContacts() {
         if (!state.currentUser) {
-            const desktopContainer = document.getElementById('chat-contacts');
-            const mobileContainer = document.getElementById('mobile-chat-contacts');
+            const container = document.getElementById('chat-contacts');
             const html = '<div style="padding: 30px; text-align: center; color: var(--light);">Please login to view messages</div>';
-            if (desktopContainer) desktopContainer.innerHTML = html;
-            if (mobileContainer) mobileContainer.innerHTML = html;
+            if (container) container.innerHTML = html;
             return;
         }
         
-        const desktopContainer = document.getElementById('chat-contacts');
-        const mobileContainer = document.getElementById('mobile-chat-contacts');
+        const container = document.getElementById('chat-contacts');
         
         const loadingHtml = '<div style="padding: 30px; text-align: center; color: var(--light);"><i class="fas fa-spinner fa-spin"></i> Loading conversations...</div>';
-        if (desktopContainer) desktopContainer.innerHTML = loadingHtml;
-        if (mobileContainer) mobileContainer.innerHTML = loadingHtml;
+        if (container) container.innerHTML = loadingHtml;
         
         try {
             const messagesRef = db.collection('messages');
@@ -3829,8 +3754,7 @@
             
             if (allMessages.length === 0) {
                 const emptyHtml = '<div style="padding: 30px; text-align: center; color: var(--light);"><i class="fas fa-comments"></i><p>No conversations yet</p><small>Start by messaging someone!</small></div>';
-                if (desktopContainer) desktopContainer.innerHTML = emptyHtml;
-                if (mobileContainer) mobileContainer.innerHTML = emptyHtml;
+                if (container) container.innerHTML = emptyHtml;
                 return;
             }
             
@@ -3872,21 +3796,21 @@
             
             contacts.sort((a, b) => b.lastTime - a.lastTime);
             
-            displayContacts(contacts, desktopContainer, false);
-            displayContacts(contacts, mobileContainer, true);
+            displayContacts(contacts);
             
         } catch (error) {
             console.error('Error loading contacts:', error);
             const errorHtml = '<div style="padding: 20px; text-align: center; color: var(--light);"><i class="fas fa-exclamation-circle"></i><p>Error loading conversations</p><button class="btn btn-secondary btn-small" onclick="loadChatContacts()" style="margin-top: 10px;">Retry</button></div>';
-            if (desktopContainer) desktopContainer.innerHTML = errorHtml;
-            if (mobileContainer) mobileContainer.innerHTML = errorHtml;
+            if (container) container.innerHTML = errorHtml;
         }
     }
     
-    function displayContacts(contacts, container, isMobile) {
+    function displayContacts(contacts) {
+        const container = document.getElementById('chat-contacts');
+        
         if (!container) return;
         
-        if (contacts.length === 0) {
+        if (!contacts || contacts.length === 0) {
             container.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--light);"><i class="fas fa-comments"></i><p>No conversations yet</p></div>';
             return;
         }
@@ -3897,12 +3821,8 @@
             const displayMessage = lastMessage.length > 30 ? 
                 lastMessage.substring(0, 30) + '...' : lastMessage;
             
-            const onClick = isMobile ? 
-                `onclick="openMobileChatWithUser('${contact.id}', '${escapeHtml(contact.name)}', '${contact.type}')"` :
-                `onclick="openChatWithUser('${contact.id}', '${escapeHtml(contact.name)}', '${contact.type}')"`;
-            
             html += `
-                <div class="chat-contact" ${onClick}>
+                <div class="chat-contact" onclick="openChatWithUser('${contact.id}', '${escapeHtml(contact.name)}', '${contact.type}')">
                     <div class="avatar" style="position: relative;">
                         ${getUserInitials(contact.name)}
                         ${contact.unread ? '<div class="online-indicator"></div>' : ''}
@@ -3932,6 +3852,7 @@
         state.currentChatWith = userId;
         state.currentChatUser = { id: userId, name: userName, type: userType };
         
+        // Update chat header
         document.getElementById('chat-with').innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div class="avatar" style="width: 36px; height: 36px;">
@@ -3946,60 +3867,23 @@
             </div>
         `;
         
+        // Show input area
         document.getElementById('chat-input-area').style.display = 'flex';
         
-        loadMessages(userId, false);
+        // Load messages
+        loadMessages(userId);
         
-        setTimeout(() => {
-            document.getElementById('message-input').focus();
-        }, 100);
+        // On mobile, automatically focus the input
+        if (window.innerWidth < 768) {
+            const timeoutId = setTimeout(() => {
+                document.getElementById('message-input').focus();
+                state.reliableTimeouts.delete(timeoutId);
+            }, 100);
+            state.reliableTimeouts.set(timeoutId, true);
+        }
     }
     
-    async function openMobileChatWithUser(userId, userName, userType) {
-        if (!state.currentUser) {
-            showNotification('Please login to chat', 'warning');
-            showPage('login');
-            return;
-        }
-        
-        if (state.chatListener) {
-            state.chatListener();
-            state.chatListener = null;
-        }
-        
-        state.currentChatWith = userId;
-        state.currentChatUser = { id: userId, name: userName, type: userType };
-        
-        document.getElementById('mobile-chat-with').innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="avatar" style="width: 36px; height: 36px;">
-                    ${getUserInitials(userName)}
-                </div>
-                <div>
-                    <strong>${userName}</strong>
-                    <div style="font-size: 0.85rem; color: var(--light);">
-                        ${userType === 'client' ? 'Client' : 'Freelancer'}
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('mobile-chat-input').style.display = 'flex';
-        
-        showMobileChatConversation();
-        
-        loadMessages(userId, true);
-        
-        setTimeout(() => {
-            const input = document.getElementById('mobile-message-input');
-            if (input) {
-                input.focus();
-                input.value = '';
-            }
-        }, 100);
-    }
-    
-    async function loadMessages(userId, isMobile) {
+    async function loadMessages(userId) {
         if (!state.currentUser || !userId) return;
         
         if (state.chatListener) {
@@ -4007,12 +3891,7 @@
             state.chatListener = null;
         }
         
-        const container = isMobile ? 
-            document.getElementById('mobile-chat-messages') : 
-            document.getElementById('chat-messages');
-        
-        if (!container) return;
-        
+        const container = document.getElementById('chat-messages');
         container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>';
         
         try {
@@ -4074,9 +3953,11 @@
                         container.appendChild(messageElement);
                     });
                     
-                    setTimeout(() => {
+                    const scrollTimeoutId = setTimeout(() => {
                         container.scrollTop = container.scrollHeight;
+                        state.reliableTimeouts.delete(scrollTimeoutId);
                     }, 100);
+                    state.reliableTimeouts.set(scrollTimeoutId, true);
                     
                     markMessagesAsRead(userId);
                     
@@ -4097,7 +3978,7 @@
         }
     }
     
-    async function sendMessage(isMobile = false) {
+    async function sendMessage() {
         if (!state.currentUser) {
             showNotification('Please login to send messages', 'warning');
             showPage('login');
@@ -4109,9 +3990,7 @@
             return;
         }
         
-        const input = isMobile ? 
-            document.getElementById('mobile-message-input') : 
-            document.getElementById('message-input');
+        const input = document.getElementById('message-input');
         const text = input.value.trim();
         
         if (!text) {
@@ -4518,9 +4397,11 @@
             const jobElement = document.getElementById(`job-${jobId}`);
             if (jobElement) {
                 jobElement.style.animation = 'fadeOut 0.3s ease-out';
-                setTimeout(() => {
+                const removeTimeoutId = setTimeout(() => {
                     jobElement.remove();
+                    state.reliableTimeouts.delete(removeTimeoutId);
                 }, 300);
+                state.reliableTimeouts.set(removeTimeoutId, true);
             }
 
             if (document.getElementById('home-page') && !document.getElementById('home-page').classList.contains('hidden')) {
@@ -4995,13 +4876,11 @@
         
         showPage('chat');
         
-        setTimeout(() => {
-            if (window.innerWidth < 768) {
-                openMobileChatWithUser(freelancerId, freelancerName, userType);
-            } else {
-                openChatWithUser(freelancerId, freelancerName, userType);
-            }
+        const timeoutId = setTimeout(() => {
+            openChatWithUser(freelancerId, freelancerName, userType);
+            state.reliableTimeouts.delete(timeoutId);
         }, 100);
+        state.reliableTimeouts.set(timeoutId, true);
     }
     
     // ============================================
@@ -6237,9 +6116,11 @@
                 case 'jobs':
                     const container = document.getElementById('all-job-listings');
                     if (container) container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading jobs...</div>';
-                    setTimeout(() => {
+                    const loadJobsTimeoutId = setTimeout(() => {
                         loadAllJobs();
+                        state.reliableTimeouts.delete(loadJobsTimeoutId);
                     }, 100);
+                    state.reliableTimeouts.set(loadJobsTimeoutId, true);
                     break;
                     
                 case 'freelancers':
@@ -6251,9 +6132,11 @@
                         document.getElementById('filter-skills').value = '';
                         document.getElementById('filter-rate').value = '';
                         
-                        setTimeout(() => {
+                        const searchTimeoutId = setTimeout(() => {
                             searchFreelancers();
+                            state.reliableTimeouts.delete(searchTimeoutId);
                         }, 100);
+                        state.reliableTimeouts.set(searchTimeoutId, true);
                     }
                     break;
                     
@@ -6265,9 +6148,11 @@
                     
                 case 'admin':
                     if (state.isAdmin) {
-                        setTimeout(() => {
+                        const adminTimeoutId = setTimeout(() => {
                             loadAdminDashboard();
+                            state.reliableTimeouts.delete(adminTimeoutId);
                         }, 100);
+                        state.reliableTimeouts.set(adminTimeoutId, true);
                     } else {
                         showNotification('Admin access required', 'error');
                         showPage('home');
@@ -6305,14 +6190,6 @@
         const sendBroadcastBtn = document.getElementById('send-broadcast');
         if (sendBroadcastBtn) {
             sendBroadcastBtn.addEventListener('click', sendBroadcast);
-        }
-        
-        // Close announcement banner
-        const closeAnnouncementBtn = document.getElementById('close-announcement');
-        if (closeAnnouncementBtn) {
-            closeAnnouncementBtn.addEventListener('click', function() {
-                document.getElementById('system-announcement-banner').classList.add('hidden');
-            });
         }
         
         // Save system settings
@@ -6353,7 +6230,8 @@
                     localStorage.clear();
                     sessionStorage.clear();
                     showNotification('Cache cleared. Page will reload.', 'info');
-                    setTimeout(() => location.reload(), 1000);
+                    const reloadTimeoutId = setTimeout(() => location.reload(), 1000);
+                    state.reliableTimeouts.set(reloadTimeoutId, true);
                 }
             });
         }
@@ -6599,15 +6477,10 @@
             });
         }
         
-        // Chat
+        // Chat - Simplified unified listeners
         const sendMessageBtn = document.getElementById('send-message');
         if (sendMessageBtn) {
-            sendMessageBtn.addEventListener('click', () => sendMessage(false));
-        }
-        
-        const mobileSendMessageBtn = document.getElementById('mobile-send-message');
-        if (mobileSendMessageBtn) {
-            mobileSendMessageBtn.addEventListener('click', () => sendMessage(true));
+            sendMessageBtn.addEventListener('click', sendMessage);
         }
         
         const messageInput = document.getElementById('message-input');
@@ -6615,17 +6488,33 @@
             messageInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    sendMessage(false);
+                    sendMessage();
                 }
             });
         }
         
-        const mobileMessageInput = document.getElementById('mobile-message-input');
-        if (mobileMessageInput) {
-            mobileMessageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage(true);
+        // Chat back button
+        const chatBackBtn = document.getElementById('chat-back-btn');
+        if (chatBackBtn) {
+            chatBackBtn.addEventListener('click', function() {
+                // On mobile, reset to contacts view when back is clicked
+                if (window.innerWidth < 768) {
+                    state.currentChatWith = null;
+                    state.currentChatUser = null;
+                    
+                    if (state.chatListener) {
+                        state.chatListener();
+                        state.chatListener = null;
+                    }
+                    
+                    // Update UI to show contacts view
+                    document.getElementById('chat-with').innerHTML = '<span>Select a conversation</span>';
+                    document.getElementById('chat-input-area').style.display = 'none';
+                    document.getElementById('chat-messages').innerHTML = 
+                        '<div style="text-align: center; padding: 40px; color: var(--light);">' +
+                        '<i class="fas fa-comment"></i>' +
+                        '<p>Select a conversation to start chatting</p>' +
+                        '</div>';
                 }
             });
         }
@@ -6747,13 +6636,11 @@
                     if (doc.exists) {
                         const user = doc.data();
                         showPage('chat');
-                        setTimeout(() => {
-                            if (window.innerWidth < 768) {
-                                openMobileChatWithUser(posterId, user.name, user.type);
-                            } else {
-                                openChatWithUser(posterId, user.name, user.type);
-                            }
+                        const chatTimeoutId = setTimeout(() => {
+                            openChatWithUser(posterId, user.name, user.type);
+                            state.reliableTimeouts.delete(chatTimeoutId);
                         }, 100);
+                        state.reliableTimeouts.set(chatTimeoutId, true);
                     }
                 });
             }
@@ -6792,17 +6679,15 @@
             }
         });
         
-        // Chat overlay click
-        const chatOverlay = document.getElementById('chatOverlay');
-        if (chatOverlay) {
-            chatOverlay.addEventListener('click', function() {
-                if (window.innerWidth < 768) {
-                    showMobileChatSidebar();
-                }
+        // Close announcement banner (for all users) - FIXED
+        const closeAnnouncementBtn = document.getElementById('close-announcement');
+        if (closeAnnouncementBtn) {
+            closeAnnouncementBtn.addEventListener('click', function() {
+                document.getElementById('system-announcement-banner').classList.add('hidden');
             });
         }
         
-        // Window resize for chat
+        // Window resize for responsive chat
         window.addEventListener('resize', function() {
             if (document.getElementById('chat-page') && 
                 !document.getElementById('chat-page').classList.contains('hidden')) {
@@ -6836,13 +6721,11 @@
         setupEventListeners();
         showPage('home');
         
-        setTimeout(() => {
+        const commentsTimeoutId = setTimeout(() => {
             loadComments();
+            state.reliableTimeouts.delete(commentsTimeoutId);
         }, 1000);
-        
-        if (window.innerWidth < 768) {
-            showMobileChatSidebar();
-        }
+        state.reliableTimeouts.set(commentsTimeoutId, true);
     });
     </script>
 </body>
