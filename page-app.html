@@ -4378,32 +4378,53 @@
         </div>
     </footer>
 
-   <script>
+ <script>
     // ============================================
-    // FIREBASE CONFIGURATION - FIXED
+    // FIREBASE CONFIGURATION - FIXED VERSION
     // ============================================
 
+    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyD37dnKXSnyVJpFuLPaDDV5f9Ec-45XXsw",
         authDomain: "bluetonic-network.firebaseapp.com",
         projectId: "bluetonic-network",
-        storageBucket: "bluetonic-network.firebasestorage.app",
+        storageBucket: "bluetonic-network.appspot.com",
         messagingSenderId: "228076933520",
         appId: "1:228076933520:web:57b2dca469b2f66e196315"
     };
 
-    // Initialize Firebase
+    // Initialize Firebase services
     let auth, db;
-    try {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+    let firebaseInitialized = false;
+
+    // Check if Firebase is available and initialize
+    if (typeof firebase !== 'undefined' && typeof firebase.app !== 'undefined') {
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            auth = firebase.auth();
+            db = firebase.firestore();
+            firebaseInitialized = true;
+            console.log("✅ Firebase initialized successfully");
+            
+            // Enable offline persistence
+            db.enablePersistence()
+                .catch(err => {
+                    if (err.code == 'failed-precondition') {
+                        console.log("Multiple tabs open, persistence can only be enabled in one tab at a time.");
+                    } else if (err.code == 'unimplemented') {
+                        console.log("The current browser doesn't support persistence.");
+                    }
+                });
+            
+        } catch (error) {
+            console.error("❌ Firebase initialization error:", error);
+            showNotification("Firebase initialization failed. Please refresh the page.", "error");
         }
-        auth = firebase.auth();
-        db = firebase.firestore();
-        console.log("Firebase initialized successfully");
-    } catch (error) {
-        console.error("Firebase initialization error:", error);
-        showNotification("Firebase initialization failed. Please refresh the page.", "error");
+    } else {
+        console.error("Firebase SDK not loaded");
+        showNotification("Firebase SDK not loaded. Please refresh.", "error");
     }
 
     // ============================================
@@ -4432,7 +4453,10 @@
         broadcastListener: null,
         currentAnnouncement: null,
         reliableTimeouts: new Map(),
-        currentRating: 5
+        currentRating: 5,
+        webhookListener: null,
+        subscriptionCheckInterval: null,
+        paymentListeners: []
     };
 
     const plansState = {
@@ -4446,34 +4470,90 @@
     };
 
     // ============================================
-    // PLAN PAYMENT LINKS - ADDED
+    // PLAN PAYMENT LINKS - UPDATED STRUCTURE
     // ============================================
 
     const PLAN_PAYMENT_LINKS = {
         // VERIFICATION PLANS
-        'Basic Verification': 'https://paystack.shop/pay/bluetonic-Basic-verification-payment',
-        'Premium Verification': 'https://paystack.shop/pay/bluetonic-Premium-verification-payment',
-        'Business Verification': 'https://paystack.shop/pay/bluetonic-business-verification-payment',
+        'Basic Verification': {
+            url: 'https://paystack.shop/pay/bluetonic-Basic-verification-payment',
+            price: 9.99,
+            type: 'verification',
+            duration: 30
+        },
+        'Premium Verification': {
+            url: 'https://paystack.shop/pay/bluetonic-Premium-verification-payment',
+            price: 19.99,
+            type: 'verification',
+            duration: 30
+        },
+        'Business Verification': {
+            url: 'https://paystack.shop/pay/bluetonic-business-verification-payment',
+            price: 49.99,
+            type: 'verification',
+            duration: 30
+        },
         
         // ADVERTISEMENT (AD) PLANS
-        'Basic AD': 'https://paystack.shop/pay/bluetonic-basicad-payment',
-        'Premium AD': 'https://paystack.shop/pay/bluetonic-PremiumAD-payment',
-        'Enterprise AD': 'https://paystack.shop/pay/bluetonic-enterprisead-payment',
+        'Basic AD': {
+            url: 'https://paystack.shop/pay/bluetonic-basicad-payment',
+            price: 14.99,
+            type: 'advertisement',
+            duration: 30
+        },
+        'Premium AD': {
+            url: 'https://paystack.shop/pay/bluetonic-PremiumAD-payment',
+            price: 29.99,
+            type: 'advertisement',
+            duration: 30
+        },
+        'Enterprise AD': {
+            url: 'https://paystack.shop/pay/bluetonic-enterprisead-payment',
+            price: 99.99,
+            type: 'advertisement',
+            duration: 30
+        },
         
         // TOP LIST BOOST PLANS
-        'Weekly Boost': 'https://paystack.shop/pay/bluetonic-weeklyboost-payment',
-        'Monthly Spotlight': 'https://paystack.shop/pay/bluetonic-monthlyspotlight-payment',
-        'Quarterly Champion': 'https://paystack.shop/pay/bluetonic-quarterlychampion-payment'
+        'Weekly Boost': {
+            url: 'https://paystack.shop/pay/bluetonic-weeklyboost-payment',
+            price: 24.99,
+            type: 'toplist',
+            duration: 7
+        },
+        'Monthly Spotlight': {
+            url: 'https://paystack.shop/pay/bluetonic-monthlyspotlight-payment',
+            price: 39.99,
+            type: 'toplist',
+            duration: 30
+        },
+        'Quarterly Champion': {
+            url: 'https://paystack.shop/pay/bluetonic-quarterlychampion-payment',
+            price: 89.99,
+            type: 'toplist',
+            duration: 90
+        }
     };
 
     // ============================================
-    // HELPER FUNCTIONS - ENHANCED WITH RATING FUNCTIONS
+    // HELPER FUNCTIONS - COMPLETE SET
     // ============================================
 
     function showNotification(message, type = 'success', duration = 3000) {
+        console.log(`Notification [${type}]:`, message);
+        
+        // Remove existing notifications
         const existingNotifications = document.querySelectorAll('.notification');
-        existingNotifications.forEach(notification => notification.remove());
+        existingNotifications.forEach(notification => {
+            notification.style.animation = 'notificationSlide 0.3s ease-out reverse';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        });
 
+        // Create new notification
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.innerHTML = `
@@ -4483,16 +4563,15 @@
 
         document.body.appendChild(notification);
 
+        // Auto-remove after duration
         const timeoutId = setTimeout(() => {
             notification.style.animation = 'notificationSlide 0.3s ease-out reverse';
-            const removeTimeoutId = setTimeout(() => {
+            setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
                 state.reliableTimeouts.delete(timeoutId);
-                state.reliableTimeouts.delete(removeTimeoutId);
             }, 300);
-            state.reliableTimeouts.set(removeTimeoutId, true);
         }, duration);
         state.reliableTimeouts.set(timeoutId, true);
     }
@@ -4518,53 +4597,66 @@
     }
 
     function escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 
     function getUserInitials(name) {
-        if (!name) return 'U';
-        return name.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 2);
+        if (!name || typeof name !== 'string') return 'U';
+        return name.split(' ')
+            .map(word => word[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
     }
 
     function formatMessageTime(timestamp) {
         if (!timestamp) return 'Just now';
 
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
+        try {
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+        } catch (error) {
+            return 'Just now';
+        }
     }
 
     function formatMessageDate(dateString) {
-        const date = new Date(dateString);
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-        
-        if (date.toDateString() === today.toDateString()) {
-            return 'Today';
-        } else if (date.toDateString() === yesterday.toDateString()) {
-            return 'Yesterday';
-        } else {
-            return date.toLocaleDateString('en-US', { 
-                weekday: 'long',
-                month: 'short', 
-                day: 'numeric'
-            });
+        try {
+            const date = new Date(dateString);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Yesterday';
+            } else {
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'long',
+                    month: 'short', 
+                    day: 'numeric'
+                });
+            }
+        } catch (error) {
+            return 'Recent';
         }
     }
 
@@ -4594,6 +4686,7 @@
     }
 
     function updateAdminUI() {
+        const adminPage = document.getElementById('admin-page');
         if (state.isAdmin) {
             document.body.classList.add('user-is-admin');
             console.log('Admin UI enabled for:', state.currentUser.email);
@@ -4602,16 +4695,13 @@
                 state.userProfile.isAdmin = true;
             }
 
-            if (document.getElementById('admin-page') &&
-                !document.getElementById('admin-page').classList.contains('hidden')) {
+            if (adminPage && !adminPage.classList.contains('hidden')) {
                 loadAdminDashboard();
             }
-
         } else {
             document.body.classList.remove('user-is-admin');
 
-            if (document.getElementById('admin-page') &&
-                !document.getElementById('admin-page').classList.contains('hidden')) {
+            if (adminPage && !adminPage.classList.contains('hidden')) {
                 showPage('home');
                 showNotification('Access denied. Admin privileges required.', 'error');
             }
@@ -4619,6 +4709,9 @@
     }
 
     function generateStarRating(rating) {
+        if (!rating || rating < 0) rating = 0;
+        if (rating > 5) rating = 5;
+        
         const fullStars = Math.floor(rating);
         const halfStar = rating % 1 >= 0.5;
         const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
@@ -4647,42 +4740,467 @@
     }
 
     // ============================================
+    // SAMPLE DATA FUNCTIONS (from original)
+    // ============================================
+
+    function getSampleTestimonials() {
+        return [
+            {
+                name: "Sarah L.",
+                rating: 5,
+                text: "Found an amazing developer for my e-commerce project. Communication was smooth and the work was delivered ahead of schedule. Highly recommended!",
+                type: "client",
+                isVerified: true
+            },
+            {
+                name: "Michael T.",
+                rating: 4.8,
+                text: "As a freelancer, I've landed more quality projects here than on any other platform. The rating system helps build trust with clients quickly.",
+                type: "freelancer",
+                isVerified: true
+            },
+            {
+                name: "Jessica R.",
+                rating: 4.9,
+                text: "The verification system gave me confidence to hire. Completed 3 projects successfully and each freelancer was professional and skilled.",
+                type: "client",
+                isVerified: true
+            },
+            {
+                name: "David K.",
+                rating: 4.7,
+                text: "Great platform for finding quality freelancers. The escrow system provides peace of mind for both parties.",
+                type: "client",
+                isVerified: false
+            },
+            {
+                name: "Emma S.",
+                rating: 4.9,
+                text: "The best freelancing platform I've used. Consistent work and prompt payments make this my go-to platform.",
+                type: "freelancer",
+                isVerified: true
+            },
+            {
+                name: "Robert M.",
+                rating: 4.6,
+                text: "Excellent customer support and a wide range of talented professionals. Will definitely use again!",
+                type: "client",
+                isVerified: true
+            }
+        ];
+    }
+
+    function getSampleReviews() {
+        return [
+            {
+                clientName: "Mark T.",
+                rating: 5,
+                text: "Exceptional work! The freelancer delivered ahead of schedule and the quality exceeded expectations. Communication was perfect throughout the project.",
+                freelancerName: "James K.",
+                date: "2 days ago"
+            },
+            {
+                clientName: "Sarah L.",
+                rating: 5,
+                text: "Highly professional and skilled. Will definitely hire again for future projects. The platform made the entire process smooth and secure.",
+                freelancerName: "David K.",
+                date: "3 days ago"
+            },
+            {
+                clientName: "Alex R.",
+                rating: 4,
+                text: "Good work overall, minor communication delays but the final result was satisfactory.",
+                freelancerName: "Maria S.",
+                date: "1 week ago"
+            },
+            {
+                clientName: "John D.",
+                rating: 5,
+                text: "Outstanding service! The freelancer went above and beyond to deliver exactly what I needed.",
+                freelancerName: "Lisa W.",
+                date: "2 weeks ago"
+            }
+        ];
+    }
+
+    function getSampleTopFreelancers() {
+        return [
+            {
+                id: "sample1",
+                name: "James K.",
+                rating: 4.9,
+                reviewCount: 42,
+                hourlyRate: 85,
+                bio: "Full-stack developer with 8+ years experience. Specialized in React, Node.js, and cloud infrastructure.",
+                skills: ["React", "Node.js", "AWS", "MongoDB", "TypeScript"],
+                isVerified: true
+            },
+            {
+                id: "sample2",
+                name: "Sarah M.",
+                rating: 4.8,
+                reviewCount: 28,
+                hourlyRate: 75,
+                bio: "UI/UX designer focused on creating intuitive user experiences for web and mobile applications.",
+                skills: ["UI Design", "UX Research", "Figma", "Prototyping", "Wireframing"],
+                isVerified: true
+            },
+            {
+                id: "sample3",
+                name: "David L.",
+                rating: 4.7,
+                reviewCount: 35,
+                hourlyRate: 65,
+                bio: "Digital marketing expert with focus on SEO and social media strategy. Increased client revenue by 300%.",
+                skills: ["SEO", "Social Media", "Content Marketing", "Google Analytics", "PPC"],
+                isVerified: true
+            },
+            {
+                id: "sample4",
+                name: "Maria G.",
+                rating: 4.9,
+                reviewCount: 19,
+                hourlyRate: 90,
+                bio: "Mobile app developer specializing in Flutter and React Native. Created 50+ successful apps.",
+                skills: ["Flutter", "React Native", "iOS", "Android", "Firebase"],
+                isVerified: true
+            }
+        ];
+    }
+
+    function getHardcodedPlans() {
+        return [
+            {
+                id: "verification1",
+                name: 'Basic Verification',
+                type: 'verification',
+                prices: { monthly: 9.99, yearly: 99.99 },
+                features: [
+                    'Verified badge on profile',
+                    'Basic trust indicators',
+                    'Email verification included',
+                    'Increased visibility'
+                ],
+                popular: false,
+                isActive: true
+            },
+            {
+                id: "verification2",
+                name: 'Premium Verification',
+                type: 'verification',
+                prices: { monthly: 19.99, yearly: 199.99 },
+                features: [
+                    'Verified badge on profile',
+                    'Priority trust indicators',
+                    'Background check verification',
+                    'Featured in verified section',
+                    'Priority customer support',
+                    '3x more job invites'
+                ],
+                popular: true,
+                isActive: true
+            },
+            {
+                id: "verification3",
+                name: 'Business Verification',
+                type: 'verification',
+                prices: { monthly: 49.99, yearly: 499.99 },
+                features: [
+                    'Business verification badge',
+                    'Company details display',
+                    'Team member verification (up to 5)',
+                    'Featured in business directory',
+                    'Dedicated account manager',
+                    'Priority in search results'
+                ],
+                popular: false,
+                isActive: true
+            },
+            {
+                id: "advertisement1",
+                name: 'Basic AD',
+                type: 'advertisement',
+                prices: { monthly: 14.99, yearly: 149.99 },
+                features: [
+                    'AD badge on profile',
+                    'Featured in search results',
+                    'Basic ad placement',
+                    'Standard visibility boost',
+                    'Email notifications'
+                ],
+                popular: false,
+                isActive: true
+            },
+            {
+                id: "advertisement2",
+                name: 'Premium AD',
+                type: 'advertisement',
+                prices: { monthly: 29.99, yearly: 299.99 },
+                features: [
+                    'Prominent AD badge',
+                    'Top placement in search results',
+                    'Featured in recommendations',
+                    'Email campaign inclusion',
+                    'Performance analytics',
+                    'Priority customer support'
+                ],
+                popular: true,
+                isActive: true
+            },
+            {
+                id: "advertisement3",
+                name: 'Enterprise AD',
+                type: 'advertisement',
+                prices: { monthly: 99.99, yearly: 999.99 },
+                features: [
+                    'Premium AD placement',
+                    'Guaranteed top 3 position',
+                    'Dedicated ad space',
+                    'Advanced analytics dashboard',
+                    'Custom ad campaigns',
+                    '24/7 priority support',
+                    'Dedicated account manager'
+                ],
+                popular: false,
+                isActive: true
+            },
+            {
+                id: "toplist1",
+                name: 'Weekly Boost',
+                type: 'toplist',
+                prices: { monthly: 24.99, yearly: 249.99 },
+                features: [
+                    'Appear in top list for 7 days',
+                    'Priority visibility',
+                    'Featured in "Top Rated" section',
+                    'Basic performance metrics',
+                    'Email notifications'
+                ],
+                popular: false,
+                isActive: true
+            },
+            {
+                id: "toplist2",
+                name: 'Monthly Spotlight',
+                type: 'toplist',
+                prices: { monthly: 39.99, yearly: 399.99 },
+                features: [
+                    'Top list placement for 30 days',
+                    'Guaranteed top 10 position',
+                    'Featured profile highlighting',
+                    'Advanced performance analytics',
+                    'Email notifications to clients',
+                    'Priority support'
+                ],
+                popular: true,
+                isActive: true
+            },
+            {
+                id: "toplist3",
+                name: 'Quarterly Champion',
+                type: 'toplist',
+                prices: { monthly: 89.99, yearly: 899.99 },
+                features: [
+                    'Top list placement for 90 days',
+                    'Guaranteed top 5 position',
+                    'Dedicated featured section',
+                    'Premium performance analytics',
+                    'Weekly performance reports',
+                    'Priority client matching',
+                    'Dedicated account manager'
+                ],
+                popular: false,
+                isActive: true
+            }
+        ];
+    }
+
+    // ============================================
+    // PAYMENT VERIFICATION FUNCTIONS
+    // ============================================
+
+    async function verifyPaystackPayment(reference) {
+        try {
+            console.log('Verifying Paystack payment for reference:', reference);
+            
+            // Simulate payment verification (replace with actual API call)
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // For demo purposes, assume 80% of payments are successful
+                    const isSuccessful = Math.random() > 0.2;
+                    console.log('Payment verification result:', isSuccessful ? 'SUCCESS' : 'FAILED');
+                    resolve(isSuccessful);
+                }, 1500);
+            });
+            
+        } catch (error) {
+            console.error('Error verifying with Paystack:', error);
+            return false;
+        }
+    }
+
+    async function verifyPayment(paymentReference, planName, userId) {
+        try {
+            console.log('Verifying payment:', { paymentReference, planName, userId });
+            
+            // Check if payment already exists
+            const existingPaymentQuery = await db.collection('payments')
+                .where('paymentReference', '==', paymentReference)
+                .where('userId', '==', userId)
+                .get();
+            
+            if (!existingPaymentQuery.empty) {
+                const existingPayment = existingPaymentQuery.docs[0].data();
+                if (existingPayment.status === 'completed') {
+                    return { success: true, message: 'Payment already processed' };
+                }
+            }
+
+            const paymentData = PLAN_PAYMENT_LINKS[planName];
+            if (!paymentData) {
+                throw new Error('Plan not found');
+            }
+
+            // Record payment as pending
+            const paymentDoc = await db.collection('payments').add({
+                userId: userId,
+                planName: planName,
+                amount: paymentData.price,
+                paymentReference: paymentReference,
+                paymentMethod: 'paystack',
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Verify payment
+            const isPaymentSuccessful = await verifyPaystackPayment(paymentReference);
+            
+            if (isPaymentSuccessful) {
+                // Create subscription
+                const endDate = new Date();
+                endDate.setDate(endDate.getDate() + paymentData.duration);
+                
+                const subscriptionData = {
+                    userId: userId,
+                    planName: planName,
+                    planType: paymentData.type,
+                    amount: paymentData.price,
+                    paymentReference: paymentReference,
+                    paymentId: paymentDoc.id,
+                    status: 'active',
+                    startDate: firebase.firestore.FieldValue.serverTimestamp(),
+                    endDate: firebase.firestore.Timestamp.fromDate(endDate),
+                    billingPeriod: 'monthly',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                const subscriptionRef = await db.collection('subscriptions').add(subscriptionData);
+
+                // Update user verification status
+                if (paymentData.type === 'verification') {
+                    await db.collection('users').doc(userId).update({
+                        isVerified: true,
+                        verificationPlan: planName,
+                        verifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        subscriptionId: subscriptionRef.id
+                    });
+                    
+                    // Update local state
+                    if (state.userProfile && userId === state.currentUser?.uid) {
+                        state.userProfile.isVerified = true;
+                        state.userProfile.verificationPlan = planName;
+                    }
+                }
+
+                // Update payment status
+                await paymentDoc.update({
+                    status: 'completed',
+                    subscriptionId: subscriptionRef.id,
+                    verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                showNotification(`Payment verified! ${planName} is now active.`, 'success');
+                
+                // Refresh UI
+                if (state.currentUser) {
+                    await loadUserProfile(state.currentUser.uid);
+                    updateUIForUser();
+                    
+                    // Refresh plans page if open
+                    if (document.getElementById('plans-page') && 
+                        !document.getElementById('plans-page').classList.contains('hidden')) {
+                        loadPlans();
+                    }
+                }
+
+                return { success: true, message: 'Payment verified and subscription activated' };
+            } else {
+                // Update payment status to failed
+                await paymentDoc.update({
+                    status: 'failed',
+                    failedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                return { success: false, message: 'Payment verification failed' };
+            }
+
+        } catch (error) {
+            console.error('Error verifying payment:', error);
+            throw error;
+        }
+    }
+
+    // ============================================
     // AUTHENTICATION FUNCTIONS
     // ============================================
 
-    if (auth) {
+    if (auth && firebaseInitialized) {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 try {
+                    console.log('User authenticated:', user.email);
                     await loadUserProfile(user.uid);
                     state.currentUser = user;
-
                     state.isAdmin = checkIfAdmin(user);
+                    
                     updateAdminUI();
-
                     updateUIForUser();
                     await loadAppliedJobs();
 
                     if (state.userProfile) {
-                        showNotification(`Welcome back, ${state.userProfile.name}!`);
+                        showNotification(`Welcome back, ${state.userProfile.name}!`, 'success');
                     }
 
                     await loadCurrentAnnouncement();
+                    
+                    // Check for expired subscriptions
+                    await checkSubscriptionExpiry();
+                    
+                    // Setup subscription check
+                    setupSubscriptionExpiryCheck();
 
-                    if (document.getElementById('chat-page') &&
-                        !document.getElementById('chat-page').classList.contains('hidden')) {
+                    // Refresh current page if needed
+                    const currentPage = getCurrentPage();
+                    if (currentPage === 'chat') {
                         setupChatView();
                         loadChatContacts();
-                    }
-
-                    if (state.isAdmin) {
+                    } else if (currentPage === 'admin' && state.isAdmin) {
                         setupAdminEventListeners();
+                    } else if (currentPage === 'plans') {
+                        loadPlans();
+                    } else if (currentPage === 'profile') {
+                        loadProfileData();
+                    } else if (currentPage === 'ratings') {
+                        loadRatingsPage();
                     }
 
                 } catch (error) {
                     console.error("Error loading user profile:", error);
+                    showNotification("Error loading profile. Please refresh.", "error");
                 }
             } else {
+                console.log('User logged out');
                 state.currentUser = null;
                 state.userProfile = null;
                 state.isAdmin = false;
@@ -4694,6 +5212,7 @@
     }
 
     function clearAllListeners() {
+        // Clear all Firestore listeners
         if (state.chatListener) {
             state.chatListener();
             state.chatListener = null;
@@ -4706,6 +5225,14 @@
             state.commentsListener();
             state.commentsListener = null;
         }
+        
+        // Clear payment listeners
+        state.paymentListeners.forEach(listener => {
+            if (listener) listener();
+        });
+        state.paymentListeners = [];
+        
+        // Clear intervals
         if (state.statsUpdateInterval) {
             clearInterval(state.statsUpdateInterval);
             state.statsUpdateInterval = null;
@@ -4714,12 +5241,18 @@
             clearTimeout(state.freelancerSearchTimeout);
             state.freelancerSearchTimeout = null;
         }
+        if (state.subscriptionCheckInterval) {
+            clearInterval(state.subscriptionCheckInterval);
+            state.subscriptionCheckInterval = null;
+        }
 
+        // Clear all timeouts
         state.reliableTimeouts.forEach((_, timeoutId) => {
             clearTimeout(timeoutId);
         });
         state.reliableTimeouts.clear();
 
+        // Clear admin listeners
         clearAdminListeners();
     }
 
@@ -4740,6 +5273,24 @@
             const doc = await db.collection('users').doc(userId).get();
             if (doc.exists) {
                 state.userProfile = { id: doc.id, ...doc.data() };
+                console.log('User profile loaded:', state.userProfile.name);
+                
+                // Check verification subscription
+                const verificationSubs = await db.collection('subscriptions')
+                    .where('userId', '==', userId)
+                    .where('planType', '==', 'verification')
+                    .where('status', '==', 'active')
+                    .get();
+
+                if (verificationSubs.empty && state.userProfile.isVerified) {
+                    // Remove expired verification
+                    await db.collection('users').doc(userId).update({
+                        isVerified: false,
+                        verificationPlan: null,
+                        verificationExpiredAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    state.userProfile.isVerified = false;
+                }
             } else {
                 const user = auth.currentUser;
                 if (user) {
@@ -4748,6 +5299,7 @@
             }
         } catch (error) {
             console.error('Error loading user profile:', error);
+            throw error;
         }
     }
 
@@ -4769,14 +5321,18 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 authProvider: user.providerData[0]?.providerId || 'password',
                 emailVerified: user.emailVerified || false,
-                isVerified: user.emailVerified || false,
-                joinedDate: firebase.firestore.FieldValue.serverTimestamp()
+                isVerified: false,
+                verificationPlan: null,
+                joinedDate: firebase.firestore.FieldValue.serverTimestamp(),
+                paymentMethods: []
             };
 
             await db.collection('users').doc(userId).set(basicProfile);
             state.userProfile = { id: userId, ...basicProfile };
+            console.log('Basic profile created for:', basicProfile.name);
         } catch (error) {
             console.error("Error creating basic profile:", error);
+            throw error;
         }
     }
 
@@ -4799,7 +5355,6 @@
                 !document.getElementById('jobs-page').classList.contains('hidden')) {
                 updateApplyButtons();
             }
-
         } catch (error) {
             console.error("Error loading applied jobs:", error);
         }
@@ -4824,8 +5379,8 @@
 
     async function signInWithGoogle() {
         try {
-            if (!auth) {
-                showNotification('Authentication service not available. Please refresh the page.', 'error');
+            if (!auth || !firebaseInitialized) {
+                showNotification('Authentication service not available. Please refresh.', 'error');
                 return;
             }
 
@@ -4838,58 +5393,23 @@
             const result = await auth.signInWithPopup(provider);
             const user = result.user;
 
-            const userDoc = await db.collection('users').doc(user.uid).get();
-
-            if (!userDoc.exists) {
-                const userProfile = {
-                    name: user.displayName || user.email.split('@')[0],
-                    email: user.email,
-                    type: 'freelancer',
-                    skills: [],
-                    location: '',
-                    bio: `Google user - ${user.displayName || user.email}`,
-                    rating: 0,
-                    reviewCount: 0,
-                    hourlyRate: 50,
-                    jobsPosted: 0,
-                    jobsCompleted: 0,
-                    profilePictureUrl: user.photoURL || null,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    authProvider: 'google',
-                    emailVerified: user.emailVerified,
-                    isVerified: true,
-                    joinedDate: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                await db.collection('users').doc(user.uid).set(userProfile);
-                await loadUserProfile(user.uid);
-            } else {
-                await loadUserProfile(user.uid);
-            }
-
-            state.currentUser = user;
-            state.isAdmin = checkIfAdmin(user);
-            updateAdminUI();
-            updateUIForUser();
-
-            showNotification(`Welcome ${state.userProfile?.name || 'User'}!`, 'success');
+            showNotification(`Welcome ${user.displayName || 'User'}!`, 'success');
             showPage('home');
 
         } catch (error) {
             console.error('Google sign in error:', error);
-
+            
             let errorMessage = 'Google sign in failed. Please try again.';
-
             if (error.code === 'auth/popup-blocked') {
-                errorMessage = 'Popup blocked by browser. Please allow popups for this site.';
+                errorMessage = 'Popup blocked. Please allow popups for this site.';
             } else if (error.code === 'auth/popup-closed-by-user') {
                 errorMessage = 'Sign in cancelled.';
             } else if (error.code === 'auth/network-request-failed') {
-                errorMessage = 'Network error. Please check your internet connection.';
+                errorMessage = 'Network error. Please check your internet.';
             } else if (error.code === 'auth/operation-not-allowed') {
-                errorMessage = 'Google sign-in is not enabled. Please contact support.';
+                errorMessage = 'Google sign-in is not enabled.';
             }
-
+            
             showNotification(errorMessage, 'error');
         }
     }
@@ -4924,7 +5444,7 @@
         showLoader('register-submit-btn', 'register-text', 'register-loader');
 
         try {
-            if (!auth) {
+            if (!auth || !firebaseInitialized) {
                 throw new Error('Authentication service not available');
             }
 
@@ -4951,18 +5471,21 @@
                 authProvider: 'password',
                 emailVerified: false,
                 isVerified: false,
-                joinedDate: firebase.firestore.FieldValue.serverTimestamp()
+                verificationPlan: null,
+                joinedDate: firebase.firestore.FieldValue.serverTimestamp(),
+                paymentMethods: []
             };
 
             await db.collection('users').doc(user.uid).set(userProfile);
-            await user.sendEmailVerification();
-
-            if (email === ADMIN_EMAIL) {
-                state.isAdmin = true;
-                updateAdminUI();
+            
+            // Send email verification
+            try {
+                await user.sendEmailVerification();
+                showNotification(`Welcome to Bluetonic, ${name}! Please check your email to verify your account.`);
+            } catch (emailError) {
+                showNotification(`Welcome to Bluetonic, ${name}! Account created successfully.`);
             }
-
-            showNotification(`Welcome to Bluetonic, ${name}! Please check your email to verify your account.`);
+            
             hideLoader('register-submit-btn', 'register-text', 'register-loader');
 
             document.getElementById('register-form').reset();
@@ -4973,15 +5496,12 @@
             hideLoader('register-submit-btn', 'register-text', 'register-loader');
 
             let errorMessage = 'Registration failed. Please try again.';
-
             if (error.code === 'auth/email-already-in-use') {
                 errorMessage = 'Email already in use. Please login instead.';
             } else if (error.code === 'auth/invalid-email') {
                 errorMessage = 'Invalid email address.';
             } else if (error.code === 'auth/weak-password') {
                 errorMessage = 'Password is too weak.';
-            } else if (error.message === 'Authentication service not available') {
-                errorMessage = 'Authentication service not available. Please refresh the page.';
             }
 
             showNotification(errorMessage, 'error');
@@ -5005,7 +5525,7 @@
         showLoader('login-submit-btn', 'login-text', 'login-loader');
 
         try {
-            if (!auth) {
+            if (!auth || !firebaseInitialized) {
                 throw new Error('Authentication service not available');
             }
 
@@ -5021,15 +5541,14 @@
             hideLoader('login-submit-btn', 'login-text', 'login-loader');
 
             let errorMessage = 'Login failed. Please try again.';
-
             if (error.code === 'auth/user-not-found') {
                 errorMessage = 'No account found with this email.';
             } else if (error.code === 'auth/wrong-password') {
                 errorMessage = 'Incorrect password.';
             } else if (error.code === 'auth/invalid-email') {
                 errorMessage = 'Invalid email address.';
-            } else if (error.message === 'Authentication service not available') {
-                errorMessage = 'Authentication service not available. Please refresh the page.';
+            } else if (error.code === 'auth/too-many-requests') {
+                errorMessage = 'Too many failed attempts. Please try again later.';
             }
 
             showNotification(errorMessage, 'error');
@@ -5075,7 +5594,6 @@
             container.innerHTML = '';
 
             const testimonials = [];
-
             usersSnapshot.forEach(doc => {
                 const user = doc.data();
                 if (user.reviews && user.reviews.length > 0) {
@@ -5083,7 +5601,7 @@
                     testimonials.push({
                         name: user.name,
                         rating: user.rating || 5,
-                        text: recentReview.review || "Great experience working on this platform!",
+                        text: recentReview.review || "Great experience!",
                         type: user.type,
                         isVerified: user.isVerified || false
                     });
@@ -5171,32 +5689,6 @@
             `;
             container.appendChild(card);
         });
-    }
-
-    function getSampleTestimonials() {
-        return [
-            {
-                name: "Sarah L.",
-                rating: 5,
-                text: "Found an amazing developer for my e-commerce project. Communication was smooth and the work was delivered ahead of schedule. Highly recommended!",
-                type: "client",
-                isVerified: true
-            },
-            {
-                name: "Michael T.",
-                rating: 4.8,
-                text: "As a freelancer, I've landed more quality projects here than on any other platform. The rating system helps build trust with clients quickly.",
-                type: "freelancer",
-                isVerified: true
-            },
-            {
-                name: "Jessica R.",
-                rating: 4.9,
-                text: "The verification system gave me confidence to hire. Completed 3 projects successfully and each freelancer was professional and skilled.",
-                type: "client",
-                isVerified: true
-            }
-        ];
     }
 
     async function loadRatingsPage() {
@@ -5387,25 +5879,6 @@
         });
     }
 
-    function getSampleReviews() {
-        return [
-            {
-                clientName: "Mark T.",
-                rating: 5,
-                text: "Exceptional work! The freelancer delivered ahead of schedule and the quality exceeded expectations. Communication was perfect throughout the project.",
-                freelancerName: "James K.",
-                date: "2 days ago"
-            },
-            {
-                clientName: "Sarah L.",
-                rating: 5,
-                text: "Highly professional and skilled. Will definitely hire again for future projects. The platform made the entire process smooth and secure.",
-                freelancerName: "David K.",
-                date: "3 days ago"
-            }
-        ];
-    }
-
     async function loadTopFreelancers() {
         try {
             const container = document.getElementById('top-freelancers');
@@ -5495,28 +5968,7 @@
         const container = document.getElementById('top-freelancers');
         if (!container) return;
 
-        const sampleFreelancers = [
-            {
-                id: "sample1",
-                name: "James K.",
-                rating: 4.9,
-                reviewCount: 42,
-                hourlyRate: 85,
-                bio: "Full-stack developer with 8+ years experience. Specialized in React, Node.js, and cloud infrastructure.",
-                skills: ["React", "Node.js", "AWS", "MongoDB", "TypeScript"],
-                isVerified: true
-            },
-            {
-                id: "sample2",
-                name: "Sarah M.",
-                rating: 4.8,
-                reviewCount: 28,
-                hourlyRate: 75,
-                bio: "UI/UX designer focused on creating intuitive user experiences for web and mobile applications.",
-                skills: ["UI Design", "UX Research", "Figma", "Prototyping", "Wireframing"],
-                isVerified: true
-            }
-        ];
+        const sampleFreelancers = getSampleTopFreelancers();
 
         container.innerHTML = '';
 
@@ -5578,43 +6030,28 @@
             const freelancersSnapshot = await db.collection('users')
                 .where('type', '==', 'freelancer')
                 .get();
-
-            const freelancerCount = freelancersSnapshot.size || 0;
-            document.getElementById('stats-freelancers').textContent = freelancerCount.toLocaleString();
+            document.getElementById('stats-freelancers').textContent = freelancersSnapshot.size.toLocaleString();
 
             const jobsSnapshot = await db.collection('jobs').get();
-            const jobCount = jobsSnapshot.size || 0;
-            document.getElementById('stats-jobs').textContent = jobCount.toLocaleString();
+            document.getElementById('stats-jobs').textContent = jobsSnapshot.size.toLocaleString();
 
             let totalEarned = 0;
-            let fiveStarCount = 0;
-
-            const allJobsSnapshot = await db.collection('jobs').get();
-
-            allJobsSnapshot.forEach(doc => {
+            jobsSnapshot.forEach(doc => {
                 const job = doc.data();
                 if (job.budget && !isNaN(parseFloat(job.budget))) {
                     totalEarned += parseFloat(job.budget);
                 }
-                if (job.rating === 5) {
-                    fiveStarCount++;
-                }
             });
+            document.getElementById('stats-earned').textContent = `$${totalEarned.toLocaleString()}`;
 
+            // For ratings count
+            let ratingsCount = 0;
             const usersSnapshot = await db.collection('users').get();
             usersSnapshot.forEach(doc => {
                 const user = doc.data();
-                if (user.reviews) {
-                    user.reviews.forEach(review => {
-                        if (review.rating === 5) {
-                            fiveStarCount++;
-                        }
-                    });
-                }
+                ratingsCount += user.reviewCount || 0;
             });
-
-            document.getElementById('stats-earned').textContent = `$${totalEarned.toLocaleString()}`;
-            document.getElementById('stats-ratings').textContent = fiveStarCount > 0 ? fiveStarCount.toLocaleString() : "1,200+";
+            document.getElementById('stats-ratings').textContent = ratingsCount.toLocaleString();
 
         } catch (error) {
             console.error('Error loading stats:', error);
@@ -5633,6 +6070,8 @@
                 .get();
 
             const container = document.getElementById('job-listings');
+            if (!container) return;
+
             container.innerHTML = '';
 
             if (snapshot.empty) {
@@ -5662,7 +6101,9 @@
         } catch (error) {
             console.error('Error loading recent jobs:', error);
             const container = document.getElementById('job-listings');
-            container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">Error loading jobs</div>';
+            if (container) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">Error loading jobs</div>';
+            }
         }
     }
 
@@ -5673,6 +6114,8 @@
                 .get();
 
             const container = document.getElementById('all-job-listings');
+            if (!container) return;
+
             container.innerHTML = '';
 
             if (snapshot.empty) {
@@ -5680,25 +6123,18 @@
                 return;
             }
 
-            const jobsData = [];
-
-            snapshot.forEach(doc => {
-                jobsData.push({ id: doc.id, ...doc.data() });
-            });
-
-            for (const job of jobsData) {
+            for (const doc of snapshot.docs) {
+                const job = { id: doc.id, ...doc.data() };
                 const hasApplied = state.appliedJobs.has(job.id);
                 const isFreelancer = state.userProfile?.type === 'freelancer';
                 const isLoggedIn = state.currentUser !== null;
 
                 let posterName = 'Unknown';
-                let posterRating = null;
                 try {
                     const userDoc = await db.collection('users').doc(job.postedBy).get();
                     if (userDoc.exists) {
                         const userData = userDoc.data();
                         posterName = userData.name;
-                        posterRating = userData.rating;
                     }
                 } catch (error) {
                     console.error('Error loading user:', error);
@@ -5719,14 +6155,6 @@
                     applyButtonHtml = `<button class="btn btn-primary btn-small apply-job-btn" data-job-id="${job.id}">Apply Now</button>`;
                 }
 
-                const ratingDisplay = posterRating ?
-                    `<div style="display: flex; align-items: center; gap: 5px; margin-top: 5px; font-size: 0.8rem;">
-                        <div class="star-rating" style="font-size: 0.7rem;">
-                            ${generateStarRating(posterRating)}
-                        </div>
-                        <span style="color: var(--light);">${posterRating.toFixed(1)}</span>
-                    </div>` : '';
-
                 jobElement.innerHTML = `
                     <h3>${job.title}</h3>
                     <div class="job-meta">
@@ -5741,7 +6169,6 @@
                     <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <div>
                             <span style="font-size: 0.9rem; color: var(--light);">Posted by: ${posterName}</span>
-                            ${ratingDisplay}
                         </div>
                         <div style="display: flex; gap: 8px;">
                             ${applyButtonHtml}
@@ -5763,7 +6190,9 @@
         } catch (error) {
             console.error('Error loading jobs:', error);
             const container = document.getElementById('all-job-listings');
-            container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading jobs. Please try again.</div>';
+            if (container) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading jobs. Please try again.</div>';
+            }
         }
     }
 
@@ -5921,11 +6350,9 @@
             const jobElement = document.getElementById(`job-${jobId}`);
             if (jobElement) {
                 jobElement.style.animation = 'fadeOut 0.3s ease-out';
-                const removeTimeoutId = setTimeout(() => {
+                setTimeout(() => {
                     jobElement.remove();
-                    state.reliableTimeouts.delete(removeTimeoutId);
                 }, 300);
-                state.reliableTimeouts.set(removeTimeoutId, true);
             }
 
             if (document.getElementById('home-page') && !document.getElementById('home-page').classList.contains('hidden')) {
@@ -6179,6 +6606,30 @@
 
         html += '</div>';
         container.innerHTML = html;
+        
+        // Re-attach event listeners
+        setTimeout(() => {
+            document.querySelectorAll('.hire-freelancer-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const freelancerId = this.getAttribute('data-freelancer-id');
+                    hireFreelancer(freelancerId);
+                });
+            });
+            
+            document.querySelectorAll('.message-freelancer-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const freelancerId = this.getAttribute('data-freelancer-id');
+                    messageFreelancer(freelancerId);
+                });
+            });
+            
+            document.querySelectorAll('.view-profile-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const freelancerId = this.getAttribute('data-freelancer-id');
+                    viewFreelancerProfile(freelancerId);
+                });
+            });
+        }, 100);
     }
 
     // ============================================
@@ -6441,7 +6892,7 @@
                         <button class="btn btn-primary" onclick="hireFreelancer('${freelancerId}'); this.parentElement.parentElement.parentElement.parentElement.remove()">
                             <i class="fas fa-handshake"></i> Hire This Freelancer
                         </button>
-                        <button class="btn btn-secondary" onclick="messageFreelancer('${freelancerId}', '${escapeHtml(freelancer.name)}', 'freelancer'); this.parentElement.parentElement.parentElement.parentElement.remove()">
+                        <button class="btn btn-secondary" onclick="messageFreelancer('${freelancerId}'); this.parentElement.parentElement.parentElement.parentElement.remove()">
                             <i class="fas fa-envelope"></i> Send Message
                         </button>
                     </div>
@@ -6462,7 +6913,7 @@
         }
     }
 
-    function messageFreelancer(freelancerId, freelancerName, userType = 'freelancer') {
+    function messageFreelancer(freelancerId, userType = 'freelancer') {
         if (!state.currentUser) {
             showNotification('Please login to send messages', 'warning');
             showPage('login');
@@ -6471,11 +6922,14 @@
 
         showPage('chat');
 
-        const timeoutId = setTimeout(() => {
-            openChatWithUser(freelancerId, freelancerName, userType);
-            state.reliableTimeouts.delete(timeoutId);
+        setTimeout(() => {
+            db.collection('users').doc(freelancerId).get().then(doc => {
+                if (doc.exists) {
+                    const user = doc.data();
+                    openChatWithUser(freelancerId, user.name, user.type);
+                }
+            });
         }, 100);
-        state.reliableTimeouts.set(timeoutId, true);
     }
 
     // ============================================
@@ -6840,11 +7294,10 @@
     }
 
     // ============================================
-    // CHAT FUNCTIONS - REPLACED WITH WORKING VERSION FROM PREVIOUS SCRIPT
+    // CHAT FUNCTIONS
     // ============================================
 
     function setupChatView() {
-        // Simplified: Show/hide back button based on screen size
         const backBtn = document.getElementById('chat-back-btn');
         if (window.innerWidth < 768) {
             backBtn.style.display = 'block';
@@ -7002,7 +7455,6 @@
         state.currentChatWith = userId;
         state.currentChatUser = { id: userId, name: userName, type: userType };
         
-        // Update chat header
         document.getElementById('chat-with').innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div class="avatar" style="width: 36px; height: 36px;">
@@ -7017,19 +7469,14 @@
             </div>
         `;
         
-        // Show input area
         document.getElementById('chat-input-area').style.display = 'flex';
         
-        // Load messages
         loadMessages(userId);
         
-        // On mobile, automatically focus the input
         if (window.innerWidth < 768) {
-            const timeoutId = setTimeout(() => {
+            setTimeout(() => {
                 document.getElementById('message-input').focus();
-                state.reliableTimeouts.delete(timeoutId);
             }, 100);
-            state.reliableTimeouts.set(timeoutId, true);
         }
     }
     
@@ -7103,11 +7550,9 @@
                         container.appendChild(messageElement);
                     });
                     
-                    const scrollTimeoutId = setTimeout(() => {
+                    setTimeout(() => {
                         container.scrollTop = container.scrollHeight;
-                        state.reliableTimeouts.delete(scrollTimeoutId);
                     }, 100);
-                    state.reliableTimeouts.set(scrollTimeoutId, true);
                     
                     markMessagesAsRead(userId);
                     
@@ -7204,7 +7649,7 @@
     }
 
     // ============================================
-    // PLANS & PROMOTIONS SYSTEM - MODIFIED
+    // PLANS & PROMOTIONS SYSTEM
     // ============================================
 
     function initializePlansSystem() {
@@ -7215,44 +7660,207 @@
 
     async function loadPlans() {
         try {
-            console.log('Loading plans from database...');
+            console.log('Loading plans...');
 
-            // Clear all containers first
-            const containers = [
-                'verification-plans-grid',
-                'advertisement-plans-grid',
-                'toplist-plans-grid',
-                'active-subscriptions-list',
-                'subscription-history-list',
-                'payment-history-list'
-            ];
-
-            containers.forEach(containerId => {
-                const container = document.getElementById(containerId);
-                if (container) {
-                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--light);"><i class="fas fa-spinner fa-spin" style="font-size: 1.5rem;"></i><p style="margin-top: 10px;">Loading...</p></div>';
-                }
-            });
-
-            // Load plans
+            // Load plans for everyone (guests included)
             await loadAllPlansFromDatabase();
 
-            // Load user data if logged in
+            // Load user-specific data if logged in
             if (state.currentUser) {
                 await Promise.all([
                     loadUserSubscriptions(),
                     loadPaymentHistory()
                 ]);
+                
+                await loadPlanStatistics();
+            } else {
+                // Show public view for guests
+                await loadGuestPlansView();
             }
-
-            // Load statistics
-            await loadPlanStatistics();
-
-            console.log('Plans loaded successfully from database');
 
         } catch (error) {
             console.error('Error loading plans:', error);
             showNotification('Error loading plans. Please try again.', 'error');
+        }
+    }
+
+    async function loadGuestPlansView() {
+        // Show public statistics
+        try {
+            const statsContainer = document.getElementById('plan-stats');
+            if (statsContainer) {
+                // Get public stats
+                const verifiedUsers = await db.collection('users')
+                    .where('isVerified', '==', true)
+                    .get();
+                
+                const activeSubs = await db.collection('subscriptions')
+                    .where('status', '==', 'active')
+                    .get();
+                
+                // Count by type
+                let verificationCount = 0;
+                let adCount = 0;
+                let toplistCount = 0;
+                let totalRevenue = 0;
+                
+                activeSubs.forEach(doc => {
+                    const sub = doc.data();
+                    if (sub.planType === 'verification') verificationCount++;
+                    if (sub.planType === 'advertisement') adCount++;
+                    if (sub.planType === 'toplist') toplistCount++;
+                    if (sub.amount) totalRevenue += sub.amount;
+                });
+                
+                statsContainer.innerHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">${verifiedUsers.size}</div>
+                                <div class="stat-label">Verified Users</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--primary);">
+                                <i class="fas fa-ad"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">${adCount}</div>
+                                <div class="stat-label">Active Ads</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">${toplistCount}</div>
+                                <div class="stat-label">Top List Boosts</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--purple);">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">$${totalRevenue.toLocaleString()}</div>
+                                <div class="stat-label">Total Processed</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Show public payment history (anonymized)
+            const historyContainer = document.getElementById('payment-history-container');
+            if (historyContainer) {
+                try {
+                    const recentPayments = await db.collection('payments')
+                        .where('status', '==', 'completed')
+                        .orderBy('createdAt', 'desc')
+                        .limit(10)
+                        .get();
+                    
+                    if (recentPayments.empty) {
+                        historyContainer.innerHTML = `
+                            <div class="card">
+                                <h3 style="margin-bottom: 20px;">Recent Transactions</h3>
+                                <div style="text-align: center; padding: 40px; color: var(--light);">
+                                    <i class="fas fa-credit-card" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                                    <p>No recent transactions</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        let historyHtml = `
+                            <div class="card">
+                                <h3 style="margin-bottom: 20px;">Recent Platform Transactions</h3>
+                                <div style="max-height: 400px; overflow-y: auto;">
+                        `;
+                        
+                        recentPayments.forEach(doc => {
+                            const payment = doc.data();
+                            const paymentDate = payment.createdAt?.toDate ?
+                                payment.createdAt.toDate().toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) : 'Recent';
+                            
+                            historyHtml += `
+                                <div class="payment-history-item">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 5px;">${payment.planName}</div>
+                                        <div style="color: var(--light); font-size: 0.9rem;">
+                                            ${paymentDate}
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div class="payment-amount">$${payment.amount}</div>
+                                        <div class="payment-status completed">Completed</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        historyHtml += `
+                                </div>
+                                <div style="text-align: center; padding: 15px; border-top: 1px solid var(--border); margin-top: 15px;">
+                                    <p style="color: var(--light); font-size: 0.9rem;">
+                                        <i class="fas fa-lock"></i> Login to view your personal transaction history
+                                    </p>
+                                    <button class="btn btn-primary" onclick="showPage('login')" style="margin-top: 10px;">
+                                        <i class="fas fa-sign-in-alt"></i> Login to View Your History
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        historyContainer.innerHTML = historyHtml;
+                    }
+                } catch (error) {
+                    console.error('Error loading public payment history:', error);
+                    historyContainer.innerHTML = `
+                        <div class="card">
+                            <h3 style="margin-bottom: 20px;">Transaction History</h3>
+                            <div style="text-align: center; padding: 40px; color: var(--light);">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p>Unable to load transaction history</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Show subscriptions section for guests
+            const subscriptionContainer = document.getElementById('subscriptions-container');
+            if (subscriptionContainer) {
+                subscriptionContainer.innerHTML = `
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px;">Active Subscriptions on Platform</h3>
+                        <div style="text-align: center; padding: 30px; color: var(--light);">
+                            <i class="fas fa-crown" style="font-size: 3rem; margin-bottom: 15px; color: var(--warning);"></i>
+                            <p><strong>Join ${verifiedUsers.size}+ Verified Users</strong></p>
+                            <p style="margin-top: 10px;">Our platform has processed $${totalRevenue.toLocaleString()} in verified transactions</p>
+                            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                                <button class="btn btn-primary" onclick="showPage('login')">
+                                    <i class="fas fa-sign-in-alt"></i> Login to View Your Subscriptions
+                                </button>
+                                <button class="btn btn-success" onclick="showPage('register')">
+                                    <i class="fas fa-user-plus"></i> Sign Up to Get Started
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+        } catch (error) {
+            console.error('Error loading guest plans view:', error);
         }
     }
 
@@ -7261,10 +7869,8 @@
             const plansSnapshot = await db.collection('plans').get();
 
             if (plansSnapshot.empty) {
-                console.log('No plans found in database, creating default plans');
                 await createDefaultPlans();
-                await loadAllPlansFromDatabase();
-                return;
+                return loadAllPlansFromDatabase();
             }
 
             const plansByType = {
@@ -7276,193 +7882,40 @@
             plansSnapshot.forEach(doc => {
                 const plan = { id: doc.id, ...doc.data() };
                 const type = plan.type;
-
                 if (plansByType[type]) {
                     plansByType[type].push(plan);
                 }
             });
 
-            plansByType.verification.sort((a, b) => a.prices.monthly - b.prices.monthly);
-            plansByType.advertisement.sort((a, b) => a.prices.monthly - b.prices.monthly);
-            plansByType.toplist.sort((a, b) => a.prices.monthly - b.prices.monthly);
+            // Sort by price
+            Object.keys(plansByType).forEach(type => {
+                plansByType[type].sort((a, b) => a.prices.monthly - b.prices.monthly);
+            });
 
-            plansState.allPlans = [...plansByType.verification, ...plansByType.advertisement, ...plansByType.toplist];
+            plansState.allPlans = [
+                ...plansByType.verification,
+                ...plansByType.advertisement,
+                ...plansByType.toplist
+            ];
 
+            // Display plans
             displayPlansByType('verification', plansByType.verification);
             displayPlansByType('advertisement', plansByType.advertisement);
             displayPlansByType('toplist', plansByType.toplist);
 
-            // Re-attach event listeners
-            setTimeout(() => {
-                document.querySelectorAll('.select-plan-btn').forEach(btn => {
-                    btn.addEventListener('click', handlePlanSelection);
-                });
-            }, 100);
-
         } catch (error) {
             console.error('Error loading plans from database:', error);
-            showNotification('Error loading plans from database', 'error');
-        }
-    }
-
-    async function createDefaultPlans() {
-        try {
-            const defaultPlans = [
-                {
-                    name: 'Basic Verification',
-                    type: 'verification',
-                    prices: { monthly: 9.99, yearly: 99.99 },
-                    features: [
-                        'Verified badge on profile',
-                        'Basic trust indicators',
-                        'Email verification included',
-                        'Increased visibility'
-                    ],
-                    popular: false,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Premium Verification',
-                    type: 'verification',
-                    prices: { monthly: 19.99, yearly: 199.99 },
-                    features: [
-                        'Verified badge on profile',
-                        'Priority trust indicators',
-                        'Background check verification',
-                        'Featured in verified section',
-                        'Priority customer support',
-                        '3x more job invites'
-                    ],
-                    popular: true,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Business Verification',
-                    type: 'verification',
-                    prices: { monthly: 49.99, yearly: 499.99 },
-                    features: [
-                        'Business verification badge',
-                        'Company details display',
-                        'Team member verification (up to 5)',
-                        'Featured in business directory',
-                        'Dedicated account manager',
-                        'Priority in search results'
-                    ],
-                    popular: false,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Basic AD',
-                    type: 'advertisement',
-                    prices: { monthly: 14.99, yearly: 149.99 },
-                    features: [
-                        'AD badge on profile',
-                        'Featured in search results',
-                        'Basic ad placement',
-                        'Standard visibility boost',
-                        'Email notifications'
-                    ],
-                    popular: false,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Premium AD',
-                    type: 'advertisement',
-                    prices: { monthly: 29.99, yearly: 299.99 },
-                    features: [
-                        'Prominent AD badge',
-                        'Top placement in search results',
-                        'Featured in recommendations',
-                        'Email campaign inclusion',
-                        'Performance analytics',
-                        'Priority customer support'
-                    ],
-                    popular: true,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Enterprise AD',
-                    type: 'advertisement',
-                    prices: { monthly: 99.99, yearly: 999.99 },
-                    features: [
-                        'Premium AD placement',
-                        'Guaranteed top 3 position',
-                        'Dedicated ad space',
-                        'Advanced analytics dashboard',
-                        'Custom ad campaigns',
-                        '24/7 priority support',
-                        'Dedicated account manager'
-                    ],
-                    popular: false,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Weekly Boost',
-                    type: 'toplist',
-                    prices: { monthly: 24.99, yearly: 249.99 },
-                    features: [
-                        'Appear in top list for 7 days',
-                        'Priority visibility',
-                        'Featured in "Top Rated" section',
-                        'Basic performance metrics',
-                        'Email notifications'
-                    ],
-                    popular: false,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Monthly Spotlight',
-                    type: 'toplist',
-                    prices: { monthly: 39.99, yearly: 399.99 },
-                    features: [
-                        'Top list placement for 30 days',
-                        'Guaranteed top 10 position',
-                        'Featured profile highlighting',
-                        'Advanced performance analytics',
-                        'Email notifications to clients',
-                        'Priority support'
-                    ],
-                    popular: true,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                },
-                {
-                    name: 'Quarterly Champion',
-                    type: 'toplist',
-                    prices: { monthly: 89.99, yearly: 899.99 },
-                    features: [
-                        'Top list placement for 90 days',
-                        'Guaranteed top 5 position',
-                        'Dedicated featured section',
-                        'Premium performance analytics',
-                        'Weekly performance reports',
-                        'Priority client matching',
-                        'Dedicated account manager'
-                    ],
-                    popular: false,
-                    isActive: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }
-            ];
-
-            const batch = db.batch();
-            defaultPlans.forEach(plan => {
-                const planRef = db.collection('plans').doc();
-                batch.set(planRef, plan);
-            });
-
-            await batch.commit();
-            console.log('Default plans created successfully');
-
-        } catch (error) {
-            console.error('Error creating default plans:', error);
+            // Fallback to hardcoded plans
+            const hardcodedPlans = getHardcodedPlans();
+            const plansByType = {
+                verification: hardcodedPlans.filter(p => p.type === 'verification'),
+                advertisement: hardcodedPlans.filter(p => p.type === 'advertisement'),
+                toplist: hardcodedPlans.filter(p => p.type === 'toplist')
+            };
+            
+            displayPlansByType('verification', plansByType.verification);
+            displayPlansByType('advertisement', plansByType.advertisement);
+            displayPlansByType('toplist', plansByType.toplist);
         }
     }
 
@@ -7474,7 +7927,7 @@
             container.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: var(--light); grid-column: 1 / -1;">
                     <i class="fas fa-tag" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
-                    <p>No ${type} plans available at the moment</p>
+                    <p>No ${type} plans available</p>
                 </div>
             `;
             return;
@@ -7486,6 +7939,13 @@
             const planCard = createPlanCardFromDatabase(plan);
             container.appendChild(planCard);
         });
+
+        // Re-attach event listeners
+        setTimeout(() => {
+            document.querySelectorAll('.select-plan-btn').forEach(btn => {
+                btn.addEventListener('click', handlePlanSelection);
+            });
+        }, 100);
     }
 
     function createPlanCardFromDatabase(plan) {
@@ -7501,8 +7961,8 @@
         const typeClass = plan.type === 'verification' ? 'verification' :
             plan.type === 'advertisement' ? 'advertisement' : 'toplist';
 
-        // Get the payment link for this plan
-        const paymentLink = PLAN_PAYMENT_LINKS[plan.name] || '#';
+        const paymentData = PLAN_PAYMENT_LINKS[plan.name];
+        const paymentLink = paymentData ? paymentData.url : '#';
 
         card.innerHTML = `
             <div class="plan-type ${typeClass}">
@@ -7513,17 +7973,37 @@
             <div class="plan-price">
                 <div class="plan-price-amount">$${monthlyPrice.toFixed(2)}</div>
                 <div class="plan-price-period">per month</div>
-                ${yearlySavings > 0 ? `<div class="plan-savings">Save ${savingsPercentage}% with yearly billing</div>` : ''}
+                ${yearlySavings > 0 ? `
+                    <div class="plan-savings">
+                        <i class="fas fa-percentage"></i> Save ${savingsPercentage}% yearly
+                    </div>
+                ` : ''}
             </div>
             <div class="plan-features">
-                ${plan.features.map(feature => `<div class="plan-feature"><i class="fas fa-check"></i><span>${feature}</span></div>`).join('')}
+                ${plan.features.map(feature => `
+                    <div class="plan-feature">
+                        <i class="fas fa-check"></i>
+                        <span>${feature}</span>
+                    </div>
+                `).join('')}
             </div>
             <div class="plan-actions">
-                <a href="${paymentLink}" target="_blank" class="btn btn-primary select-plan-btn" 
-                        data-plan-name="${plan.name}" 
-                        ${!plan.isActive ? 'disabled style="pointer-events: none; opacity: 0.5;"' : ''}>
-                    <i class="fas fa-shopping-cart"></i> ${plan.isActive ? 'Select Plan' : 'Unavailable'}
-                </a>
+                ${!state.currentUser ? `
+                    <div style="display: flex; gap: 10px; flex-direction: column;">
+                        <button class="btn btn-primary" onclick="showPage('login')">
+                            <i class="fas fa-sign-in-alt"></i> Login to Purchase
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="showPage('register')">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </button>
+                    </div>
+                ` : `
+                    <a href="${paymentLink}" target="_blank" class="btn btn-primary select-plan-btn" 
+                       data-plan-name="${plan.name}" 
+                       ${!plan.isActive ? 'disabled style="pointer-events: none; opacity: 0.5;"' : ''}>
+                        <i class="fas fa-shopping-cart"></i> ${plan.isActive ? 'Purchase Now' : 'Unavailable'}
+                    </a>
+                `}
             </div>
         `;
 
@@ -7531,26 +8011,105 @@
     }
 
     function handlePlanSelection(e) {
+        e.preventDefault();
         const link = e.currentTarget || e.target.closest('.select-plan-btn');
         if (!link) return;
 
         const planName = link.getAttribute('data-plan-name');
-        const paymentLink = PLAN_PAYMENT_LINKS[planName];
+        const paymentData = PLAN_PAYMENT_LINKS[planName];
         
-        if (paymentLink) {
-            // Open in new tab
-            window.open(paymentLink, '_blank');
-        } else {
-            showNotification('Payment link not found for this plan', 'error');
+        if (!paymentData || !paymentData.url) {
+            showNotification('Payment link not available for this plan', 'error');
+            return;
         }
+
+        if (!state.currentUser) {
+            showNotification('Please login to purchase plans', 'warning');
+            showPage('login');
+            return;
+        }
+
+        // Open payment in new tab
+        window.open(paymentData.url, '_blank', 'noopener,noreferrer');
+        
+        // Show payment instructions
+        showNotification(`Payment page opened. After payment, your subscription will be activated automatically.`, 'info', 5000);
+        
+        // Set up listener for payment verification
+        setupPaymentListener(planName, paymentData);
     }
 
-    // ============================================
-    // REMOVED PAYMENT MODAL FUNCTIONS
-    // ============================================
+    function setupPaymentListener(planName, paymentData) {
+        if (!state.currentUser) return;
 
-    // Removed showPaymentModal, setupPaymentModalEvents, loadPaymentForm, and processPayment functions
-    // since we're now using direct links
+        // Remove any existing listener
+        if (state.paymentListeners.length > 0) {
+            state.paymentListeners.forEach(listener => listener());
+            state.paymentListeners = [];
+        }
+
+        // Listen for new payments for this user
+        const listener = db.collection('payments')
+            .where('userId', '==', state.currentUser.uid)
+            .where('status', '==', 'pending')
+            .orderBy('createdAt', 'desc')
+            .limit(1)
+            .onSnapshot(async (snapshot) => {
+                if (!snapshot.empty) {
+                    const paymentDoc = snapshot.docs[0];
+                    const payment = paymentDoc.data();
+                    
+                    if (payment.planName === planName) {
+                        showNotification('Processing your payment...', 'info');
+                        
+                        try {
+                            const result = await verifyPayment(
+                                payment.paymentReference,
+                                planName,
+                                state.currentUser.uid
+                            );
+                            
+                            if (result.success) {
+                                showNotification(`Payment successful! ${planName} is now active.`, 'success');
+                                // Remove listener after successful payment
+                                listener();
+                            } else {
+                                showNotification('Payment processing failed. Please contact support.', 'error');
+                            }
+                        } catch (error) {
+                            console.error('Payment processing error:', error);
+                            showNotification('Error processing payment. Please contact support.', 'error');
+                        }
+                    }
+                }
+            });
+
+        state.paymentListeners.push(listener);
+    }
+
+    async function createDefaultPlans() {
+        try {
+            const defaultPlans = getHardcodedPlans();
+
+            const batch = db.batch();
+            defaultPlans.forEach(plan => {
+                const planRef = db.collection('plans').doc();
+                const planData = {
+                    ...plan,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                delete planData.id; // Remove the id property
+                batch.set(planRef, planData);
+            });
+
+            await batch.commit();
+            console.log('Default plans created successfully');
+
+        } catch (error) {
+            console.error('Error creating default plans:', error);
+            throw error;
+        }
+    }
 
     async function loadUserSubscriptions() {
         if (!state.currentUser) return;
@@ -7559,19 +8118,21 @@
             const container = document.getElementById('active-subscriptions-list');
             const historyContainer = document.getElementById('subscription-history-list');
 
-            if (!container || !historyContainer) {
-                console.error('Subscription containers not found');
-                return;
-            }
+            if (!container || !historyContainer) return;
 
-            console.log('Loading user subscriptions for:', state.currentUser.uid);
-
+            // Load active subscriptions
             const activeSubsSnapshot = await db.collection('subscriptions')
                 .where('userId', '==', state.currentUser.uid)
                 .where('status', '==', 'active')
                 .orderBy('startDate', 'desc')
                 .get();
 
+            const activeSubscriptions = [];
+            activeSubsSnapshot.forEach(doc => {
+                activeSubscriptions.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Load subscription history
             const historySubsSnapshot = await db.collection('subscriptions')
                 .where('userId', '==', state.currentUser.uid)
                 .where('status', 'in', ['expired', 'cancelled'])
@@ -7579,52 +8140,28 @@
                 .limit(10)
                 .get();
 
-            const activeSubscriptions = [];
-            for (const doc of activeSubsSnapshot.docs) {
-                const sub = doc.data();
-                sub.id = doc.id;
-                activeSubscriptions.push(sub);
-            }
-
             const historySubscriptions = [];
-            for (const doc of historySubsSnapshot.docs) {
-                const sub = doc.data();
-                sub.id = doc.id;
-                historySubscriptions.push(sub);
-            }
-
-            console.log('Found subscriptions:', {
-                active: activeSubscriptions.length,
-                history: historySubscriptions.length
+            historySubsSnapshot.forEach(doc => {
+                historySubscriptions.push({ id: doc.id, ...doc.data() });
             });
 
             updateSubscriptionsUI(activeSubscriptions, historySubscriptions);
 
         } catch (error) {
             console.error('Error loading subscriptions:', error);
-            const container = document.getElementById('active-subscriptions-list');
-            const historyContainer = document.getElementById('subscription-history-list');
-
-            if (container) {
-                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">Error loading active subscriptions</div>';
-            }
-            if (historyContainer) {
-                historyContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">Error loading subscription history</div>';
-            }
+            showNotification('Error loading subscriptions', 'error');
         }
     }
 
     function updateSubscriptionsUI(activeSubs, historySubs) {
-        const container = document.getElementById('active-subscriptions-list');
+        const activeContainer = document.getElementById('active-subscriptions-list');
         const historyContainer = document.getElementById('subscription-history-list');
 
-        if (!container || !historyContainer) {
-            console.error('Subscription UI containers not found');
-            return;
-        }
+        if (!activeContainer || !historyContainer) return;
 
+        // Active subscriptions
         if (activeSubs.length === 0) {
-            container.innerHTML = `
+            activeContainer.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: var(--light);">
                     <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
                     <p>No active subscriptions</p>
@@ -7632,10 +8169,21 @@
                 </div>
             `;
         } else {
-            container.innerHTML = '';
+            activeContainer.innerHTML = '';
             activeSubs.forEach(sub => {
-                const expiresDate = sub.endDate?.toDate ? sub.endDate.toDate().toLocaleDateString() : 'N/A';
-                const startDate = sub.startDate?.toDate ? sub.startDate.toDate().toLocaleDateString() : 'N/A';
+                const startDate = sub.startDate?.toDate ? 
+                    sub.startDate.toDate().toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    }) : 'N/A';
+                
+                const endDate = sub.endDate?.toDate ?
+                    sub.endDate.toDate().toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    }) : 'N/A';
 
                 const subElement = document.createElement('div');
                 subElement.className = 'subscription-item';
@@ -7643,40 +8191,25 @@
                     <div class="subscription-info">
                         <div style="font-weight: 600; margin-bottom: 5px;">${sub.planName}</div>
                         <div style="color: var(--light); font-size: 0.9rem;">
-                            ${sub.planType ? sub.planType.charAt(0).toUpperCase() + sub.planType.slice(1) : 'Plan'} • $${sub.amount} / ${sub.billingPeriod}
+                            ${sub.planType ? sub.planType.charAt(0).toUpperCase() + sub.planType.slice(1) : 'Plan'} • 
+                            $${sub.amount} / ${sub.billingPeriod || 'month'}
                         </div>
                         <div style="color: var(--light); font-size: 0.8rem; margin-top: 3px;">
-                            Started: ${startDate}
+                            <i class="fas fa-calendar-alt"></i> ${startDate} - ${endDate}
                         </div>
                     </div>
                     <div>
                         <span class="subscription-status active">Active</span>
                         <div style="text-align: right; margin-top: 5px; font-size: 0.85rem; color: var(--light);">
-                            Expires: ${expiresDate}
+                            <i class="fas fa-clock"></i> Expires: ${endDate}
                         </div>
                     </div>
-                    <div style="flex-basis: 100%; margin-top: 10px;">
-                        <button class="btn btn-outline-danger btn-small cancel-subscription-btn" 
-                                data-sub-id="${sub.id}" data-plan-name="${sub.planName}">
-                            <i class="fas fa-times"></i> Cancel Subscription
-                        </button>
-                    </div>
                 `;
-                container.appendChild(subElement);
+                activeContainer.appendChild(subElement);
             });
-
-            // Re-attach event listeners
-            setTimeout(() => {
-                document.querySelectorAll('.cancel-subscription-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        const subId = this.getAttribute('data-sub-id');
-                        const planName = this.getAttribute('data-plan-name');
-                        cancelSubscription(subId, planName);
-                    });
-                });
-            }, 100);
         }
 
+        // Subscription history
         if (historySubs.length === 0) {
             historyContainer.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: var(--light);">
@@ -7687,8 +8220,11 @@
         } else {
             historyContainer.innerHTML = '';
             historySubs.forEach(sub => {
-                const startDate = sub.startDate?.toDate ? sub.startDate.toDate().toLocaleDateString() : 'N/A';
-                const expiresDate = sub.endDate?.toDate ? sub.endDate.toDate().toLocaleDateString() : 'N/A';
+                const startDate = sub.startDate?.toDate ? 
+                    sub.startDate.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+                
+                const endDate = sub.endDate?.toDate ? 
+                    sub.endDate.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
 
                 const historyElement = document.createElement('div');
                 historyElement.className = 'subscription-item';
@@ -7696,12 +8232,14 @@
                     <div class="subscription-info">
                         <div style="font-weight: 600; margin-bottom: 5px;">${sub.planName}</div>
                         <div style="color: var(--light); font-size: 0.9rem;">
-                            ${startDate} - ${expiresDate}
+                            ${startDate} - ${endDate}
                         </div>
                     </div>
                     <div>
                         <span class="subscription-status ${sub.status}">${sub.status}</span>
-                        <div style="text-align: right; margin-top: 5px; font-weight: 600;">$${sub.amount}</div>
+                        <div style="text-align: right; margin-top: 5px; font-weight: 600;">
+                            $${sub.amount}
+                        </div>
                     </div>
                 `;
                 historyContainer.appendChild(historyElement);
@@ -7714,27 +8252,18 @@
 
         try {
             const container = document.getElementById('payment-history-list');
-            if (!container) {
-                console.error('Payment history container not found');
-                return;
-            }
-
-            console.log('Loading payment history for:', state.currentUser.uid);
+            if (!container) return;
 
             const paymentsSnapshot = await db.collection('payments')
                 .where('userId', '==', state.currentUser.uid)
                 .orderBy('createdAt', 'desc')
-                .limit(10)
+                .limit(20)
                 .get();
 
             const payments = [];
-            for (const doc of paymentsSnapshot.docs) {
-                const payment = doc.data();
-                payment.id = doc.id;
-                payments.push(payment);
-            }
-
-            console.log('Found payments:', payments.length);
+            paymentsSnapshot.forEach(doc => {
+                payments.push({ id: doc.id, ...doc.data() });
+            });
 
             updatePaymentHistoryUI(payments);
 
@@ -7756,13 +8285,19 @@
                 <div style="text-align: center; padding: 40px; color: var(--light);">
                     <i class="fas fa-credit-card" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
                     <p>No payment history</p>
+                    <p style="font-size: 0.9rem; margin-top: 5px;">Your transactions will appear here</p>
                 </div>
             `;
         } else {
             container.innerHTML = '';
             payments.forEach(payment => {
                 const paymentDate = payment.createdAt?.toDate ?
-                    payment.createdAt.toDate().toLocaleDateString() : 'N/A';
+                    payment.createdAt.toDate().toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'N/A';
 
                 const paymentElement = document.createElement('div');
                 paymentElement.className = 'payment-history-item';
@@ -7770,11 +8305,13 @@
                     <div>
                         <div style="font-weight: 600; margin-bottom: 5px;">${payment.planName}</div>
                         <div style="color: var(--light); font-size: 0.9rem;">
-                            ${paymentDate} • ${payment.paymentMethod ? payment.paymentMethod.toUpperCase() : 'Unknown'}
+                            <i class="fas fa-calendar"></i> ${paymentDate}
                         </div>
-                        <div style="color: var(--light); font-size: 0.8rem; margin-top: 3px;">
-                            ${payment.billingPeriod ? payment.billingPeriod.charAt(0).toUpperCase() + payment.billingPeriod.slice(1) : ''}
-                        </div>
+                        ${payment.paymentReference ? `
+                            <div style="color: var(--light); font-size: 0.8rem; margin-top: 3px;">
+                                <i class="fas fa-hashtag"></i> ${payment.paymentReference}
+                            </div>
+                        ` : ''}
                     </div>
                     <div style="text-align: right;">
                         <div class="payment-amount">$${payment.amount}</div>
@@ -7786,149 +8323,157 @@
         }
     }
 
-    async function cancelSubscription(subscriptionId, planName) {
-        if (!confirm(`Are you sure you want to cancel "${planName}"?`)) {
-            return;
-        }
+    async function loadPlanStatistics() {
+        if (!state.currentUser) return;
 
         try {
-            await db.collection('subscriptions').doc(subscriptionId).update({
-                status: 'cancelled',
-                cancelledAt: firebase.firestore.FieldValue.serverTimestamp()
+            const statsContainer = document.getElementById('plan-stats');
+            if (!statsContainer) return;
+
+            // Get user's statistics
+            const userSubs = await db.collection('subscriptions')
+                .where('userId', '==', state.currentUser.uid)
+                .get();
+
+            const userPayments = await db.collection('payments')
+                .where('userId', '==', state.currentUser.uid)
+                .where('status', '==', 'completed')
+                .get();
+
+            let activeCount = 0;
+            let totalSpent = 0;
+            let verificationCount = 0;
+
+            userSubs.forEach(doc => {
+                const sub = doc.data();
+                if (sub.status === 'active') activeCount++;
+                if (sub.planType === 'verification') verificationCount++;
             });
 
-            showNotification(`Subscription "${planName}" cancelled successfully`, 'success');
+            userPayments.forEach(doc => {
+                const payment = doc.data();
+                if (payment.amount) totalSpent += payment.amount;
+            });
 
-            if (state.currentUser) {
-                await loadUserSubscriptions();
-            }
-
-        } catch (error) {
-            console.error('Error cancelling subscription:', error);
-            showNotification('Error cancelling subscription', 'error');
-        }
-    }
-
-    async function loadPlanStatistics() {
-        try {
-            const verifiedCount = document.getElementById('verified-count');
-            const activeAds = document.getElementById('active-ads');
-            const toplistCount = document.getElementById('toplist-count');
-            const totalRevenue = document.getElementById('total-revenue');
-
-            if (verifiedCount || activeAds || toplistCount || totalRevenue) {
-                const paymentsSnapshot = await db.collection('payments')
-                    .where('status', '==', 'completed')
-                    .get();
-
-                let totalRevenueAmount = 0;
-                paymentsSnapshot.forEach(doc => {
-                    const payment = doc.data();
-                    if (payment.amount) {
-                        totalRevenueAmount += payment.amount;
-                    }
-                });
-
-                const activeSubsSnapshot = await db.collection('subscriptions')
-                    .where('status', '==', 'active')
-                    .get();
-
-                const subscriptionsByType = {
-                    verification: 0,
-                    advertisement: 0,
-                    toplist: 0
-                };
-
-                activeSubsSnapshot.forEach(doc => {
-                    const sub = doc.data();
-                    if (sub.planType && subscriptionsByType[sub.planType] !== undefined) {
-                        subscriptionsByType[sub.planType]++;
-                    }
-                });
-
-                if (verifiedCount) verifiedCount.textContent = subscriptionsByType.verification;
-                if (activeAds) activeAds.textContent = subscriptionsByType.advertisement;
-                if (toplistCount) toplistCount.textContent = subscriptionsByType.toplist;
-                if (totalRevenue) totalRevenue.textContent = `$${totalRevenueAmount.toLocaleString()}`;
-            }
+            statsContainer.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">${activeCount}</div>
+                            <div class="stat-label">Active Plans</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--primary);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">${verificationCount}</div>
+                            <div class="stat-label">Verifications</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">$${totalSpent}</div>
+                            <div class="stat-label">Total Spent</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--purple);">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">${userPayments.size}</div>
+                            <div class="stat-label">Transactions</div>
+                        </div>
+                    </div>
+                </div>
+            `;
 
         } catch (error) {
             console.error('Error loading plan statistics:', error);
-            if (document.getElementById('verified-count')) document.getElementById('verified-count').textContent = '0';
-            if (document.getElementById('active-ads')) document.getElementById('active-ads').textContent = '0';
-            if (document.getElementById('toplist-count')) document.getElementById('toplist-count').textContent = '0';
-            if (document.getElementById('total-revenue')) document.getElementById('total-revenue').textContent = '$0';
         }
     }
 
-    function setupPlanFiltering() {
-        document.querySelectorAll('.plans-tab').forEach(tab => {
-            tab.addEventListener('click', function () {
-                const tabType = this.getAttribute('data-tab');
+    // ============================================
+    // SUBSCRIPTION EXPIRY FUNCTIONS
+    // ============================================
 
-                document.querySelectorAll('.plans-tab').forEach(t => {
-                    t.classList.remove('active', 'btn-primary');
-                    t.classList.add('btn-outline-primary');
-                });
+    async function checkSubscriptionExpiry() {
+        if (!state.currentUser) return;
 
-                this.classList.remove('btn-outline-primary');
-                this.classList.add('active', 'btn-primary');
+        try {
+            const now = new Date();
+            const activeSubs = await db.collection('subscriptions')
+                .where('userId', '==', state.currentUser.uid)
+                .where('status', '==', 'active')
+                .get();
 
-                const allPlansContainer = document.getElementById('all-plans-container');
-                const subscriptionsContainer = document.getElementById('subscriptions-container');
-                const paymentHistoryContainer = document.getElementById('payment-history-container');
+            const batch = db.batch();
+            let hasExpired = false;
 
-                if (allPlansContainer) {
-                    allPlansContainer.style.display = tabType === 'all' ? 'block' : 'none';
-                }
-                if (subscriptionsContainer) {
-                    subscriptionsContainer.style.display = tabType === 'subscriptions' ? 'block' : 'none';
-                }
-                if (paymentHistoryContainer) {
-                    paymentHistoryContainer.style.display = tabType === 'history' ? 'block' : 'none';
-                }
-
-                if (['verification', 'advertisement', 'toplist'].includes(tabType)) {
-                    if (allPlansContainer) allPlansContainer.style.display = 'block';
-                    if (subscriptionsContainer) subscriptionsContainer.style.display = 'none';
-                    if (paymentHistoryContainer) paymentHistoryContainer.style.display = 'none';
-
-                    const categoryId = tabType + '-plans';
-                    const element = document.getElementById(categoryId);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
+            activeSubs.forEach(doc => {
+                const sub = doc.data();
+                const endDate = sub.endDate?.toDate ? sub.endDate.toDate() : null;
+                
+                if (endDate && endDate < now) {
+                    batch.update(doc.ref, { 
+                        status: 'expired',
+                        expiredAt: firebase.firestore.FieldValue.serverTimestamp() 
+                    });
+                    hasExpired = true;
+                    
+                    // Remove verification if it was a verification plan
+                    if (sub.planType === 'verification') {
+                        db.collection('users').doc(state.currentUser.uid).update({
+                            isVerified: false,
+                            verificationPlan: null,
+                            verificationExpiredAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            if (state.userProfile) {
+                                state.userProfile.isVerified = false;
+                                state.userProfile.verificationPlan = null;
+                            }
+                        });
                     }
                 }
-
-                if (tabType === 'subscriptions' && state.currentUser) {
-                    loadUserSubscriptions();
-                }
-
-                if (tabType === 'history' && state.currentUser) {
-                    loadPaymentHistory();
-                }
             });
-        });
+
+            if (hasExpired) {
+                await batch.commit();
+                showNotification('Some subscriptions have expired', 'warning');
+                updateUIForUser();
+                if (document.getElementById('plans-page') && 
+                    !document.getElementById('plans-page').classList.contains('hidden')) {
+                    loadPlans();
+                }
+            }
+
+        } catch (error) {
+            console.error('Error checking subscription expiry:', error);
+        }
     }
 
-    function setupPlansEventListeners() {
-        document.addEventListener('click', function (e) {
-            if (e.target.closest('.select-plan-btn')) {
-                handlePlanSelection(e);
+    function setupSubscriptionExpiryCheck() {
+        // Check immediately
+        checkSubscriptionExpiry();
+        
+        // Check every hour
+        state.subscriptionCheckInterval = setInterval(() => {
+            if (state.currentUser) {
+                checkSubscriptionExpiry();
             }
-
-            if (e.target.closest('.cancel-subscription-btn')) {
-                const button = e.target.closest('.cancel-subscription-btn');
-                const subId = button.getAttribute('data-sub-id');
-                const planName = button.getAttribute('data-plan-name');
-
-                cancelSubscription(subId, planName);
-            }
-        });
+        }, 60 * 60 * 1000);
     }
 
     // ============================================
-    // ADMIN FUNCTIONS
+    // ADMIN FUNCTIONS - COMPLETE SET
     // ============================================
 
     async function loadAdminDashboard() {
@@ -7944,117 +8489,11 @@
             await loadActivityLog();
             await loadCurrentAnnouncement();
             await loadAdminPlans();
+            await loadPendingPayments();
 
         } catch (error) {
             console.error('Error loading admin dashboard:', error);
             showNotification('Error loading admin dashboard', 'error');
-        }
-    }
-
-    async function loadAdminPlans() {
-        if (!state.isAdmin) return;
-
-        try {
-            const plansSnapshot = await db.collection('plans').orderBy('type').get();
-            const tbody = document.getElementById('plans-table-body');
-            if (!tbody) return;
-
-            tbody.innerHTML = '';
-
-            if (plansSnapshot.empty) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">
-                            No plans found. <button class="btn btn-small btn-primary" onclick="createDefaultPlans()">Create Default Plans</button>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            plansSnapshot.forEach(doc => {
-                const plan = doc.data();
-                const typeClass = plan.type === 'verification' ? 'verification' :
-                    plan.type === 'advertisement' ? 'advertisement' : 'toplist';
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${plan.name}</td>
-                        <td>
-                            <span class="plan-type-badge ${typeClass}">
-                                ${plan.type.charAt(0).toUpperCase() + plan.type.slice(1)}
-                            </span>
-                        </td>
-                        <td>$${plan.prices.monthly}/mo<br><small>$${plan.prices.yearly}/yr</small></td>
-                        <td>
-                            <span class="plan-status ${plan.isActive ? 'active' : 'inactive'}">
-                                ${plan.isActive ? 'Active' : 'Inactive'}
-                            </span>
-                        </td>
-                        <td>${plan.popular ? '<i class="fas fa-star" style="color: gold;"></i> Popular' : 'Standard'}</td>
-                        <td>
-                            <button class="admin-action-btn edit" data-plan-id="${doc.id}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="admin-action-btn toggle" data-plan-id="${doc.id}" data-plan-name="${plan.name}" data-current-status="${plan.isActive}">
-                                <i class="fas fa-power-off"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            document.querySelectorAll('.admin-action-btn.toggle[data-plan-id]').forEach(btn => {
-                btn.addEventListener('click', async function () {
-                    const planId = this.getAttribute('data-plan-id');
-                    const planName = this.getAttribute('data-plan-name');
-                    const currentStatus = this.getAttribute('data-current-status') === 'true';
-
-                    await togglePlanStatus(planId, planName, currentStatus);
-                });
-            });
-
-        } catch (error) {
-            console.error('Error loading admin plans:', error);
-            const tbody = document.getElementById('plans-table-body');
-            if (tbody) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--danger);">
-                            Error loading plans
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-    }
-
-    async function togglePlanStatus(planId, planName, currentStatus) {
-        if (!state.isAdmin) return;
-
-        const newStatus = !currentStatus;
-        const action = newStatus ? 'activate' : 'deactivate';
-
-        if (!confirm(`Are you sure you want to ${action} "${planName}"?`)) {
-            return;
-        }
-
-        try {
-            await db.collection('plans').doc(planId).update({
-                isActive: newStatus,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            showNotification(`Plan "${planName}" ${action}d successfully`, 'success');
-            await loadAdminPlans();
-
-            if (document.getElementById('plans-page') && !document.getElementById('plans-page').classList.contains('hidden')) {
-                loadPlans();
-            }
-
-        } catch (error) {
-            console.error('Error toggling plan status:', error);
-            showNotification('Error updating plan status', 'error');
         }
     }
 
@@ -8100,6 +8539,8 @@
                 .get();
 
             const tbody = document.getElementById('users-table-body');
+            if (!tbody) return;
+            
             tbody.innerHTML = '';
 
             if (usersSnapshot.empty) {
@@ -8150,13 +8591,16 @@
 
         } catch (error) {
             console.error('Error loading users for admin:', error);
-            document.getElementById('users-table-body').innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--danger);">
-                        Error loading users
-                    </td>
+            const tbody = document.getElementById('users-table-body');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: var(--danger);">
+                            Error loading users
+                        </td>
                     </tr>
-            `;
+                `;
+            }
         }
     }
 
@@ -8170,6 +8614,8 @@
                 .get();
 
             const tbody = document.getElementById('jobs-table-body');
+            if (!tbody) return;
+            
             tbody.innerHTML = '';
 
             if (jobsSnapshot.empty) {
@@ -8225,13 +8671,16 @@
 
         } catch (error) {
             console.error('Error loading jobs for admin:', error);
-            document.getElementById('jobs-table-body').innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--danger);">
-                        Error loading jobs
-                    </td>
-                </tr>
-            `;
+            const tbody = document.getElementById('jobs-table-body');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: var(--danger);">
+                            Error loading jobs
+                        </td>
+                    </tr>
+                `;
+            }
         }
     }
 
@@ -8245,6 +8694,8 @@
                 .get();
 
             const container = document.getElementById('broadcast-history');
+            if (!container) return;
+            
             container.innerHTML = '';
 
             if (broadcastSnapshot.empty) {
@@ -8273,8 +8724,10 @@
 
         } catch (error) {
             console.error('Error loading broadcast history:', error);
-            document.getElementById('broadcast-history').innerHTML =
-                '<p style="text-align: center; color: var(--danger);">Error loading broadcasts</p>';
+            const container = document.getElementById('broadcast-history');
+            if (container) {
+                container.innerHTML = '<p style="text-align: center; color: var(--danger);">Error loading broadcasts</p>';
+            }
         }
     }
 
@@ -8363,23 +8816,28 @@
         const banner = document.getElementById('system-announcement-banner');
 
         if (!announcement || !announcement.isActive) {
-            banner.classList.add('hidden');
+            if (banner) banner.classList.add('hidden');
             return;
         }
 
-        document.getElementById('announcement-type').textContent =
+        const typeElement = document.getElementById('announcement-type');
+        const messageElement = document.getElementById('announcement-message');
+        
+        if (typeElement) typeElement.textContent = 
             announcement.type ? announcement.type.charAt(0).toUpperCase() + announcement.type.slice(1) : 'Info';
-        document.getElementById('announcement-message').textContent = announcement.message;
+        if (messageElement) messageElement.textContent = announcement.message;
 
-        banner.style.background = announcement.type === 'alert' ?
-            'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' :
-            announcement.type === 'warning' ?
-                'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' :
-                announcement.type === 'news' ?
-                    'linear-gradient(135deg, #10b981 0%, #059669 100%)' :
-                    'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+        if (banner) {
+            banner.style.background = announcement.type === 'alert' ?
+                'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' :
+                announcement.type === 'warning' ?
+                    'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' :
+                    announcement.type === 'news' ?
+                        'linear-gradient(135deg, #10b981 0%, #059669 100%)' :
+                        'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
 
-        banner.classList.remove('hidden');
+            banner.classList.remove('hidden');
+        }
     }
 
     async function loadActivityLog() {
@@ -8387,6 +8845,7 @@
 
         try {
             const container = document.getElementById('admin-activity-log');
+            if (!container) return;
 
             const recentUsers = await db.collection('users')
                 .orderBy('createdAt', 'desc')
@@ -8458,8 +8917,246 @@
 
         } catch (error) {
             console.error('Error loading activity log:', error);
-            document.getElementById('admin-activity-log').innerHTML =
-                '<p style="text-align: center; color: var(--danger);">Error loading activity log</p>';
+            const container = document.getElementById('admin-activity-log');
+            if (container) {
+                container.innerHTML = '<p style="text-align: center; color: var(--danger);">Error loading activity log</p>';
+            }
+        }
+    }
+
+    async function loadAdminPlans() {
+        if (!state.isAdmin) return;
+
+        try {
+            const plansSnapshot = await db.collection('plans').orderBy('type').get();
+            const tbody = document.getElementById('plans-table-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            if (plansSnapshot.empty) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">
+                            No plans found. <button class="btn btn-small btn-primary" onclick="createDefaultPlans()">Create Default Plans</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            plansSnapshot.forEach(doc => {
+                const plan = doc.data();
+                const typeClass = plan.type === 'verification' ? 'verification' :
+                    plan.type === 'advertisement' ? 'advertisement' : 'toplist';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${plan.name}</td>
+                        <td>
+                            <span class="plan-type-badge ${typeClass}">
+                                ${plan.type.charAt(0).toUpperCase() + plan.type.slice(1)}
+                            </span>
+                        </td>
+                        <td>$${plan.prices.monthly}/mo<br><small>$${plan.prices.yearly}/yr</small></td>
+                        <td>
+                            <span class="plan-status ${plan.isActive ? 'active' : 'inactive'}">
+                                ${plan.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>${plan.popular ? '<i class="fas fa-star" style="color: gold;"></i> Popular' : 'Standard'}</td>
+                        <td>
+                            <button class="admin-action-btn edit" data-plan-id="${doc.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="admin-action-btn toggle" data-plan-id="${doc.id}" data-plan-name="${plan.name}" data-current-status="${plan.isActive}">
+                                <i class="fas fa-power-off"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Re-attach event listeners
+            setTimeout(() => {
+                document.querySelectorAll('.admin-action-btn.toggle[data-plan-id]').forEach(btn => {
+                    btn.addEventListener('click', async function () {
+                        const planId = this.getAttribute('data-plan-id');
+                        const planName = this.getAttribute('data-plan-name');
+                        const currentStatus = this.getAttribute('data-current-status') === 'true';
+
+                        await togglePlanStatus(planId, planName, currentStatus);
+                    });
+                });
+            }, 100);
+
+        } catch (error) {
+            console.error('Error loading admin plans:', error);
+            const tbody = document.getElementById('plans-table-body');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--danger);">
+                            Error loading plans
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+    }
+
+    async function togglePlanStatus(planId, planName, currentStatus) {
+        if (!state.isAdmin) return;
+
+        const newStatus = !currentStatus;
+        const action = newStatus ? 'activate' : 'deactivate';
+
+        if (!confirm(`Are you sure you want to ${action} "${planName}"?`)) {
+            return;
+        }
+
+        try {
+            await db.collection('plans').doc(planId).update({
+                isActive: newStatus,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            showNotification(`Plan "${planName}" ${action}d successfully`, 'success');
+            await loadAdminPlans();
+
+            if (document.getElementById('plans-page') && !document.getElementById('plans-page').classList.contains('hidden')) {
+                loadPlans();
+            }
+
+        } catch (error) {
+            console.error('Error toggling plan status:', error);
+            showNotification('Error updating plan status', 'error');
+        }
+    }
+
+    async function loadPendingPayments() {
+        if (!state.isAdmin) return;
+
+        try {
+            const pendingPayments = await db.collection('payments')
+                .where('status', '==', 'pending')
+                .orderBy('createdAt', 'desc')
+                .limit(20)
+                .get();
+
+            const container = document.getElementById('pending-payments-list');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (pendingPayments.empty) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light);">No pending payments</div>';
+                return;
+            }
+
+            pendingPayments.forEach(async (doc) => {
+                const payment = doc.data();
+                
+                // Get user info
+                let userName = 'Unknown';
+                try {
+                    const userDoc = await db.collection('users').doc(payment.userId).get();
+                    if (userDoc.exists) {
+                        userName = userDoc.data().name;
+                    }
+                } catch (error) {
+                    console.error('Error getting user:', error);
+                }
+
+                const paymentElement = document.createElement('div');
+                paymentElement.className = 'pending-payment-item';
+                paymentElement.innerHTML = `
+                    <div class="pending-payment-info">
+                        <div style="font-weight: 600; margin-bottom: 5px;">${userName}</div>
+                        <div style="color: var(--light); font-size: 0.9rem;">
+                            ${payment.planName} • $${payment.amount}
+                        </div>
+                        <div style="color: var(--light); font-size: 0.8rem;">
+                            Reference: ${payment.paymentReference}
+                        </div>
+                    </div>
+                    <div class="pending-payment-actions">
+                        <button class="btn btn-success btn-small verify-payment-btn" 
+                                data-payment-id="${doc.id}"
+                                data-reference="${payment.paymentReference}"
+                                data-plan-name="${payment.planName}"
+                                data-user-id="${payment.userId}">
+                            <i class="fas fa-check"></i> Verify
+                        </button>
+                        <button class="btn btn-danger btn-small reject-payment-btn" 
+                                data-payment-id="${doc.id}">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(paymentElement);
+            });
+
+            // Add event listeners
+            setTimeout(() => {
+                document.querySelectorAll('.verify-payment-btn').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const paymentId = this.getAttribute('data-payment-id');
+                        const reference = this.getAttribute('data-reference');
+                        const planName = this.getAttribute('data-plan-name');
+                        const userId = this.getAttribute('data-user-id');
+                        
+                        if (confirm(`Verify payment for ${planName}?`)) {
+                            try {
+                                const result = await verifyPayment(reference, planName, userId);
+                                
+                                if (result.success) {
+                                    // Update payment status
+                                    await db.collection('payments').doc(paymentId).update({
+                                        status: 'completed',
+                                        verifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                        verifiedBy: state.currentUser.uid
+                                    });
+                                    
+                                    showNotification('Payment verified successfully!', 'success');
+                                    loadPendingPayments();
+                                } else {
+                                    showNotification(result.message, 'error');
+                                }
+                            } catch (error) {
+                                console.error('Error verifying payment:', error);
+                                showNotification('Error verifying payment: ' + error.message, 'error');
+                            }
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.reject-payment-btn').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const paymentId = this.getAttribute('data-payment-id');
+                        
+                        if (confirm('Reject this payment?')) {
+                            try {
+                                await db.collection('payments').doc(paymentId).update({
+                                    status: 'rejected',
+                                    rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    rejectedBy: state.currentUser.uid
+                                });
+                                
+                                showNotification('Payment rejected', 'success');
+                                loadPendingPayments();
+                            } catch (error) {
+                                console.error('Error rejecting payment:', error);
+                                showNotification('Error rejecting payment', 'error');
+                            }
+                        }
+                    });
+                });
+            }, 100);
+
+        } catch (error) {
+            console.error('Error loading pending payments:', error);
         }
     }
 
@@ -8608,42 +9305,174 @@
     }
 
     // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+
+    function getCurrentPage() {
+        const pages = document.querySelectorAll('.page');
+        for (const page of pages) {
+            if (!page.classList.contains('hidden')) {
+                return page.id.replace('-page', '');
+            }
+        }
+        return 'home';
+    }
+
+    function setupPlanFiltering() {
+        document.querySelectorAll('.plans-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                const tabType = this.getAttribute('data-tab');
+
+                // Update tab styles
+                document.querySelectorAll('.plans-tab').forEach(t => {
+                    t.classList.remove('active', 'btn-primary');
+                    t.classList.add('btn-outline-primary');
+                });
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('active', 'btn-primary');
+
+                // Show/hide sections
+                const allPlansContainer = document.getElementById('all-plans-container');
+                const subscriptionsContainer = document.getElementById('subscriptions-container');
+                const paymentHistoryContainer = document.getElementById('payment-history-container');
+
+                if (allPlansContainer) {
+                    allPlansContainer.style.display = tabType === 'all' ? 'block' : 'none';
+                }
+                if (subscriptionsContainer) {
+                    subscriptionsContainer.style.display = tabType === 'subscriptions' ? 'block' : 'none';
+                }
+                if (paymentHistoryContainer) {
+                    paymentHistoryContainer.style.display = tabType === 'history' ? 'block' : 'none';
+                }
+
+                // Scroll to category if needed
+                if (['verification', 'advertisement', 'toplist'].includes(tabType)) {
+                    if (allPlansContainer) allPlansContainer.style.display = 'block';
+                    const categoryId = tabType + '-plans';
+                    const element = document.getElementById(categoryId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+
+                // Load data if needed
+                if (tabType === 'subscriptions' && state.currentUser) {
+                    loadUserSubscriptions();
+                }
+                if (tabType === 'history' && state.currentUser) {
+                    loadPaymentHistory();
+                }
+            });
+        });
+    }
+
+    function setupPlansEventListeners() {
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.select-plan-btn')) {
+                handlePlanSelection(e);
+            }
+
+            if (e.target.closest('.cancel-subscription-btn')) {
+                const button = e.target.closest('.cancel-subscription-btn');
+                const subId = button.getAttribute('data-sub-id');
+                const planName = button.getAttribute('data-plan-name');
+                cancelSubscription(subId, planName);
+            }
+        });
+    }
+
+    async function cancelSubscription(subscriptionId, planName) {
+        if (!confirm(`Are you sure you want to cancel "${planName}"?`)) {
+            return;
+        }
+
+        try {
+            await db.collection('subscriptions').doc(subscriptionId).update({
+                status: 'cancelled',
+                cancelledAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            showNotification(`Subscription "${planName}" cancelled successfully`, 'success');
+            loadUserSubscriptions();
+
+        } catch (error) {
+            console.error('Error cancelling subscription:', error);
+            showNotification('Error cancelling subscription', 'error');
+        }
+    }
+
+    // ============================================
     // UI FUNCTIONS
     // ============================================
 
     function updateUIForUser() {
         const userMenu = document.getElementById('userMenu');
+        if (!userMenu) return;
 
         if (state.currentUser && state.userProfile) {
             const avatarLetter = getUserInitials(state.userProfile.name);
-
             userMenu.innerHTML = `
-                <a href="#" data-page="profile">Profile</a>
+                <a href="#" data-page="profile" style="display: flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-user"></i> Profile
+                </a>
                 <div class="avatar" title="${state.userProfile.name}">${avatarLetter}</div>
-                <button class="btn btn-secondary btn-small" id="logoutBtn">Logout</button>
+                <button class="btn btn-secondary btn-small" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             `;
-
+            
+            // Add admin link if admin
+            if (state.isAdmin) {
+                userMenu.innerHTML = `
+                    <a href="#" data-page="admin" style="display: flex; align-items: center; gap: 5px; color: var(--danger);">
+                        <i class="fas fa-crown"></i> Admin
+                    </a>
+                    <a href="#" data-page="profile" style="display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <div class="avatar" title="${state.userProfile.name}">${avatarLetter}</div>
+                    <button class="btn btn-secondary btn-small" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                `;
+            }
         } else {
             userMenu.innerHTML = `
-                <a href="#" data-page="login" id="loginBtn">Login</a>
-                <a href="#" data-page="register" id="registerBtn" class="btn btn-primary">Sign Up</a>
+                <a href="#" data-page="login" id="loginBtn" style="margin-right: 10px;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="#" data-page="register" id="registerBtn" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
             `;
+        }
+
+        // Update mobile menu
+        const mobileUserMenu = document.getElementById('mobileUserMenu');
+        if (mobileUserMenu) {
+            mobileUserMenu.innerHTML = userMenu.innerHTML;
         }
     }
 
     function showPage(pageName) {
+        console.log('Showing page:', pageName);
+        
+        // Hide all pages
         document.querySelectorAll('.page').forEach(page => {
             page.classList.add('hidden');
         });
 
+        // Show requested page
         const pageElement = document.getElementById(`${pageName}-page`);
         if (pageElement) {
             pageElement.classList.remove('hidden');
-            updateUIForUser();
-
+            
+            // Close mobile menu if open
             const navLinks = document.getElementById('navLinks');
             if (navLinks) navLinks.classList.remove('active');
 
+            // Load page-specific content
             switch (pageName) {
                 case 'home':
                     loadHomeStats();
@@ -8652,41 +9481,15 @@
                     if (state.statsUpdateInterval) {
                         clearInterval(state.statsUpdateInterval);
                     }
-                    state.statsUpdateInterval = setInterval(() => {
-                        loadHomeStats();
-                    }, 30000);
-                    break;
-
-                case 'ratings':
-                    loadRatingsPage();
+                    state.statsUpdateInterval = setInterval(loadHomeStats, 30000);
                     break;
 
                 case 'jobs':
-                    const container = document.getElementById('all-job-listings');
-                    if (container) container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading jobs...</div>';
-                    const loadJobsTimeoutId = setTimeout(() => {
-                        loadAllJobs();
-                        state.reliableTimeouts.delete(loadJobsTimeoutId);
-                    }, 100);
-                    state.reliableTimeouts.set(loadJobsTimeoutId, true);
+                    loadAllJobs();
                     break;
 
                 case 'freelancers':
-                    if (!state.currentUser) {
-                        showNotification('Please login to search freelancers', 'warning');
-                        showPage('login');
-                    } else {
-                        document.getElementById('freelancer-search').value = '';
-                        document.getElementById('filter-skills').value = '';
-                        document.getElementById('filter-rate').value = '';
-                        document.getElementById('filter-rating').value = '';
-
-                        const searchTimeoutId = setTimeout(() => {
-                            searchFreelancers();
-                            state.reliableTimeouts.delete(searchTimeoutId);
-                        }, 100);
-                        state.reliableTimeouts.set(searchTimeoutId, true);
-                    }
+                    searchFreelancers();
                     break;
 
                 case 'profile':
@@ -8697,11 +9500,8 @@
 
                 case 'admin':
                     if (state.isAdmin) {
-                        const adminTimeoutId = setTimeout(() => {
-                            loadAdminDashboard();
-                            state.reliableTimeouts.delete(adminTimeoutId);
-                        }, 100);
-                        state.reliableTimeouts.set(adminTimeoutId, true);
+                        loadAdminDashboard();
+                        setupAdminEventListeners();
                     } else {
                         showNotification('Admin access required', 'error');
                         showPage('home');
@@ -8715,41 +9515,54 @@
                     } else {
                         setupChatView();
                         loadChatContacts();
-                        state.currentChatWith = null;
-                        state.currentChatUser = null;
-
-                        if (state.chatListener) {
-                            state.chatListener();
-                            state.chatListener = null;
-                        }
                     }
                     break;
 
                 case 'plans':
-                    console.log('Initializing plans page...');
                     initializePlansSystem();
+                    break;
+
+                case 'ratings':
+                    loadRatingsPage();
+                    break;
+                    
+                case 'post-job':
+                    // Nothing special to load for post-job page
                     break;
             }
 
+            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
     // ============================================
-    // EVENT LISTENER SETUP
+    // EVENT LISTENER SETUP - COMPLETE
     // ============================================
 
     function setupEventListeners() {
+        // Mobile menu toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
-
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', () => {
+        if (mobileMenuBtn && navLinks) {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 navLinks.classList.toggle('active');
             });
         }
 
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navLinks && navLinks.classList.contains('active') && 
+                !e.target.closest('#navLinks') && 
+                !e.target.closest('#mobileMenuBtn')) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Page navigation
         document.addEventListener('click', function (e) {
+            // Page links
             if (e.target.closest('[data-page]')) {
                 e.preventDefault();
                 const link = e.target.closest('[data-page]');
@@ -8757,63 +9570,60 @@
                 showPage(page);
             }
 
+            // Logout button
+            if (e.target.closest('#logoutBtn')) {
+                e.preventDefault();
+                logoutUser();
+            }
+
+            // Apply job buttons
+            if (e.target.closest('.apply-job-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.apply-job-btn');
+                const jobId = button.getAttribute('data-job-id');
+                applyForJob(jobId);
+            }
+
+            // Delete job buttons
+            if (e.target.closest('.delete-job-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.delete-job-btn');
+                const jobId = button.getAttribute('data-job-id');
+                deleteJob(jobId);
+            }
+
+            // Message poster buttons
+            if (e.target.closest('.message-poster-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.message-poster-btn');
+                const posterId = button.getAttribute('data-poster-id');
+                messageFreelancer(posterId);
+            }
+
+            // Hire freelancer buttons
+            if (e.target.closest('.hire-freelancer-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.hire-freelancer-btn');
+                const freelancerId = button.getAttribute('data-freelancer-id');
+                hireFreelancer(freelancerId);
+            }
+
+            // View jobs button
             if (e.target.closest('.view-jobs-btn')) {
                 e.preventDefault();
                 showPage('jobs');
             }
+
+            // Close announcement
+            if (e.target.closest('#close-announcement')) {
+                e.preventDefault();
+                const banner = document.getElementById('system-announcement-banner');
+                if (banner) banner.classList.add('hidden');
+            }
         });
 
-        const startFreelancingBtn = document.getElementById('startFreelancingBtn');
-        const hireTalentBtn = document.getElementById('hireTalentBtn');
-
-        if (startFreelancingBtn) {
-            startFreelancingBtn.addEventListener('click', () => {
-                showPage('register');
-            });
-        }
-
-        if (hireTalentBtn) {
-            hireTalentBtn.addEventListener('click', () => {
-                showPage('post-job');
-            });
-        }
-
-        const clientTypeBtn = document.getElementById('client-type-btn');
-        const freelancerTypeBtn = document.getElementById('freelancer-type-btn');
-
-        if (clientTypeBtn) {
-            clientTypeBtn.addEventListener('click', function () {
-                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('user-type').value = 'client';
-                document.getElementById('skills-field').style.display = 'none';
-            });
-        }
-
-        if (freelancerTypeBtn) {
-            freelancerTypeBtn.addEventListener('click', function () {
-                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('user-type').value = 'freelancer';
-                document.getElementById('skills-field').style.display = 'block';
-            });
-        }
-
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        const googleRegisterBtn = document.getElementById('google-register-btn');
-
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', signInWithGoogle);
-        }
-
-        if (googleRegisterBtn) {
-            googleRegisterBtn.addEventListener('click', signInWithGoogle);
-        }
-
+        // Form submissions
         const registerForm = document.getElementById('register-form');
-        const loginForm = document.getElementById('login-form');
-        const postJobForm = document.getElementById('post-job-form');
-
         if (registerForm) {
             registerForm.addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -8821,6 +9631,7 @@
             });
         }
 
+        const loginForm = document.getElementById('login-form');
         if (loginForm) {
             loginForm.addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -8828,27 +9639,11 @@
             });
         }
 
+        const postJobForm = document.getElementById('post-job-form');
         if (postJobForm) {
             postJobForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 postJob();
-            });
-        }
-
-        const registerLink = document.getElementById('register-link');
-        const loginLink = document.getElementById('login-link');
-
-        if (registerLink) {
-            registerLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showPage('register');
-            });
-        }
-
-        if (loginLink) {
-            loginLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showPage('login');
             });
         }
 
@@ -8889,13 +9684,18 @@
             });
         }
 
-        const sendMessageBtn = document.getElementById('send-message-btn');
-        const messageInput = document.getElementById('message-input');
+        // Google login buttons
+        document.querySelectorAll('.google-login-btn').forEach(btn => {
+            btn.addEventListener('click', signInWithGoogle);
+        });
 
+        // Chat functionality
+        const sendMessageBtn = document.getElementById('send-message-btn');
         if (sendMessageBtn) {
             sendMessageBtn.addEventListener('click', sendMessage);
         }
 
+        const messageInput = document.getElementById('message-input');
         if (messageInput) {
             messageInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -8905,34 +9705,13 @@
             });
         }
 
-        const chatBackBtn = document.getElementById('chat-back-btn');
-        if (chatBackBtn) {
-            chatBackBtn.addEventListener('click', function () {
-                if (window.innerWidth < 768) {
-                    state.currentChatWith = null;
-                    state.currentChatUser = null;
-
-                    if (state.chatListener) {
-                        state.chatListener();
-                        state.chatListener = null;
-                    }
-
-                    document.getElementById('chat-with').innerHTML = '<span>Select a conversation</span>';
-                    document.getElementById('chat-input-area').style.display = 'none';
-                    document.getElementById('chat-messages').innerHTML =
-                        '<div style="text-align: center; padding: 40px; color: var(--light);">' +
-                        '<i class="fas fa-comment"></i>' +
-                        '<p>Select a conversation to start chatting</p>' +
-                        '</div>';
-                }
-            });
-        }
-
+        // Comments functionality
         const submitCommentBtn = document.getElementById('submit-comment-btn');
         if (submitCommentBtn) {
             submitCommentBtn.addEventListener('click', submitComment);
         }
 
+        // Star rating input
         const starInput = document.getElementById('comment-rating-input');
         if (starInput) {
             const stars = starInput.querySelectorAll('i');
@@ -8952,6 +9731,7 @@
             });
         }
 
+        // Edit profile
         const editProfileBtn = document.getElementById('edit-profile-btn');
         if (editProfileBtn) {
             editProfileBtn.addEventListener('click', function () {
@@ -8968,6 +9748,7 @@
             });
         }
 
+        // Add portfolio
         const addPortfolioBtn = document.getElementById('add-portfolio-btn');
         if (addPortfolioBtn) {
             addPortfolioBtn.addEventListener('click', () => {
@@ -8979,25 +9760,8 @@
             });
         }
 
-        const closePortfolioModal = document.getElementById('close-portfolio-modal');
-        const cancelPortfolioBtn = document.getElementById('cancel-portfolio-btn');
-
-        if (closePortfolioModal) {
-            closePortfolioModal.addEventListener('click', () => {
-                closeModal('portfolio-modal');
-            });
-        }
-
-        if (cancelPortfolioBtn) {
-            cancelPortfolioBtn.addEventListener('click', () => {
-                closeModal('portfolio-modal');
-            });
-        }
-
+        // Payment methods setup
         const setupPaypalBtn = document.getElementById('setup-paypal-btn');
-        const setupWhatsappBtn = document.getElementById('setup-whatsapp-btn');
-        const setupBankBtn = document.getElementById('setup-bank-btn');
-
         if (setupPaypalBtn) {
             setupPaypalBtn.addEventListener('click', () => {
                 if (!state.currentUser) {
@@ -9009,6 +9773,7 @@
             });
         }
 
+        const setupWhatsappBtn = document.getElementById('setup-whatsapp-btn');
         if (setupWhatsappBtn) {
             setupWhatsappBtn.addEventListener('click', () => {
                 if (!state.currentUser) {
@@ -9020,6 +9785,7 @@
             });
         }
 
+        const setupBankBtn = document.getElementById('setup-bank-btn');
         if (setupBankBtn) {
             setupBankBtn.addEventListener('click', () => {
                 if (!state.currentUser) {
@@ -9035,62 +9801,29 @@
             });
         }
 
-        const closePaypalModal = document.getElementById('close-paypal-modal');
-        const cancelPaypalBtn = document.getElementById('cancel-paypal-btn');
+        // Save payment methods
         const savePaypalBtn = document.getElementById('save-paypal-btn');
-
-        if (closePaypalModal) {
-            closePaypalModal.addEventListener('click', () => closeModal('paypal-modal'));
-        }
-
-        if (cancelPaypalBtn) {
-            cancelPaypalBtn.addEventListener('click', () => closeModal('paypal-modal'));
-        }
-
         if (savePaypalBtn) {
             savePaypalBtn.addEventListener('click', savePayPal);
         }
 
-        const closeWhatsappModal = document.getElementById('close-whatsapp-modal');
-        const cancelWhatsappBtn = document.getElementById('cancel-whatsapp-btn');
         const saveWhatsappBtn = document.getElementById('save-whatsapp-btn');
-
-        if (closeWhatsappModal) {
-            closeWhatsappModal.addEventListener('click', () => closeModal('whatsapp-modal'));
-        }
-
-        if (cancelWhatsappBtn) {
-            cancelWhatsappBtn.addEventListener('click', () => closeModal('whatsapp-modal'));
-        }
-
         if (saveWhatsappBtn) {
             saveWhatsappBtn.addEventListener('click', saveWhatsApp);
         }
 
-        const closeBankModal = document.getElementById('close-bank-modal');
-        const cancelBankBtn = document.getElementById('cancel-bank-btn');
         const saveBankBtn = document.getElementById('save-bank-btn');
-
-        if (closeBankModal) {
-            closeBankModal.addEventListener('click', () => closeModal('bank-modal'));
-        }
-
-        if (cancelBankBtn) {
-            cancelBankBtn.addEventListener('click', () => closeModal('bank-modal'));
-        }
-
         if (saveBankBtn) {
             saveBankBtn.addEventListener('click', saveBankAccount);
         }
 
+        // Freelancer search
         const searchFreelancersBtn = document.getElementById('search-freelancers-btn');
-        const freelancerSearch = document.getElementById('freelancer-search');
-        const clearSearchBtn = document.getElementById('clear-search-btn');
-
         if (searchFreelancersBtn) {
             searchFreelancersBtn.addEventListener('click', searchFreelancers);
         }
 
+        const freelancerSearch = document.getElementById('freelancer-search');
         if (freelancerSearch) {
             freelancerSearch.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
@@ -9099,6 +9832,7 @@
             });
         }
 
+        const clearSearchBtn = document.getElementById('clear-search-btn');
         if (clearSearchBtn) {
             clearSearchBtn.addEventListener('click', function () {
                 document.getElementById('freelancer-search').value = '';
@@ -9109,81 +9843,64 @@
             });
         }
 
-        document.addEventListener('click', function (e) {
-            if (e.target.closest('#logoutBtn')) {
-                e.preventDefault();
-                logoutUser();
-            }
-
-            if (e.target.closest('#go-to-admin-btn')) {
-                e.preventDefault();
-                showPage('admin');
-            }
-
-            if (e.target.closest('.message-poster-btn')) {
-                const button = e.target.closest('.message-poster-btn');
-                const posterId = button.getAttribute('data-poster-id');
-
-                db.collection('users').doc(posterId).get().then(doc => {
-                    if (doc.exists) {
-                        const user = doc.data();
-                        showPage('chat');
-                        const chatTimeoutId = setTimeout(() => {
-                            openChatWithUser(posterId, user.name, user.type);
-                            state.reliableTimeouts.delete(chatTimeoutId);
-                        }, 100);
-                        state.reliableTimeouts.set(chatTimeoutId, true);
-                    }
-                });
-            }
-
-            if (e.target.closest('.delete-job-btn')) {
-                const button = e.target.closest('.delete-job-btn');
-                const jobId = button.getAttribute('data-job-id');
-                deleteJob(jobId);
-            }
-
-            if (e.target.closest('.hire-freelancer-btn')) {
-                const button = e.target.closest('.hire-freelancer-btn');
-                const freelancerId = button.getAttribute('data-freelancer-id');
-                hireFreelancer(freelancerId);
-            }
-
-            if (e.target.closest('.message-freelancer-btn')) {
-                const button = e.target.closest('.message-freelancer-btn');
-                const freelancerId = button.getAttribute('data-freelancer-id');
-                db.collection('users').doc(freelancerId).get().then(doc => {
-                    if (doc.exists) {
-                        const user = doc.data();
-                        messageFreelancer(freelancerId, user.name, user.type);
-                    }
-                });
-            }
-
-            if (e.target.closest('.view-profile-btn')) {
-                const button = e.target.closest('.view-profile-btn');
-                const freelancerId = button.getAttribute('data-freelancer-id');
-                viewFreelancerProfile(freelancerId);
-            }
-        });
-
-        const closeAnnouncement = document.getElementById('close-announcement');
-        if (closeAnnouncement) {
-            closeAnnouncement.addEventListener('click', function () {
-                document.getElementById('system-announcement-banner').classList.add('hidden');
+        // User type selection
+        const clientTypeBtn = document.getElementById('client-type-btn');
+        if (clientTypeBtn) {
+            clientTypeBtn.addEventListener('click', function () {
+                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('user-type').value = 'client';
+                const skillsField = document.getElementById('skills-field');
+                if (skillsField) skillsField.style.display = 'none';
             });
         }
 
-        window.addEventListener('resize', function () {
-            if (document.getElementById('chat-page') &&
-                !document.getElementById('chat-page').classList.contains('hidden')) {
-                setupChatView();
-            }
-        });
+        const freelancerTypeBtn = document.getElementById('freelancer-type-btn');
+        if (freelancerTypeBtn) {
+            freelancerTypeBtn.addEventListener('click', function () {
+                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('user-type').value = 'freelancer';
+                const skillsField = document.getElementById('skills-field');
+                if (skillsField) skillsField.style.display = 'block';
+            });
+        }
 
-        window.addEventListener('beforeunload', clearAllListeners);
+        // Registration/Login links
+        const registerLink = document.getElementById('register-link');
+        if (registerLink) {
+            registerLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('register');
+            });
+        }
+
+        const loginLink = document.getElementById('login-link');
+        if (loginLink) {
+            loginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('login');
+            });
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM loaded, initializing...');
+            
+            if (!firebaseInitialized) {
+                showNotification("Firebase initialization failed. Please refresh the page.", "error");
+                return;
+            }
+
+            // Show home page by default
+            showPage('home');
+            
+            // Load comments after a delay
+            setTimeout(loadComments, 1000);
+        });
     }
 
+    // Setup admin event listeners
     function setupAdminEventListeners() {
         const sendBroadcastBtn = document.getElementById('send-broadcast-btn');
         if (sendBroadcastBtn) {
@@ -9226,8 +9943,7 @@
                     localStorage.clear();
                     sessionStorage.clear();
                     showNotification('Cache cleared. Page will reload.', 'info');
-                    const reloadTimeoutId = setTimeout(() => location.reload(), 1000);
-                    state.reliableTimeouts.set(reloadTimeoutId, true);
+                    setTimeout(() => location.reload(), 1000);
                 }
             });
         }
@@ -9319,63 +10035,46 @@
             refreshAllJobsBtn.addEventListener('click', function () {
                 if (!state.isAdmin) return;
 
-                    showNotification('Refreshing job listings...', 'info');
-                    loadAllJobs();
-                    if (document.getElementById('admin-page') &&
-                        !document.getElementById('admin-page').classList.contains('hidden')) {
-                        loadJobsForAdmin();
-                    }
-                });
-            }
-
-            document.addEventListener('click', function (e) {
-                if (e.target.closest('.admin-action-btn.edit[data-user-id]')) {
-                    const button = e.target.closest('.admin-action-btn.edit');
-                    const userId = button.getAttribute('data-user-id');
-                    showNotification('Edit user functionality coming soon', 'info');
-                }
-
-                if (e.target.closest('.admin-action-btn.delete[data-user-id]')) {
-                    const button = e.target.closest('.admin-action-btn.delete');
-                    const userId = button.getAttribute('data-user-id');
-                    const userName = button.getAttribute('data-user-name');
-                    showNotification('Delete user functionality coming soon', 'info');
-                }
-
-                if (e.target.closest('.admin-action-btn.edit[data-job-id]')) {
-                    const button = e.target.closest('.admin-action-btn.edit');
-                    const jobId = button.getAttribute('data-job-id');
-                    showNotification('Edit job functionality coming soon', 'info');
-                }
-
-                if (e.target.closest('.admin-action-btn.delete[data-job-id]')) {
-                    const button = e.target.closest('.admin-action-btn.delete');
-                    const jobId = button.getAttribute('data-job-id');
-                    const jobTitle = button.getAttribute('data-job-title');
-                    showNotification('Delete job functionality coming soon', 'info');
+                showNotification('Refreshing job listings...', 'info');
+                loadAllJobs();
+                if (document.getElementById('admin-page') &&
+                    !document.getElementById('admin-page').classList.contains('hidden')) {
+                    loadJobsForAdmin();
                 }
             });
         }
+    }
 
-        // ============================================
-        // INITIALIZATION
-        // ============================================
+    // Initialize everything
+    setupEventListeners();
 
-        document.addEventListener('DOMContentLoaded', function () {
-            if (!firebase.apps.length) {
-                showNotification("Firebase initialization failed. Please refresh the page.", "error");
-                return;
-            }
+    // Make functions available globally
+    window.showPage = showPage;
+    window.signInWithGoogle = signInWithGoogle;
+    window.logoutUser = logoutUser;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.searchFreelancers = searchFreelancers;
+    window.applyForJob = applyForJob;
+    window.deleteJob = deleteJob;
+    window.postJob = postJob;
+    window.sendMessage = sendMessage;
+    window.submitComment = submitComment;
+    window.hireFreelancer = hireFreelancer;
+    window.messageFreelancer = messageFreelancer;
+    window.viewFreelancerProfile = viewFreelancerProfile;
+    window.openChatWithUser = openChatWithUser;
+    window.loadPlans = loadPlans;
+    window.loadComments = loadComments;
+    window.loadChatContacts = loadChatContacts;
+    window.loadAllJobs = loadAllJobs;
+    window.loadProfileData = loadProfileData;
+    window.loadRatingsPage = loadRatingsPage;
+    window.loadTestimonials = loadTestimonials;
+    window.savePayPal = savePayPal;
+    window.saveWhatsApp = saveWhatsApp;
+    window.saveBankAccount = saveBankAccount;
 
-            setupEventListeners();
-            showPage('home');
-
-            const commentsTimeoutId = setTimeout(() => {
-                loadComments();
-                state.reliableTimeouts.delete(commentsTimeoutId);
-            }, 1000);
-            state.reliableTimeouts.set(commentsTimeoutId, true);
-        });
 </script>
 </body>
 
